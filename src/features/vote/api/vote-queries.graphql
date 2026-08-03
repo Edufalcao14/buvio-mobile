@@ -1,0 +1,29 @@
+query VoteMatch($matchId: ID!) {
+  me {
+    id
+    displayName
+    nickname
+    avatarUrl
+  }
+  getMatchById(matchId: $matchId) {
+    id
+    name
+    date
+    type
+    players {
+      id
+      displayName
+      nickname
+      avatarUrl
+    }
+    votingSession {
+      ...VotingSessionState
+    }
+  }
+}
+
+subscription VotingSessionUpdated($votingSessionId: ID!) {
+  votingSessionUpdated(votingSessionId: $votingSessionId) {
+    ...VotingSessionState
+  }
+}

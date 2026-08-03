@@ -1,0 +1,34 @@
+mutation SubmitVote(
+  $votingSession: ID!
+  $votedUserId: ID!
+  $type: VoteType!
+  $description: String
+) {
+  submitVote(
+    votingSession: $votingSession
+    votedUserId: $votedUserId
+    type: $type
+    description: $description
+  ) {
+    id
+    type
+    description
+    voted {
+      id
+      displayName
+      nickname
+    }
+  }
+}
+
+mutation CreateVotingSession($matchId: ID!, $closingAt: DateTime) {
+  createVotingSession(matchId: $matchId, closingAt: $closingAt) {
+    ...VotingSessionState
+  }
+}
+
+mutation CloseVotingSession($votingSessionId: ID!) {
+  closeVotingSession(votingSessionId: $votingSessionId) {
+    ...VotingSessionState
+  }
+}

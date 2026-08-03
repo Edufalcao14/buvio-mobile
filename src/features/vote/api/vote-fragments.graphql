@@ -1,0 +1,56 @@
+# The whole session in one shape. The subscription pushes the full state on
+# every vote and on close, so query, mutation and subscription all read the
+# same fragment and the cache is updated by identity alone.
+fragment VotingSessionState on VotingSession {
+  id
+  status
+  timeRemaining
+  closingAt
+  closedAt
+  closedReason
+  startedBy {
+    id
+    displayName
+    nickname
+  }
+  match {
+    id
+    name
+    date
+  }
+  ballots {
+    player {
+      id
+      displayName
+      nickname
+      avatarUrl
+    }
+    hasTop
+    hasFlop
+    isComplete
+  }
+  tally {
+    player {
+      id
+      displayName
+      nickname
+      avatarUrl
+    }
+    topCount
+    flopCount
+  }
+  voteResult {
+    top {
+      id
+      displayName
+      nickname
+      avatarUrl
+    }
+    flop {
+      id
+      displayName
+      nickname
+      avatarUrl
+    }
+  }
+}
