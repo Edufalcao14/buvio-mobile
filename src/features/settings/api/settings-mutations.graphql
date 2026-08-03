@@ -1,0 +1,51 @@
+# Identity: the nickname the squad knows a player by, their avatar, and the
+# team's crest.
+#
+# The two picture flows are three steps on purpose (see the backend ADR
+# 0003 "images upload directly to R2"): ask for a ticket, PUT the bytes
+# straight to the bucket, then confirm the key — the confirm mutation is what
+# actually attaches the image, so it is the one that returns the new URL.
+
+mutation UpdateProfile($nickname: String, $displayName: String) {
+  updateProfile(nickname: $nickname, displayName: $displayName) {
+    id
+    displayName
+    nickname
+    avatarUrl
+    email
+  }
+}
+
+mutation CreateAvatarUploadUrl($contentType: String!) {
+  createAvatarUploadUrl(contentType: $contentType) {
+    uploadUrl
+    key
+  }
+}
+
+mutation ConfirmAvatarUpload($key: String!) {
+  confirmAvatarUpload(key: $key) {
+    id
+    displayName
+    nickname
+    avatarUrl
+    email
+  }
+}
+
+mutation CreateTeamCrestUploadUrl($contentType: String!) {
+  createTeamCrestUploadUrl(contentType: $contentType) {
+    uploadUrl
+    key
+  }
+}
+
+mutation ConfirmTeamCrestUpload($key: String!) {
+  confirmTeamCrestUpload(key: $key) {
+    id
+    name
+    code
+    sport
+    crestUrl
+  }
+}
