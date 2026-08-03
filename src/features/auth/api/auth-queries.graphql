@@ -1,0 +1,51 @@
+query Me {
+  me {
+    id
+    email
+    displayName
+    nickname
+    avatarUrl
+    team {
+      id
+      name
+      code
+      sport
+      crestUrl
+      creator {
+        id
+        displayName
+        externalId
+        email
+      }
+    }
+  }
+}
+query validateTeamCode($code: String!) {
+  validateTeamCode(code: $code)
+}
+
+query GetTeamMembers {
+  getTeamMembers {
+    id
+    displayName
+    nickname
+    avatarUrl
+    email
+    createdAt
+    updatedAt
+    deletedAt
+    externalId
+    team {
+      name
+      code
+      sport
+      crestUrl
+      creator {
+        displayName
+        email
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
