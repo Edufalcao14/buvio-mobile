@@ -1,0 +1,26 @@
+# An existing player signs in and lands in their team.
+appId: com.anonymous.BuvioFrontend
+name: Sign in
+tags:
+  - auth
+---
+- runFlow: subflows/sign-in-existing-user.yaml
+
+- assertVisible: "Matchs"
+- assertVisible: "Historique"
+- assertVisible: "Classement"
+
+# Wrong credentials are rejected in place, without leaving the screen.
+- clearState
+- launchApp
+- tapOn: "Se Connecter"
+- assertVisible: "Connexion"
+- tapOn:
+    id: "input-email"
+- inputText: "nobody@buvio.test"
+- tapOn:
+    id: "input-password"
+- inputText: "wrongpassword"
+- hideKeyboard
+- tapOn: "Se Connecter"
+- assertVisible: "Connexion"

@@ -1,0 +1,4 @@
+# Only the top-level journeys are flows; `subflows/` holds reusable pieces
+# that other flows call with `runFlow`.
+flows:
+  - "*.yaml"

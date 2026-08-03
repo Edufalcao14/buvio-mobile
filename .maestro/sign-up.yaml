@@ -1,0 +1,10 @@
+# A new player creates an account and reaches the welcome fork.
+appId: com.anonymous.BuvioFrontend
+name: Sign up
+tags:
+  - auth
+---
+- runFlow: subflows/sign-up-new-user.yaml
+
+- assertVisible: "Créer une équipe"
+- assertVisible: "Rejoindre une équipe"

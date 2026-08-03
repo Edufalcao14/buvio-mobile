@@ -1,0 +1,28 @@
+# A fresh player creates their own club and lands on the team tabs.
+appId: com.anonymous.BuvioFrontend
+name: Create a team
+tags:
+  - team
+---
+- runFlow: subflows/sign-up-new-user.yaml
+
+- tapOn: "Créer une équipe"
+- assertVisible: "Donnez un nom à votre équipe pour obtenir un code d’invitation unique."
+
+- evalScript: ${output.teamName = 'Maestro FC ' + Date.now()}
+
+- tapOn:
+    id: "input-name"
+- inputText: ${output.teamName}
+
+- tapOn:
+    id: "input-sport"
+- inputText: "Football"
+
+- hideKeyboard
+- tapOn: "Créer l'équipe"
+
+# The tab bar of the team area is the proof we arrived.
+- assertVisible: "Matchs"
+- assertVisible: "Historique"
+- assertVisible: "Classement"

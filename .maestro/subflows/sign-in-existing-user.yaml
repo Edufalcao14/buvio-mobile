@@ -1,0 +1,27 @@
+# Signs in with an account that already belongs to a team, landing on the
+# team tabs. Override EMAIL / PASSWORD with `maestro test -e EMAIL=...`.
+appId: com.anonymous.BuvioFrontend
+env:
+  EMAIL: "maestro@buvio.test"
+  PASSWORD: "Buvio2026!secret"
+---
+- clearState
+- launchApp
+- assertVisible: "Inscription"
+
+- tapOn: "Se Connecter"
+- assertVisible: "Connexion"
+
+- tapOn:
+    id: "input-email"
+- inputText: ${EMAIL}
+
+- tapOn:
+    id: "input-password"
+- inputText: ${PASSWORD}
+
+- hideKeyboard
+# On this screen "Se Connecter" is only the submit button.
+- tapOn: "Se Connecter"
+
+- assertVisible: "Historique"

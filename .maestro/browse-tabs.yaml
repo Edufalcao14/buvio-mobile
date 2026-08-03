@@ -1,0 +1,26 @@
+# Walks the three tabs of the team area: matches, history, ranking.
+appId: com.anonymous.BuvioFrontend
+name: Browse the team tabs
+tags:
+  - team
+---
+- runFlow: subflows/sign-in-existing-user.yaml
+
+- tapOn: "Matchs"
+- assertVisible: "Créez un match avec le bouton + pour lancer la prochaine rencontre."
+
+# The creation modal opens and closes without leaving the tab.
+- tapOn: "Créer un match"
+- assertVisible: "Créer un Match"
+- assertVisible: "Nouveau match"
+- tapOn: "Fermer"
+- assertNotVisible: "Nouveau match"
+
+- tapOn: "Classement"
+- assertVisible: "Classement"
+
+- tapOn: "Historique"
+- assertVisible: "Historique"
+
+# The club chrome stays put across the tabs.
+- assertVisible: "Réglages"

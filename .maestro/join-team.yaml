@@ -1,0 +1,37 @@
+# A fresh player joins an existing club with its 5 character code.
+# Pass a real code: maestro test .maestro/join-team.yaml -e TEAM_CODE=AB12C
+appId: com.anonymous.BuvioFrontend
+name: Join a team by code
+tags:
+  - team
+env:
+  TEAM_CODE: "AB12C"
+---
+- runFlow: subflows/sign-up-new-user.yaml
+
+- tapOn: "Rejoindre une équipe"
+- assertVisible: "Le code est composé de 5 caractères alphanumériques"
+
+# One box per character: each field takes a single character and advances.
+- tapOn:
+    id: "code-input-0"
+- inputText: ${TEAM_CODE.charAt(0)}
+- tapOn:
+    id: "code-input-1"
+- inputText: ${TEAM_CODE.charAt(1)}
+- tapOn:
+    id: "code-input-2"
+- inputText: ${TEAM_CODE.charAt(2)}
+- tapOn:
+    id: "code-input-3"
+- inputText: ${TEAM_CODE.charAt(3)}
+- tapOn:
+    id: "code-input-4"
+- inputText: ${TEAM_CODE.charAt(4)}
+
+- hideKeyboard
+- tapOn: "Rejoindre l’équipe"
+
+- assertVisible: "Matchs"
+- assertVisible: "Historique"
+- assertVisible: "Classement"

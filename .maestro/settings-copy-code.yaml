@@ -1,0 +1,20 @@
+# Opens the settings sheet and copies the club's invitation code.
+appId: com.anonymous.BuvioFrontend
+name: Settings and invitation code
+tags:
+  - settings
+---
+- runFlow: subflows/sign-in-existing-user.yaml
+
+- tapOn: "Réglages"
+- assertVisible: "Joueur"
+- assertVisible: "Équipe"
+- assertVisible: "Code d’invitation"
+- assertVisible: "Partage-le pour que tes coéquipiers rejoignent l’équipe."
+
+- tapOn: "Copier le code d’invitation"
+# The toast confirms the exact code that was copied.
+- assertVisible: "Code .* copié"
+
+- tapOn: "Retour"
+- assertVisible: "Historique"
