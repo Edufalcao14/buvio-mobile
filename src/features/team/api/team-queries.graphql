@@ -1,0 +1,12 @@
+query TeamRanking {
+  teamRanking {
+    topCount
+    flopCount
+    player {
+      id
+      displayName
+      nickname
+      avatarUrl
+    }
+  }
+}

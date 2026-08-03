@@ -1,0 +1,27 @@
+# Kept apart from `TeamHistory`: the Matchs tab only needs to know whether the
+# squad owes a vote right now, and the history list must not pay for the
+# ballot fan-out on every refresh.
+query TeamVoteState {
+  me {
+    id
+    team {
+      id
+      matches {
+        id
+        name
+        date
+        votingSession {
+          id
+          status
+          timeRemaining
+          ballots {
+            player {
+              id
+            }
+            isComplete
+          }
+        }
+      }
+    }
+  }
+}

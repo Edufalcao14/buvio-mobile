@@ -1,0 +1,42 @@
+query TeamHistory {
+  me {
+    id
+    team {
+      id
+      name
+      code
+      sport
+      matches {
+        id
+        name
+        date
+        type
+        players {
+          id
+          displayName
+          nickname
+          avatarUrl
+        }
+        votingSession {
+          id
+          status
+          timeRemaining
+          voteResult {
+            top {
+              id
+              displayName
+              nickname
+              avatarUrl
+            }
+            flop {
+              id
+              displayName
+              nickname
+              avatarUrl
+            }
+          }
+        }
+      }
+    }
+  }
+}
