@@ -22,7 +22,11 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.screen}>
-      <AuthHero title="Re-bonjour, champion !" accent="champion !" />
+      <AuthHero
+        title="Re-bonjour, champion !"
+        accent="champion !"
+        mascot="whiteOutline"
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.keyboard}

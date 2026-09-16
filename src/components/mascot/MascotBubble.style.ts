@@ -1,10 +1,18 @@
 import { StyleSheet } from "react-native";
 import { Theme } from "@/theme";
 
-export const createStyles = (theme: Theme, size: "sm" | "md") => {
-  const stickerHeight = size === "md" ? 148 : 104;
+export type MascotSize = "sm" | "md" | "lg";
+
+export const createStyles = (
+  theme: Theme,
+  size: MascotSize,
+  aspectRatio: number
+) => {
+  const stickerHeight = { sm: 104, md: 148, lg: 200 }[size];
+  // The line does not grow past `lg`: a bigger sticker is a bigger mascot, not
+  // a louder sentence, and the screen's own title has to stay the loudest thing.
   const lineSize =
-    size === "md" ? theme.typography.fontSize.xl : theme.typography.fontSize.lg;
+    size === "sm" ? theme.typography.fontSize.lg : theme.typography.fontSize.xl;
 
   return StyleSheet.create({
     row: {
@@ -14,7 +22,9 @@ export const createStyles = (theme: Theme, size: "sm" | "md") => {
     },
     // Slapped slightly askew, like on a locker door.
     sticker: {
-      width: stickerHeight * 0.52,
+      // Driven by the artwork's own ratio: the coach is a wider figure than the
+      // player, and a shared constant squashed whichever one it was not made for.
+      width: stickerHeight * aspectRatio,
       height: stickerHeight,
       transform: [{ rotate: "-4deg" }],
     },

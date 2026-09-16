@@ -157,6 +157,7 @@ export default function VoteScreen({ matchId, onClose }: VoteScreenProps) {
 
         {phase === "result" ? (
           <VoteResultScreen
+            matchId={matchId}
             topName={topVerdict?.nickname ?? null}
             topAvatarUrl={topVerdict?.avatarUrl ?? null}
             flopName={flopVerdict?.nickname ?? null}

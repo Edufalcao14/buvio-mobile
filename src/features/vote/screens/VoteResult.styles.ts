@@ -68,6 +68,10 @@ export const createStyles = (theme: Theme) =>
       alignSelf: "stretch",
       gap: theme.spacing.sm,
     },
+    historyAction: {
+      alignSelf: "stretch",
+      marginTop: theme.spacing.sm,
+    },
     emptyText: {
       fontSize: theme.typography.fontSize.md,
       lineHeight:

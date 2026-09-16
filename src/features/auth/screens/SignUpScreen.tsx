@@ -35,7 +35,11 @@ export default function SignUp() {
 
   return (
     <View style={styles.screen}>
-      <AuthHero title="Alors, on signe où ?" accent="où ?" />
+      <AuthHero
+        title="Alors, on signe où ?"
+        accent="où ?"
+        mascot="whiteOutline"
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.keyboard}
@@ -49,8 +53,8 @@ export default function SignUp() {
           >
             <Text style={styles.sheetTitle}>Inscription</Text>
             <Text style={styles.subtitle}>
-              Créez votre compte pour commencer l’aventure Top/Flop avec
-              votre equipe
+              Créez votre compte pour commencer l’aventure Top/Flop avec votre
+              equipe
             </Text>
 
             <View style={styles.formContainer}>

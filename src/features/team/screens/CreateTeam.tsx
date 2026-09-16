@@ -10,13 +10,29 @@ import { createStyles } from "./CreateTeam.style";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useMemo } from "react";
 import { FormTextInput } from "@/components/inputs/formTextInput";
+import { PicturePicker } from "@/components/avatars/PicturePicker";
+import { TeamCrest } from "@/components/navigation/header/TeamCrest";
+import { useWatch } from "react-hook-form";
 import { Button } from "@/components/buttons/button";
 import { useCreateTeamFormLogic } from "../hooks/useCreateTeamViewModel";
 
 export default function CreateTeamScreen() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { control, errors, error, isLoading, handleSubmit } = useCreateTeamFormLogic();
+  const {
+    control,
+    errors,
+    error,
+    isLoading,
+    crestUri,
+    crestError,
+    chooseCrest,
+    handleSubmit,
+  } = useCreateTeamFormLogic();
+
+  // The preview builds its monogram from whatever has been typed so far, so the
+  // badge is already the team's own before a picture is chosen.
+  const typedName = useWatch({ control, name: "name" });
 
   return (
     <KeyboardAvoidingView
@@ -37,6 +53,23 @@ export default function CreateTeamScreen() {
             </Text>
           </View>
           <View style={styles.containerInputs}>
+            <PicturePicker
+              label="Blason (optionnel)"
+              accessibilityLabel="Choisir le blason de l’équipe"
+              actionLabel={crestUri ? "Changer le blason" : "Ajouter un blason"}
+              hint="Sans blason, l’équipe porte ses initiales."
+              isBusy={isLoading}
+              onPress={chooseCrest}
+              errorText={crestError}
+              preview={
+                <TeamCrest
+                  name={typedName || "Buvio"}
+                  url={crestUri}
+                  size={52}
+                />
+              }
+            />
+
             <FormTextInput
               control={control}
               errors={errors}

@@ -1,0 +1,59 @@
+# The ritual itself: the floating CTA, the two steps, the ballot sent.
+#
+# Unlike the other journeys this one cannot create its own fixture — a ballot
+# needs an *open* voting session, which only exists once a match has been
+# created and its vote opened. So it runs against an account that already owes
+# a vote, and the two players it picks are passed in:
+#
+#   maestro test .maestro/vote.yaml \
+#     -e EMAIL=you@buvio.test -e PASSWORD='Buvio2026!secret' \
+#     -e TOP_PLAYER=Sofiane -e FLOP_PLAYER=Karim
+#
+# The names are the nicknames the vote screen shows, which are the squad names
+# (`nicknameOf`), not the legal display names.
+appId: com.anonymous.BuvioFrontend
+name: Cast a ballot
+tags:
+  - vote
+env:
+  TOP_PLAYER: "Top"
+  FLOP_PLAYER: "Flop"
+---
+- runFlow: subflows/sign-in-existing-user.yaml
+
+- tapOn: "Matchs"
+
+# The pill is only there when this player's ballot is incomplete; without it
+# the fixture is wrong and the run should say so rather than quietly pass.
+- assertVisible: "Voter 🗳️"
+- tapOn: "Voter 🗳️"
+
+# Step 1 — the Top, with a word about it.
+- assertVisible: "Étape 1 sur 2"
+- assertVisible: "Qui a été le TOP ? 👑"
+- tapOn: ${TOP_PLAYER}
+# Matched on its accessibility label: both comment fields share the same
+# "Optionnel" placeholder, so only the label tells them apart.
+- tapOn: "Commentaire pour le Top"
+- inputText: "Doublé et une passe décisive."
+- hideKeyboard
+- tapOn: "Continuer"
+
+# Step 2 — the Flop.
+- assertVisible: "Étape 2 sur 2"
+- assertVisible: "Et le FLOP ? 💩"
+- tapOn: ${FLOP_PLAYER}
+- tapOn: "Continuer"
+
+# The recap is the last chance to back out.
+- assertVisible: "Récapitulatif"
+- assertVisible: "On envoie ?"
+- assertVisible: ${TOP_PLAYER}
+- assertVisible: ${FLOP_PLAYER}
+- tapOn: "Envoyer mon vote"
+
+# A complete ballot swaps the screen for the live count, pushed by the
+# subscription — there is no navigation step to wait on. Asserted on the title
+# and the tally, not on "Clore le vote": that button belongs to the admin only.
+- assertVisible: "Vote en cours"
+- assertVisible: "Bulletins"

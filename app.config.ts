@@ -23,9 +23,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     package: "com.anonymous.BuvioFrontend",
   },
-  web: {
-    favicon: "./assets/favicon.png",
-  },
+  // No web favicon: `assets/favicon.png` never existed, and pointing the
+  // config at a missing file only bought a warning. Expo's default stands
+  // until Buvio actually ships a web build.
   plugins: [
     "expo-router",
     "expo-image",
@@ -44,9 +44,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        image: "./assets/icon-full-body.png",
+        /*
+         * The mascot is a transparent cutout and the green comes from the
+         * background, so the splash is one flat field with the goat on it.
+         *
+         * The plugin centres the image inside a SQUARE box, so `imageWidth` is
+         * what the mascot actually gets: without it the plugin falls back to a
+         * 100pt logo and the goat ends up a speck.
+         */
+        image: "./assets/images/sticker_goat.png",
+        imageWidth: 260,
         resizeMode: "contain",
-        backgroundColor: "#1B4D3E",
+        backgroundColor: "#1C4233",
+        dark: {
+          image: "./assets/images/sticker_goat.png",
+          imageWidth: 260,
+          resizeMode: "contain",
+          backgroundColor: "#0B1D15",
+        },
       },
     ],
   ],

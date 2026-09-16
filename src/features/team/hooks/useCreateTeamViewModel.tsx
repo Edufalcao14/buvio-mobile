@@ -8,6 +8,11 @@ import {
   createTeamInputSchema,
 } from "@/features/team/schemas/CreateTeamValidation";
 import { useCreateTeamMutation } from "@/graphql/generated/hooks";
+import {
+  PreparedImage,
+  pickImage,
+  useImageUpload,
+} from "@/hooks/useImageUpload";
 
 export const useCreateTeamFormLogic = () => {
   const [error, setError] = useState("");
@@ -26,6 +31,26 @@ export const useCreateTeamFormLogic = () => {
   const [createTeam, { loading: isLoading }] = useCreateTeamMutation();
   const router = useRouter();
 
+  /*
+   * The crest is chosen here but uploaded after the team exists: a signed
+   * upload key lives under `crests/<teamId>/`, so there is nothing to sign
+   * until the team has an id (see the backend's ADR 0003).
+   */
+  const [crest, setCrest] = useState<PreparedImage | null>(null);
+  const {
+    upload,
+    isUploading,
+    errorMessage: crestError,
+  } = useImageUpload("crest");
+
+  const chooseCrest = async () => {
+    const picked = await pickImage();
+
+    if (picked) {
+      setCrest(picked);
+    }
+  };
+
   const handleTeamCreate = async (data: createTeamInputForms) => {
     try {
       const result = await createTeam({
@@ -34,13 +59,30 @@ export const useCreateTeamFormLogic = () => {
           sport: data.sport !== "" ? data.sport : null,
         },
         update: (cache) => {
-          
-          cache.evict({ fieldName: 'me' });
+          cache.evict({ fieldName: "me" });
           cache.gc();
-        }
+        },
       });
       if (result.errors) {
         throw new Error(result.errors[0].message);
+      }
+
+      // A crest that fails to upload must not cost the team: the squad exists,
+      // and the badge can be set later from the settings screen.
+      if (crest) {
+        const uploaded = await upload(crest);
+
+        if (uploaded.status === "failed") {
+          Toast.show({
+            type: "warning",
+            text1: "Équipe créée, blason non envoyé",
+            text2: "Tu pourras l’ajouter dans les réglages.",
+            position: "bottom",
+            visibilityTime: 3000,
+          });
+          router.push("/(tabs)/team");
+          return;
+        }
       }
 
       Toast.show({
@@ -67,7 +109,10 @@ export const useCreateTeamFormLogic = () => {
     control,
     errors,
     error,
-    isLoading,
+    isLoading: isLoading || isUploading,
+    crestUri: crest?.uri ?? null,
+    crestError,
+    chooseCrest,
     handleSubmit: handleSubmit(handleTeamCreate),
   };
 };

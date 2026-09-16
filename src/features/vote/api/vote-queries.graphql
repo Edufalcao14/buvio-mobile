@@ -22,6 +22,45 @@ query VoteMatch($matchId: ID!) {
   }
 }
 
+# The ballot history, deliberately NOT in `VotingSessionState`.
+#
+# That fragment is pushed whole by `VotingSessionUpdated` on every single vote
+# and returned again by every mutation. Folding `votes` into it would make each
+# push carry every vote cast so far — two nested users and a 256-character
+# comment apiece — so the traffic of one session grows quadratically with the
+# squad, to feed a list the live path never draws.
+#
+# The history is read once, on demand, on a session that is already closed and
+# therefore frozen. So it gets its own query, fetched lazily when the player
+# asks for it. `VotingSession` is normalised by `id`, so the votes land on the
+# very same cache entity the fragment already populates.
+query MatchVoteHistory($matchId: ID!) {
+  getMatchById(matchId: $matchId) {
+    id
+    votingSession {
+      id
+      votes {
+        id
+        type
+        description
+        createdAt
+        voter {
+          id
+          displayName
+          nickname
+          avatarUrl
+        }
+        voted {
+          id
+          displayName
+          nickname
+          avatarUrl
+        }
+      }
+    }
+  }
+}
+
 subscription VotingSessionUpdated($votingSessionId: ID!) {
   votingSessionUpdated(votingSessionId: $votingSessionId) {
     ...VotingSessionState
