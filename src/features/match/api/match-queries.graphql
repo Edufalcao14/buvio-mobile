@@ -1,4 +1,7 @@
-query TeamHistory {
+# Paged. The archive grows without bound in time - a club two seasons in has
+# hundreds of matches - and this screen used to fetch every one of them on each
+# visit. The page size is the caller's, so the screen decides how much to show.
+query TeamHistory($limit: Int, $offset: Int) {
   me {
     id
     team {
@@ -6,7 +9,7 @@ query TeamHistory {
       name
       code
       sport
-      matches {
+      matches(limit: $limit, offset: $offset) {
         id
         name
         date

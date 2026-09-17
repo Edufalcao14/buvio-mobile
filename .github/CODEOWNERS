@@ -1,0 +1,11 @@
+# Every change needs a second pair of eyes. Combined with branch protection on
+# `main`, this is what turns the existing pull-request template from a document
+# into a process - 0 of the first 12 commits arrived through a review.
+*                       @Edufalcao14
+
+# The parts where a mistake is expensive and a review is worth insisting on.
+/src/providers/         @Edufalcao14
+/src/utils/auth/        @Edufalcao14
+/.github/workflows/     @Edufalcao14
+/app.config.ts          @Edufalcao14
+/eas.json               @Edufalcao14

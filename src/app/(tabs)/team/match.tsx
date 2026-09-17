@@ -1,6 +1,5 @@
-import MatchScreen from "@/features/match/screens/MatchScreen";
+import { MatchScreen } from "@/features/match";
 
-
-export default function MatchTab() {
-  return <MatchScreen/>;
+export default function MatchRoute() {
+  return <MatchScreen />;
 }

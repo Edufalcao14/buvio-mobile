@@ -63,8 +63,16 @@ android/local.properties
 
 .idea/
 
-.eas.json
+# EAS build credentials, never the build config itself (eas.json is tracked).
+.easignore
+credentials.json
 
-# Markdown docs (only README.md is tracked)
-*.md
-!README.md
+# The documentation IS part of the project. The previous rule here excluded
+# every Markdown file but the README, which meant docs/ARCHITECTURE.md and
+# DESIGN.md - cited as normative by 21 source comments, and linked from the
+# README's first line - reached nobody who cloned the repository.
+
+# Audit and report artefacts are generated, never committed.
+audit-report/
+*.pdf
+*.docx

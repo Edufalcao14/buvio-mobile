@@ -8,7 +8,7 @@ import {
 } from "react-hook-form";
 import { View, Text } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createStyles } from "./style";
+import { createStyles } from "./BaseFormInput.styles";
 import React from "react";
 
 export type BaseFormInputProps<T extends FieldValues> = {

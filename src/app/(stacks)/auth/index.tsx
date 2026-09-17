@@ -1,6 +1,5 @@
-import SignUp from "@/features/auth/screens/SignUpScreen";
+import { SignUpScreen } from "@/features/auth";
 
-export default function SignUpScreen() {
-
-  return <SignUp />;
+export default function SignUpRoute() {
+  return <SignUpScreen />;
 }

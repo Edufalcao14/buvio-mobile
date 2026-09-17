@@ -15,14 +15,19 @@ const ROSTER: VotePlayer[] = [
     nickname: "Sofiane Bel",
     avatarUrl: null,
   },
-  { id: "user-3", displayName: "Inès Roy", nickname: "Inès Roy", avatarUrl: null },
+  {
+    id: "user-3",
+    displayName: "Inès Roy",
+    nickname: "Inès Roy",
+    avatarUrl: null,
+  },
 ];
 
 const eligibleForFlop = (topPlayerId: string | null) =>
   ROSTER.filter((player) => player.id !== topPlayerId);
 
 const renderBallot = (
-  onSubmit: SubmitMock = jest.fn(async () => ({ status: "success" as const })),
+  onSubmit: SubmitMock = jest.fn(async () => ({ status: "success" as const }))
 ) => {
   render(
     <VoteBallotScreen
@@ -30,7 +35,7 @@ const renderBallot = (
       eligibleForFlop={eligibleForFlop}
       isSubmitting={false}
       onSubmit={onSubmit}
-    />,
+    />
   );
 
   return onSubmit;
@@ -48,8 +53,8 @@ describe("VoteBallotScreen", () => {
     expect(screen.getByText("Qui a été le TOP ? 👑")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Continuer" })).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "Continuer" }).props
-        .accessibilityState.disabled,
+      screen.getByRole("button", { name: "Continuer" }).props.accessibilityState
+        .disabled
     ).toBe(true);
   });
 
@@ -94,8 +99,8 @@ describe("VoteBallotScreen", () => {
 
     expect(
       screen.getByText(
-        "Ton Top a bien été enregistré, mais le Flop n’est pas passé. Réessayez dans un instant.",
-      ),
+        "Ton Top a bien été enregistré, mais le Flop n’est pas passé. Réessayez dans un instant."
+      )
     ).toBeTruthy();
   });
 
@@ -106,13 +111,13 @@ describe("VoteBallotScreen", () => {
         eligibleForFlop={() => []}
         isSubmitting={false}
         onSubmit={jest.fn(async () => ({ status: "success" as const }))}
-      />,
+      />
     );
 
     expect(
       screen.getByText(
-        "Il faut au moins deux joueurs sur la feuille de match pour voter.",
-      ),
+        "Il faut au moins deux joueurs sur la feuille de match pour voter."
+      )
     ).toBeTruthy();
   });
 });

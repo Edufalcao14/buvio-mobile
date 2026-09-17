@@ -6,7 +6,7 @@ import {
   Path,
 } from "react-hook-form";
 import { View, TextInput, Pressable } from "react-native";
-import { createStyles } from "./style";
+import { createStyles } from "./FormPasswordInput.styles";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useState } from "react";
 import { Entypo } from "@expo/vector-icons";

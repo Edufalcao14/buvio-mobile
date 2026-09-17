@@ -20,9 +20,12 @@ describe("PodiumCard", () => {
         title="Les plus TOP"
         emoji="👑"
         variant="top"
-        entries={[entry(), entry({ id: "p2", rank: 2, nickname: "Marie", count: 1 })]}
+        entries={[
+          entry(),
+          entry({ id: "p2", rank: 2, nickname: "Marie", count: 1 }),
+        ]}
         emptyLine="Aucun top pour l’instant."
-      />,
+      />
     );
 
     expect(screen.getByText("Les plus TOP")).toBeTruthy();
@@ -39,7 +42,7 @@ describe("PodiumCard", () => {
         variant="top"
         entries={[entry({ isCurrentUser: true })]}
         emptyLine="Aucun top pour l’instant."
-      />,
+      />
     );
 
     expect(screen.getByText("toi")).toBeTruthy();
@@ -54,7 +57,7 @@ describe("PodiumCard", () => {
         variant="flop"
         entries={[]}
         emptyLine="Aucun flop pour l’instant."
-      />,
+      />
     );
 
     expect(screen.getByText("Aucun flop pour l’instant.")).toBeTruthy();

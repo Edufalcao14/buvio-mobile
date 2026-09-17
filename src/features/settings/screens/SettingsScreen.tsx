@@ -35,6 +35,8 @@ export default function SettingsScreen() {
     copyCode,
     shareCode,
     confirmLogout,
+    isDeletingAccount,
+    confirmDeleteAccount,
     goBack,
   } = useSettingsViewModel();
 
@@ -194,12 +196,28 @@ export default function SettingsScreen() {
           accessibilityRole="button"
           accessibilityLabel="Se déconnecter"
         >
-          <Feather
-            name="log-out"
-            size={18}
-            color={theme.colors.error.main}
-          />
+          <Feather name="log-out" size={18} color={theme.colors.error.main} />
           <Text style={styles.logoutText}>Se déconnecter</Text>
+        </Pressable>
+
+        {/*
+          Last on the screen and visually quietest: required to exist, never
+          something to reach for by accident.
+        */}
+        <Pressable
+          onPress={confirmDeleteAccount}
+          disabled={isDeletingAccount}
+          style={({ pressed }) => [
+            styles.deleteAccount,
+            pressed && styles.deleteAccountPressed,
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel="Supprimer mon compte"
+          accessibilityState={{ disabled: isDeletingAccount }}
+        >
+          <Text style={styles.deleteAccountText}>
+            {isDeletingAccount ? "Suppression…" : "Supprimer mon compte"}
+          </Text>
         </Pressable>
       </ScrollView>
     </View>

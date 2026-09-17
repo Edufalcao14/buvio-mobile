@@ -11,7 +11,7 @@ describe("Welcome", () => {
 
     expect(screen.getByText("Bienvenue sur Buvio !")).toBeTruthy();
     expect(
-      screen.getByLabelText("La troisième mi-temps commence ici !"),
+      screen.getByLabelText("La troisième mi-temps commence ici !")
     ).toBeTruthy();
     expect(screen.getByText("Créer une équipe")).toBeTruthy();
     expect(screen.getByText("Rejoindre une équipe")).toBeTruthy();

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text } from "react-native";
 import { Image } from "expo-image";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createCrestStyles } from "./header.style";
+import { createCrestStyles } from "./header.styles";
 
 interface TeamCrestProps {
   name: string;

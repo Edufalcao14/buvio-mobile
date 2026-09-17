@@ -18,9 +18,15 @@ const tryRequire = (loader: () => ImageSource): ImageSource | null => {
   }
 };
 
-const TOP_ART = tryRequire(() => require("../../../../assets/images/buvio_top.png"));
-const FLOP_ART = tryRequire(() => require("../../../../assets/images/buvio_flop.png"));
-const STICKER = tryRequire(() => require("../../../../assets/images/sticker_goat.png"));
+const TOP_ART = tryRequire(() =>
+  require("../../../../assets/images/buvio_top.png")
+);
+const FLOP_ART = tryRequire(() =>
+  require("../../../../assets/images/buvio_flop.png")
+);
+const STICKER = tryRequire(() =>
+  require("../../../../assets/images/sticker_goat.png")
+);
 
 interface VerdictArtProps {
   variant: "top" | "flop";
@@ -41,7 +47,7 @@ export const VerdictArt: React.FC<VerdictArtProps> = ({
   const styles = createStyles(theme, size, isTop);
 
   const chain = [isTop ? TOP_ART : FLOP_ART, STICKER].filter(
-    (source): source is ImageSource => source !== null,
+    (source): source is ImageSource => source !== null
   );
   const [stage, setStage] = useState(0);
   const source = chain[stage] ?? null;

@@ -2,13 +2,18 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Toast from "react-native-toast-message";
-import { matchSchema, MatchFormValues } from "./createMatchModalValidation";
-import { MatchType ,
+import {
+  matchSchema,
+  MatchFormValues,
+} from "@/features/match/schemas/CreateMatchValidation";
+import { getErrorMessage } from "@/lib/errors";
+import {
+  MatchType,
   useCreateMatchMutation,
   useGetTeamMembersQuery,
 } from "@/graphql/generated/hooks";
 
-export const useCreateMatchModal = (onClose?: () => void) => {
+export const useCreateMatchViewModel = (onClose?: () => void) => {
   const [error, setError] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
   const { data: getTeamMembers } = useGetTeamMembersQuery();
@@ -40,14 +45,27 @@ export const useCreateMatchModal = (onClose?: () => void) => {
           date: data.date,
           type: data.type,
         },
-        update: (cache) => {
-          cache.evict({ fieldName: "matches" });
+        update: (cache, { data: created }) => {
+          const teamId = created?.createMatch?.team?.id;
+
+          if (!teamId) {
+            return;
+          }
+
+          // Evicted on the Team, not on the root query. `matches` lives on
+          // Team in the schema, and an eviction with no `id` targets
+          // ROOT_QUERY - so the previous form matched nothing at all and the
+          // history list silently never refreshed after a match was created.
+          cache.evict({
+            id: cache.identify({ __typename: "Team", id: teamId }),
+            fieldName: "matches",
+          });
           cache.gc();
         },
       });
 
       if (result.errors) {
-        throw new Error(result.errors[0].message);
+        throw { graphQLErrors: result.errors };
       }
 
       Toast.show({
@@ -60,9 +78,7 @@ export const useCreateMatchModal = (onClose?: () => void) => {
       resetForm();
       onClose?.();
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Une erreur s'est produite"
-      );
+      setError(getErrorMessage(error));
 
       Toast.show({
         type: "error",

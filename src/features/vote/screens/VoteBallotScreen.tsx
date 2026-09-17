@@ -36,7 +36,7 @@ interface VoteBallotScreenProps {
     topId: string,
     topComment: string,
     flopId: string,
-    flopComment: string,
+    flopComment: string
   ) => Promise<BallotOutcome>;
 }
 
@@ -70,7 +70,8 @@ export default function VoteBallotScreen({
 
   const goTo = (next: Step) => {
     setIsGoingBack(
-      (next === "top" && step !== "top") || (next === "flop" && step === "confirm"),
+      (next === "top" && step !== "top") ||
+        (next === "flop" && step === "confirm")
     );
     setStep(next);
   };
@@ -96,7 +97,7 @@ export default function VoteBallotScreen({
     if (outcome.status === "topOnly") {
       setIsTopRecorded(true);
       setErrorText(
-        `Ton Top a bien été enregistré, mais le Flop n’est pas passé. ${outcome.message}`,
+        `Ton Top a bien été enregistré, mais le Flop n’est pas passé. ${outcome.message}`
       );
       return;
     }

@@ -12,7 +12,7 @@ import { fr } from "date-fns/locale";
 import { FontAwesome } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createDatePickerStyles } from "./DatePicker.style";
+import { createDatePickerStyles } from "./DatePicker.styles";
 import { DateFormat, parseInputDate } from "./utils";
 
 interface DatePickerProps {
@@ -63,6 +63,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
           }
         />
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Ouvrir le calendrier"
           style={styles.calendarButton}
           onPress={() => setShowCalendar(!showCalendar)}
           hitSlop={10}
@@ -112,6 +114,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
               }}
             />
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Fermer le calendrier"
               style={styles.closeButton}
               onPress={() => setShowCalendar(false)}
             >

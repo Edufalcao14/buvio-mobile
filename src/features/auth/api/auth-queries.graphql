@@ -14,8 +14,7 @@ query Me {
       creator {
         id
         displayName
-        externalId
-        email
+        nickname
       }
     }
   }
@@ -24,28 +23,27 @@ query validateTeamCode($code: String!) {
   validateTeamCode(code: $code)
 }
 
+# Data minimisation: the roster renders nicknames and avatars, so it asks for
+# nicknames and avatars. It used to pull every teammate's email address, their
+# soft-deletion state and their external id into device memory with no screen
+# that showed any of it.
 query GetTeamMembers {
   getTeamMembers {
     id
     displayName
     nickname
     avatarUrl
-    email
-    createdAt
-    updatedAt
-    deletedAt
-    externalId
     team {
+      id
       name
       code
       sport
       crestUrl
       creator {
+        id
         displayName
-        email
+        nickname
       }
-      createdAt
-      updatedAt
     }
   }
 }

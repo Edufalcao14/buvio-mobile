@@ -49,3 +49,11 @@ mutation ConfirmTeamCrestUpload($key: String!) {
     crestUrl
   }
 }
+
+# App Store Guideline 5.1.1(v) requires an in-app deletion path for any app
+# that offers sign-up, and GDPR Article 17 asks for the same. The server
+# anonymises the row and drops the identity account, which invalidates every
+# token this device and any other still holds.
+mutation DeleteAccount {
+  deleteAccount
+}

@@ -8,13 +8,14 @@ import {
   createTeamInputSchema,
 } from "@/features/team/schemas/CreateTeamValidation";
 import { useCreateTeamMutation } from "@/graphql/generated/hooks";
+import { getErrorMessage } from "@/lib/errors";
 import {
   PreparedImage,
   pickImage,
   useImageUpload,
 } from "@/hooks/useImageUpload";
 
-export const useCreateTeamFormLogic = () => {
+export const useCreateTeamViewModel = () => {
   const [error, setError] = useState("");
   const {
     control,
@@ -64,7 +65,9 @@ export const useCreateTeamFormLogic = () => {
         },
       });
       if (result.errors) {
-        throw new Error(result.errors[0].message);
+        // Rethrown whole: flattening to a string drops extensions.errorCode,
+        // which is the only thing that maps this to French copy.
+        throw { graphQLErrors: result.errors };
       }
 
       // A crest that fails to upload must not cost the team: the squad exists,
@@ -93,9 +96,7 @@ export const useCreateTeamFormLogic = () => {
       });
       router.push("/(tabs)/team");
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Une erreur s'est produite"
-      );
+      setError(getErrorMessage(error));
       Toast.show({
         type: "error",
         text1: "Erreur lors de la création de l'équipe",

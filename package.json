@@ -13,7 +13,10 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\" \"*.{ts,js,json,md}\"",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "test": "jest"
+    "test": "jest",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"*.{ts,js,json,md}\"",
+    "test:coverage": "jest --coverage",
+    "schema:pull": "cp ../Buvio-Backend/src/graphql/schema.graphql ./schema.graphql"
   },
   "dependencies": {
     "@apollo/client": "^3.14.1",
@@ -21,36 +24,35 @@
     "@expo/vector-icons": "^15.0.2",
     "@hookform/resolvers": "^5.7.1",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@types/react": "~19.2.18",
+    "@sentry/react-native": "~7.11.0",
+    "apollo3-cache-persist": "^0.15.0",
     "date-fns": "^4.4.0",
-    "expo": "^57.0.9",
-    "expo-constants": "~57.0.8",
-    "expo-font": "~57.0.1",
-    "expo-image": "~57.0.1",
-    "expo-image-manipulator": "~57.0.7",
-    "expo-image-picker": "~57.0.7",
-    "expo-linking": "~57.0.4",
-    "expo-router": "~57.0.9",
-    "expo-splash-screen": "~57.0.5",
+    "expo": "~57.0.23",
+    "expo-constants": "~57.0.18",
+    "expo-font": "~57.0.4",
+    "expo-image": "~57.0.5",
+    "expo-image-manipulator": "~57.0.18",
+    "expo-image-picker": "~57.0.18",
+    "expo-linking": "~57.0.10",
+    "expo-router": "~57.0.21",
+    "expo-secure-store": "^57.0.4",
+    "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
-    "expo-system-ui": "~57.0.2",
+    "expo-system-ui": "~57.0.4",
+    "expo-updates": "^57.0.22",
     "graphql-ws": "^6.2.0",
-    "husky": "^9.1.7",
     "react": "19.2.3",
     "react-hook-form": "^7.84.0",
-    "react-native": "0.86.2",
+    "react-native": "0.86.3",
     "react-native-calendars": "^1.1314.0",
     "react-native-confetti-cannon": "^1.5.2",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-pager-view": "8.0.2",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.2",
-    "react-native-tab-view": "^4.3.2",
     "react-native-toast-message": "^2.4.0",
     "react-native-worklets": "0.10.1",
-    "zod": "^3.25.76",
-    "zustand": "^5.0.14"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.7",
@@ -59,12 +61,14 @@
     "@graphql-codegen/typescript-react-apollo": "^4.4.2",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "29.5.14",
+    "@types/react": "~19.2.4",
     "eslint": "^9.39.5",
-    "eslint-config-expo": "^57.0.1",
+    "eslint-config-expo": "~57.0.2",
     "eslint-config-prettier": "^10.1.8",
     "graphql": "^16.14.2",
+    "husky": "^9.1.7",
     "jest": "~29.7.0",
-    "jest-expo": "~57.0.3",
+    "jest-expo": "~57.0.5",
     "lint-staged": "^17.3.0",
     "prettier": "^3.9.6",
     "react-test-renderer": "19.2.3",
@@ -97,6 +101,22 @@
     "testMatch": [
       "**/*.test.ts",
       "**/*.test.tsx"
-    ]
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/graphql/generated/**",
+      "!src/**/*.styles.ts",
+      "!src/**/*.style.{ts,tsx}",
+      "!src/**/style.{ts,tsx}",
+      "!src/theme/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 60,
+        "branches": 58,
+        "functions": 57,
+        "lines": 60
+      }
+    }
   }
 }

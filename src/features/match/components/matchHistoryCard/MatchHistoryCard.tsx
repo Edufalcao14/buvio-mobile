@@ -3,7 +3,7 @@ import { Pressable, View, Text } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { HistoryMatch } from "@/features/match/hooks/useHistoryViewModel";
 import { Tag } from "./Tag";
-import { createStyles } from "./MatchHistoryCard.style";
+import { createStyles } from "./MatchHistoryCard.styles";
 
 interface MatchHistoryCardProps {
   match: HistoryMatch;

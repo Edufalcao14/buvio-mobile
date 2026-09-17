@@ -1,4 +1,4 @@
-import SettingsScreen from "@/features/settings/screens/SettingsScreen";
+import { SettingsScreen } from "@/features/settings";
 
 export default function SettingsRoute() {
   return <SettingsScreen />;

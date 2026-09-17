@@ -145,6 +145,19 @@ export const createStyles = (theme: Theme) =>
     logoutPressed: {
       backgroundColor: theme.colors.error.light,
     },
+    deleteAccount: {
+      alignItems: "center",
+      paddingVertical: theme.spacing.md,
+      marginTop: theme.spacing.xs,
+    },
+    deleteAccountPressed: {
+      opacity: 0.6,
+    },
+    deleteAccountText: {
+      color: theme.colors.text.hint,
+      fontSize: theme.typography.fontSize.sm,
+      textDecorationLine: "underline",
+    },
     logoutText: {
       fontFamily: theme.typography.fontFamily.displayBold,
       fontSize: theme.typography.fontSize.md,

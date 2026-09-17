@@ -3,15 +3,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { UserInputForms, userInputSchema } from "@/features/auth/schemas/SignUpValidation";
+import {
+  UserInputForms,
+  userInputSchema,
+} from "@/features/auth/schemas/SignUpValidation";
 import { useAuth } from "@/providers/AuthProvider";
+import { getErrorMessage } from "@/lib/errors";
 import {
   pickImage,
   useImageUpload,
   type PreparedImage,
 } from "@/hooks/useImageUpload";
 
-export const useSignUpForm = () => {
+export const useSignUpViewModel = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<PreparedImage | null>(null);
@@ -54,7 +58,7 @@ export const useSignUpForm = () => {
       setAvatarError(
         cause instanceof Error
           ? cause.message
-          : "Cette image n’a pas pu être préparée. Choisis-en une autre.",
+          : "Cette image n’a pas pu être préparée. Choisis-en une autre."
       );
     }
   }, []);
@@ -93,9 +97,7 @@ export const useSignUpForm = () => {
 
       router.push("/welcome");
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Une erreur s'est produite"
-      );
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }

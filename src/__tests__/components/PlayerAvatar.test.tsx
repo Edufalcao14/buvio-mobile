@@ -20,9 +20,7 @@ describe("PlayerAvatar", () => {
   });
 
   it("shows the picture once there is one", () => {
-    render(
-      <PlayerAvatar name="Camille Dupont" url="https://cdn.test/a.jpg" />,
-    );
+    render(<PlayerAvatar name="Camille Dupont" url="https://cdn.test/a.jpg" />);
 
     expect(screen.queryByText("CD", hidden)).toBeNull();
   });

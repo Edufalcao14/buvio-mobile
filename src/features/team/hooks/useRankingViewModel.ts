@@ -33,7 +33,7 @@ export const useRankingViewModel = () => {
         .sort(
           (a, b) =>
             pick(b) - pick(a) ||
-            nicknameOf(a.player).localeCompare(nicknameOf(b.player)),
+            nicknameOf(a.player).localeCompare(nicknameOf(b.player))
         )
         .slice(0, PODIUM_SIZE)
         .map((standing, index) => ({

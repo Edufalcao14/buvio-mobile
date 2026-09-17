@@ -11,6 +11,9 @@ export const createStyles = (theme: Theme) =>
       padding: theme.spacing.lg,
       paddingBottom: theme.spacing.xxl,
     },
+    footerSpinner: {
+      paddingVertical: theme.spacing.lg,
+    },
     centered: {
       flex: 1,
       justifyContent: "center",

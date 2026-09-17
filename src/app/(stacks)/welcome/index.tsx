@@ -1,5 +1,5 @@
-import Welcome from "@/features/welcome/screens/Welcome";
+import { WelcomeScreen } from "@/features/welcome";
 
-export default function WelcomeScreen() {
-  return <Welcome />;
+export default function WelcomeRoute() {
+  return <WelcomeScreen />;
 }

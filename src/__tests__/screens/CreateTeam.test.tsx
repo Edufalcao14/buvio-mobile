@@ -39,8 +39,8 @@ describe("CreateTeamScreen", () => {
     expect(screen.getByText("Créer une équipe")).toBeTruthy();
     expect(
       screen.getByText(
-        "Donnez un nom à votre équipe pour obtenir un code d’invitation unique.",
-      ),
+        "Donnez un nom à votre équipe pour obtenir un code d’invitation unique."
+      )
     ).toBeTruthy();
     expect(screen.getByText("Nom de l'équipe")).toBeTruthy();
     expect(screen.getByText("Sport (optionnel)")).toBeTruthy();
@@ -50,13 +50,16 @@ describe("CreateTeamScreen", () => {
   it("refuses a name shorter than three characters", async () => {
     render(<CreateTeamScreen />);
 
-    fireEvent.changeText(screen.getByPlaceholderText("Ex: Les Invincibles"), "AB");
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Ex: Les Invincibles"),
+      "AB"
+    );
     fireEvent.press(screen.getByRole("button", { name: "Créer l'équipe" }));
 
     expect(
       await screen.findByText(
-        "Le champs Nom de l'équipe doit comporter au moins 3 caractères",
-      ),
+        "Le champs Nom de l'équipe doit comporter au moins 3 caractères"
+      )
     ).toBeTruthy();
   });
 
@@ -72,18 +75,18 @@ describe("CreateTeamScreen", () => {
 
     fireEvent.changeText(
       screen.getByPlaceholderText("Ex: Les Invincibles"),
-      "Les Invincibles",
+      "Les Invincibles"
     );
     fireEvent.press(screen.getByRole("button", { name: "Créer l'équipe" }));
 
     await waitFor(() =>
-      expect(router.push).toHaveBeenCalledWith("/(tabs)/team"),
+      expect(router.push).toHaveBeenCalledWith("/(tabs)/team")
     );
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "success",
         text1: "Équipe créée avec succès",
-      }),
+      })
     );
   });
 
@@ -92,23 +95,32 @@ describe("CreateTeamScreen", () => {
       mocks: [
         {
           request: createTeamRequest,
-          error: new Error("Ce nom d’équipe est déjà pris"),
+          // A GraphQL error, not a network one: errorPolicy "all" delivers
+          // it on result.errors, which is the path the view model reads.
+          result: {
+            errors: [
+              {
+                message: "TEAM_CODE_TAKEN",
+                extensions: { errorCode: "TEAM_CODE_TAKEN" },
+              },
+            ],
+          },
         },
       ],
     });
 
     fireEvent.changeText(
       screen.getByPlaceholderText("Ex: Les Invincibles"),
-      "Les Invincibles",
+      "Les Invincibles"
     );
     fireEvent.press(screen.getByRole("button", { name: "Créer l'équipe" }));
 
     expect(
-      await screen.findByText("Ce nom d’équipe est déjà pris"),
+      await screen.findByText("Ce code d'équipe est déjà utilisé.")
     ).toBeTruthy();
     expect(router.push).not.toHaveBeenCalled();
     expect(Toast.show).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "error" }),
+      expect.objectContaining({ type: "error" })
     );
   });
 });

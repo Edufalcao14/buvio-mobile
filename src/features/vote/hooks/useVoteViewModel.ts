@@ -47,7 +47,8 @@ export type BallotOutcome =
   | { status: "failed"; message: string };
 
 /** Which face of the vote the screen should show right now. */
-export type VotePhase = "loading" | "error" | "noSession" | "ballot" | "live" | "result";
+export type VotePhase =
+  "loading" | "error" | "noSession" | "ballot" | "live" | "result";
 
 const CLOSURE_LABELS: Record<VoteClosureReason, string> = {
   [VoteClosureReason.Unanimous]: "Tout le monde a voté !",
@@ -55,12 +56,13 @@ const CLOSURE_LABELS: Record<VoteClosureReason, string> = {
   [VoteClosureReason.Admin]: "Clos par l’organisateur",
 };
 
-export const closureLabel = (reason?: VoteClosureReason | null): string | null =>
-  reason ? CLOSURE_LABELS[reason] : null;
+export const closureLabel = (
+  reason?: VoteClosureReason | null
+): string | null => (reason ? CLOSURE_LABELS[reason] : null);
 
 /** Apollo's `errorPolicy: "all"` returns GraphQL errors instead of throwing. */
 const failureOf = (
-  result: { errors?: readonly unknown[] | null } | null | undefined,
+  result: { errors?: readonly unknown[] | null } | null | undefined
 ): string | null => {
   const errors = result?.errors;
 
@@ -114,24 +116,24 @@ export const useVoteViewModel = (matchId: string) => {
         nickname: nicknameOf(player),
         avatarUrl: player.avatarUrl ?? null,
       })),
-    [data?.getMatchById?.players],
+    [data?.getMatchById?.players]
   );
 
   // You cannot crown or roast yourself.
   const eligibleForTop = useMemo(
     () => roster.filter((player) => player.id !== meId),
-    [roster, meId],
+    [roster, meId]
   );
 
   const eligibleForFlop = useCallback(
     (topPlayerId: string | null) =>
       eligibleForTop.filter((player) => player.id !== topPlayerId),
-    [eligibleForTop],
+    [eligibleForTop]
   );
 
   const myBallot = useMemo(
     () => session?.ballots.find((ballot) => ballot.player.id === meId) ?? null,
-    [session, meId],
+    [session, meId]
   );
 
   const ballots = useMemo<VoteBallotRow[]>(
@@ -146,7 +148,7 @@ export const useVoteViewModel = (matchId: string) => {
         isComplete: ballot.isComplete,
         isMe: ballot.player.id === meId,
       })),
-    [session, meId],
+    [session, meId]
   );
 
   // Loudest first — the running verdict is the point of the live screen.
@@ -166,18 +168,18 @@ export const useVoteViewModel = (matchId: string) => {
         .sort(
           (a, b) =>
             b.topCount + b.flopCount - (a.topCount + a.flopCount) ||
-            a.player.nickname.localeCompare(b.player.nickname),
+            a.player.nickname.localeCompare(b.player.nickname)
         ),
-    [session],
+    [session]
   );
 
   const maxTallyCount = useMemo(
     () =>
       tally.reduce(
         (highest, row) => Math.max(highest, row.topCount, row.flopCount),
-        0,
+        0
       ),
-    [tally],
+    [tally]
   );
 
   /*
@@ -211,7 +213,7 @@ export const useVoteViewModel = (matchId: string) => {
 
     return Math.max(
       0,
-      Math.round((new Date(closingAt).getTime() - nowMs) / 1000),
+      Math.round((new Date(closingAt).getTime() - nowMs) / 1000)
     );
   }, [session, isOpen, closingAt, nowMs]);
 
@@ -222,7 +224,15 @@ export const useVoteViewModel = (matchId: string) => {
   const verdict = session?.voteResult ?? null;
 
   const asVotePlayer = (
-    player: { id: string; displayName: string; nickname?: string | null; avatarUrl?: string | null } | null | undefined,
+    player:
+      | {
+          id: string;
+          displayName: string;
+          nickname?: string | null;
+          avatarUrl?: string | null;
+        }
+      | null
+      | undefined
   ): VotePlayer | null =>
     player
       ? {
@@ -241,7 +251,7 @@ export const useVoteViewModel = (matchId: string) => {
       topId: string,
       topComment: string,
       flopId: string,
-      flopComment: string,
+      flopComment: string
     ): Promise<BallotOutcome> => {
       if (!sessionId) {
         return { status: "failed", message: "Le vote n’est pas ouvert." };
@@ -294,7 +304,7 @@ export const useVoteViewModel = (matchId: string) => {
 
       return { status: "success" };
     },
-    [sessionId, submitVote, refetch],
+    [sessionId, submitVote, refetch]
   );
 
   const closeSession = useCallback(async (): Promise<string | null> => {

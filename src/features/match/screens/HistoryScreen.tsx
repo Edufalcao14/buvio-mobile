@@ -23,6 +23,8 @@ export default function History() {
     summary,
     isLoading,
     isRefreshing,
+    isLoadingMore,
+    loadMore,
     errorMessage,
     refetch,
   } = useHistoryViewModel();
@@ -80,6 +82,18 @@ export default function History() {
       )}
       stickySectionHeadersEnabled
       showsVerticalScrollIndicator={false}
+      // Fetches the next page before the player reaches the bottom, so a long
+      // archive scrolls continuously instead of stopping at the first page.
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.4}
+      ListFooterComponent={
+        isLoadingMore ? (
+          <ActivityIndicator
+            style={styles.footerSpinner}
+            color={theme.colors.primary.light}
+          />
+        ) : null
+      }
       SectionSeparatorComponent={() => <View style={styles.sectionSpacer} />}
       ItemSeparatorComponent={() => <View style={styles.itemSpacer} />}
       refreshControl={

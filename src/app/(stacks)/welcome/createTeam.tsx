@@ -1,4 +1,5 @@
-import CreateTeamScreen from "@/features/team/screens/CreateTeam";
-export default function CreateTeam() {
+import { CreateTeamScreen } from "@/features/team";
+
+export default function CreateTeamRoute() {
   return <CreateTeamScreen />;
 }

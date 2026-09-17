@@ -5,7 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Toast from "react-native-toast-message";
 import { useAuth } from "@/providers/AuthProvider";
-import { useUpdateProfileMutation } from "@/graphql/generated/hooks";
+import {
+  useDeleteAccountMutation,
+  useUpdateProfileMutation,
+} from "@/graphql/generated/hooks";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { getErrorMessage } from "@/lib/errors";
 import { nicknameOf } from "@/utils/identity";
@@ -25,11 +28,13 @@ export const useSettingsViewModel = () => {
    * the screen at all.
    */
   const isTeamCreator = Boolean(
-    userData?.id && team?.creator?.id && team.creator.id === userData.id,
+    userData?.id && team?.creator?.id && team.creator.id === userData.id
   );
 
   const [updateProfile, { loading: isSavingProfile }] =
     useUpdateProfileMutation();
+  const [deleteAccountMutation, { loading: isDeletingAccount }] =
+    useDeleteAccountMutation();
   const [profileError, setProfileError] = useState<string | null>(null);
 
   const {
@@ -151,9 +156,71 @@ export const useSettingsViewModel = () => {
             router.replace("/");
           },
         },
-      ],
+      ]
     );
   }, [logout]);
+
+  /**
+   * Deleting an account is irreversible and takes the player's history with
+   * it, so it asks twice: once for the intent, once to be sure. Apple requires
+   * this path to exist at all (Guideline 5.1.1(v)); asking twice is what keeps
+   * a mis-tap from being final.
+   */
+  const confirmDeleteAccount = useCallback(() => {
+    Alert.alert(
+      "Supprimer ton compte ?",
+      "Ton nom, ton pseudo, ta photo et ta place dans l'équipe seront effacés. Cette action est définitive.",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Continuer",
+          style: "destructive",
+          onPress: () =>
+            Alert.alert(
+              "C'est définitif",
+              "Tu ne pourras pas récupérer ton compte. On y va ?",
+              [
+                { text: "Annuler", style: "cancel" },
+                {
+                  text: "Supprimer définitivement",
+                  style: "destructive",
+                  onPress: async () => {
+                    try {
+                      const result = await deleteAccountMutation();
+
+                      if (result.errors?.length) {
+                        Toast.show({
+                          type: "error",
+                          text1: "Suppression impossible",
+                          text2: getErrorMessage({
+                            graphQLErrors: result.errors,
+                          }),
+                          position: "bottom",
+                        });
+                        return;
+                      }
+
+                      // The server has already invalidated every token, so the
+                      // local session is dead either way - clearing it is what
+                      // gets the player back to a usable screen.
+                      await logout();
+                      router.replace("/");
+                    } catch (cause) {
+                      Toast.show({
+                        type: "error",
+                        text1: "Suppression impossible",
+                        text2: getErrorMessage(cause),
+                        position: "bottom",
+                      });
+                    }
+                  },
+                },
+              ]
+            ),
+        },
+      ]
+    );
+  }, [deleteAccountMutation, logout]);
 
   return {
     displayName: userData?.displayName ?? null,
@@ -190,6 +257,8 @@ export const useSettingsViewModel = () => {
     copyCode,
     shareCode,
     confirmLogout,
+    isDeletingAccount,
+    confirmDeleteAccount,
     goBack: () => router.back(),
   };
 };

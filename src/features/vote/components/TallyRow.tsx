@@ -45,7 +45,7 @@ const Meter: React.FC<MeterProps> = ({ label, count, max, tone }) => {
 
     pop.value = withSequence(
       withSpring(1.3, POP_SPRING),
-      withSpring(1, POP_SPRING),
+      withSpring(1, POP_SPRING)
     );
   }, [count, pop]);
 

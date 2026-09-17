@@ -2,7 +2,7 @@ import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import React from "react";
 import { Card } from "@/components/container/card/card";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createStyles } from "./Style";
+import { createStyles } from "./Screens.styles";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";

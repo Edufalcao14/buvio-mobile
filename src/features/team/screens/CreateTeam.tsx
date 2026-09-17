@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { createStyles } from "./CreateTeam.style";
+import { createStyles } from "./CreateTeam.styles";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useMemo } from "react";
 import { FormTextInput } from "@/components/inputs/formTextInput";
@@ -14,7 +14,7 @@ import { PicturePicker } from "@/components/avatars/PicturePicker";
 import { TeamCrest } from "@/components/navigation/header/TeamCrest";
 import { useWatch } from "react-hook-form";
 import { Button } from "@/components/buttons/button";
-import { useCreateTeamFormLogic } from "../hooks/useCreateTeamViewModel";
+import { useCreateTeamViewModel } from "../hooks/useCreateTeamViewModel";
 
 export default function CreateTeamScreen() {
   const theme = useTheme();
@@ -28,7 +28,7 @@ export default function CreateTeamScreen() {
     crestError,
     chooseCrest,
     handleSubmit,
-  } = useCreateTeamFormLogic();
+  } = useCreateTeamViewModel();
 
   // The preview builds its monogram from whatever has been typed so far, so the
   // badge is already the team's own before a picture is chosen.

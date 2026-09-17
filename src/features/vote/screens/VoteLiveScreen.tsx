@@ -48,9 +48,7 @@ export default function VoteLiveScreen({
   const [errorText, setErrorText] = useState<string | null>(null);
 
   const doneCount = ballots.filter((ballot) => ballot.isComplete).length;
-  const hasVotes = tally.some(
-    (row) => row.topCount > 0 || row.flopCount > 0,
-  );
+  const hasVotes = tally.some((row) => row.topCount > 0 || row.flopCount > 0);
 
   const handleClose = async () => {
     setErrorText(null);

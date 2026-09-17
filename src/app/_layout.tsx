@@ -14,6 +14,7 @@ import { ApolloProvider } from "@/providers/apollo/ApolloProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import Toast from "react-native-toast-message";
+import { ErrorBoundary } from "@/lib/monitoring/ErrorBoundary";
 import { toastConfig } from "@/components/messaging/CustomToast";
 
 /*
@@ -48,16 +49,18 @@ export default function RootLayout() {
 
   return (
     <View style={{ flex: 1 }} onLayout={revealApp}>
-      <ApolloProvider>
-        <AuthProvider>
-          <ThemeProvider>
-            {/* Chrome is Verde Gramado in both schemes — status bar stays light. */}
-            <StatusBar style="light" />
-            <Stack screenOptions={{ headerShown: false }} />
-            <Toast config={toastConfig} />
-          </ThemeProvider>
-        </AuthProvider>
-      </ApolloProvider>
+      <ErrorBoundary>
+        <ApolloProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              {/* Chrome is Verde Gramado in both schemes — status bar stays light. */}
+              <StatusBar style="light" />
+              <Stack screenOptions={{ headerShown: false }} />
+              <Toast config={toastConfig} />
+            </ThemeProvider>
+          </AuthProvider>
+        </ApolloProvider>
+      </ErrorBoundary>
     </View>
   );
 }

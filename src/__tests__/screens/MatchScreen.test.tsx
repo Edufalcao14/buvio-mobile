@@ -45,12 +45,12 @@ describe("MatchScreen", () => {
     render(<MatchScreen />, { mocks: [teamMembersMock] });
 
     expect(
-      screen.getByLabelText("Toujours pas de match ? Le chopp va chauffer…"),
+      screen.getByLabelText("Toujours pas de match ? Le chopp va chauffer…")
     ).toBeTruthy();
     expect(
       screen.getByText(
-        "Créez un match avec le bouton + pour lancer la prochaine rencontre.",
-      ),
+        "Créez un match avec le bouton + pour lancer la prochaine rencontre."
+      )
     ).toBeTruthy();
     expect(screen.getByRole("button", { name: "Créer un match" })).toBeTruthy();
 

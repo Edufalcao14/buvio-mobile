@@ -1,4 +1,5 @@
-import JoinTeamScreen from "@/features/team/screens/JoinTeam";
-export default function JoinTeam() {
+import { JoinTeamScreen } from "@/features/team";
+
+export default function JoinTeamRoute() {
   return <JoinTeamScreen />;
 }

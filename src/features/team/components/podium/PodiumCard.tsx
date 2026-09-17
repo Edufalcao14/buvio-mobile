@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { PlayerAvatar } from "@/components/avatars/PlayerAvatar";
 import { PodiumEntry } from "@/features/team/hooks/useRankingViewModel";
-import { createStyles } from "./PodiumCard.style";
+import { createStyles } from "./PodiumCard.styles";
 
 interface PodiumCardProps {
   title: string;
@@ -50,7 +50,9 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({
             />
             <Text style={styles.name} numberOfLines={1}>
               {entry.nickname}
-              {entry.isCurrentUser ? <Text style={styles.youTag}>  toi</Text> : null}
+              {entry.isCurrentUser ? (
+                <Text style={styles.youTag}> toi</Text>
+              ) : null}
             </Text>
             <Text style={styles.count}>{entry.count}</Text>
           </View>

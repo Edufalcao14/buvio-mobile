@@ -103,14 +103,14 @@ describe("Tag", () => {
         <Tag label="🔴 Vote en cours" variant="live" />
         <Tag label="Amical" variant="neutral" />
         <Tag label="💩 Sacha" />
-      </>,
+      </>
     );
 
     expect(tagStyleOf("👑 Camille").backgroundColor).toBe(
-      theme.colors.secondary.main,
+      theme.colors.secondary.main
     );
     expect(tagStyleOf("🔴 Vote en cours").backgroundColor).toBe(
-      theme.colors.error.light,
+      theme.colors.error.light
     );
     expect(tagStyleOf("Amical").backgroundColor).toBe(theme.colors.grey[50]);
     // No variant means neutral — gold is never the fallback.

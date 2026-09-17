@@ -7,7 +7,7 @@ import {
 } from "react-hook-form";
 import { TextInput, TextInputProps } from "react-native";
 import { useState } from "react";
-import { createStyles } from "./style";
+import { createStyles } from "./FormTextInput.styles";
 import { useTheme } from "@/providers/ThemeProvider";
 import { BaseFormInput } from "../BaseFormInput";
 

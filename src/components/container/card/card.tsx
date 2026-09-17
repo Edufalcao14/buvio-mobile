@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createStyles } from "./card.style";
+import { createStyles } from "./card.styles";
 import { getStyle } from "./utils";
 
 interface CardProps {
@@ -27,6 +27,7 @@ export const Card: React.FC<CardProps> = ({
 
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={handlePress}
       style={({ pressed }) => getStyle({ pressed })}
     >

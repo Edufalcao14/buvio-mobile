@@ -1,5 +1,5 @@
-import History from "@/features/match/screens/HistoryScreen";
+import { HistoryScreen } from "@/features/match";
 
-export default function HistoryTab() {
-  return <History/>;
+export default function HistoryRoute() {
+  return <HistoryScreen />;
 }

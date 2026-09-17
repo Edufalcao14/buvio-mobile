@@ -2,12 +2,19 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import { UserInputForms, userInputSchema } from "@/features/team/schemas/JoinTeamValidation";
-import { useJoinTeamMutation , useValidateTeamCodeQuery } from "@/graphql/generated/hooks";
+import {
+  UserInputForms,
+  userInputSchema,
+} from "@/features/team/schemas/JoinTeamValidation";
+import {
+  useJoinTeamMutation,
+  useValidateTeamCodeQuery,
+} from "@/graphql/generated/hooks";
 import { useApolloClient } from "@apollo/client";
 import Toast from "react-native-toast-message";
+import { getErrorMessage } from "@/lib/errors";
 
-export const useJoinTeamForm = () => {
+export const useJoinTeamViewModel = () => {
   const [error, setError] = useState("");
   const client = useApolloClient();
   const {
@@ -56,9 +63,7 @@ export const useJoinTeamForm = () => {
 
       router.push("/(tabs)/team");
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Une erreur s'est produite"
-      );
+      setError(getErrorMessage(error));
     }
   };
 

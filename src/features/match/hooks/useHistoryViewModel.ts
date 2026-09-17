@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { format, isFuture } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
@@ -69,7 +69,7 @@ const toOutcome = (
       top: { displayName: string; nickname?: string | null };
       flop: { displayName: string; nickname?: string | null };
     } | null;
-  } | null,
+  } | null
 ): MatchOutcome => {
   if (!votingSession) {
     // A match that has not been played yet is waiting, not neglected.
@@ -135,10 +135,57 @@ const toTags = (typeLabel: string, outcome: MatchOutcome): MatchTag[] => {
 const capitalise = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1);
 
+/**
+ * How many matches a page holds. Comfortably more than one screenful, so the
+ * next page is fetched well before the player reaches the end of the list.
+ */
+export const HISTORY_PAGE_SIZE = 20;
+
 export const useHistoryViewModel = () => {
-  const { data, loading, error, refetch } = useTeamHistoryQuery({
+  const { data, loading, error, refetch, fetchMore } = useTeamHistoryQuery({
+    variables: { limit: HISTORY_PAGE_SIZE, offset: 0 },
     notifyOnNetworkStatusChange: true,
   });
+
+  const loadedCount = data?.me.team?.matches?.length ?? 0;
+  // A short page means the archive is exhausted; asking again would return
+  // nothing and the list would spin forever at the bottom.
+  const hasMore = loadedCount > 0 && loadedCount % HISTORY_PAGE_SIZE === 0;
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const loadMore = useCallback(async () => {
+    if (!hasMore || isLoadingMore) {
+      return;
+    }
+
+    setIsLoadingMore(true);
+
+    try {
+      await fetchMore({
+        variables: { limit: HISTORY_PAGE_SIZE, offset: loadedCount },
+        updateQuery: (previous, { fetchMoreResult }) => {
+          const older = fetchMoreResult?.me.team?.matches ?? [];
+
+          if (!previous.me.team || older.length === 0) {
+            return previous;
+          }
+
+          return {
+            ...previous,
+            me: {
+              ...previous.me,
+              team: {
+                ...previous.me.team,
+                matches: [...(previous.me.team.matches ?? []), ...older],
+              },
+            },
+          };
+        },
+      });
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [fetchMore, hasMore, isLoadingMore, loadedCount]);
 
   const { sections, summary } = useMemo(() => {
     const rawMatches = data?.me.team?.matches ?? [];
@@ -168,7 +215,7 @@ export const useHistoryViewModel = () => {
       matches.push(item);
 
       const sectionTitle = capitalise(
-        format(date, "MMMM yyyy", { locale: fr }),
+        format(date, "MMMM yyyy", { locale: fr })
       );
       const lastSection = grouped[grouped.length - 1];
 
@@ -184,9 +231,8 @@ export const useHistoryViewModel = () => {
       sections: grouped,
       summary: {
         matchCount: matches.length,
-        decidedCount: matches.filter(
-          (match) => match.outcome.kind === "result",
-        ).length,
+        decidedCount: matches.filter((match) => match.outcome.kind === "result")
+          .length,
         liveCount: matches.filter((match) => match.outcome.kind === "voting")
           .length,
       } satisfies HistorySummary,
@@ -200,7 +246,10 @@ export const useHistoryViewModel = () => {
     // The first load owns the empty screen; a pull-to-refresh must not blank
     // the list that is already on it.
     isLoading: loading && !data,
-    isRefreshing: loading && !!data,
+    isRefreshing: loading && !!data && !isLoadingMore,
+    isLoadingMore,
+    hasMore,
+    loadMore,
     errorMessage: error ? "Impossible de charger l’historique." : null,
     refetch,
   };

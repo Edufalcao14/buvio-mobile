@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { Image } from "expo-image";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createStyles, MascotSize } from "./MascotBubble.style";
+import { createStyles, MascotSize } from "./MascotBubble.styles";
 
 /**
  * The mascot has poses. Each entry carries its own aspect ratio because the

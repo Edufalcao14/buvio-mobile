@@ -64,12 +64,10 @@ describe("JoinTeamScreen", () => {
 
     expect(screen.getByText("Rejoindre une équipe")).toBeTruthy();
     expect(
-      screen.getByText(
-        "Le code est composé de 5 caractères alphanumériques",
-      ),
+      screen.getByText("Le code est composé de 5 caractères alphanumériques")
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "Rejoindre l’équipe" }),
+      screen.getByRole("button", { name: "Rejoindre l’équipe" })
     ).toBeDisabled();
   });
 
@@ -79,7 +77,7 @@ describe("JoinTeamScreen", () => {
     await typeCode();
 
     expect(
-      screen.getByRole("button", { name: "Rejoindre l’équipe" }),
+      screen.getByRole("button", { name: "Rejoindre l’équipe" })
     ).not.toBeDisabled();
   });
 
@@ -98,13 +96,13 @@ describe("JoinTeamScreen", () => {
     fireEvent.press(screen.getByRole("button", { name: "Rejoindre l’équipe" }));
 
     await waitFor(() =>
-      expect(router.push).toHaveBeenCalledWith("/(tabs)/team"),
+      expect(router.push).toHaveBeenCalledWith("/(tabs)/team")
     );
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "success",
         text1: "Vous avez rejoint l'équipe Les Invincibles avec succès.",
-      }),
+      })
     );
   });
 
@@ -119,8 +117,8 @@ describe("JoinTeamScreen", () => {
         expect.objectContaining({
           type: "error",
           text1: `Aucune équipe trouvée avec le code ${CODE}`,
-        }),
-      ),
+        })
+      )
     );
     expect(router.push).not.toHaveBeenCalled();
   });

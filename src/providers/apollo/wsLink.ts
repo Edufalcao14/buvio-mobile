@@ -1,24 +1,17 @@
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
-import { getEnvironmentBaseURL } from "@/utils/environment";
-import { loadAuthState } from "./authState";
+import { getWebSocketBaseURL } from "@/utils/environment";
+import { loadAuthState } from "@/utils/auth/secureStore";
 
 /**
  * The realtime half of the link chain.
  *
  * The backend serves graphql-ws on the same `/graphql` path as the HTTP
- * endpoint, so the socket URL is the HTTP base with the scheme swapped —
- * deriving it means one env var keeps governing both transports.
+ * endpoint, so one environment variable governs both transports. The scheme
+ * is derived in `getWebSocketBaseURL`, which refuses cleartext outside local
+ * development - the socket carries the same bearer token the HTTP link does.
  */
-export const getWebSocketURL = (): string => {
-  const baseUrl = getEnvironmentBaseURL();
-
-  if (!baseUrl) {
-    throw new Error("Environment base URL is not defined");
-  }
-
-  return baseUrl.replace(/^http/, "ws") + "/graphql";
-};
+export const getWebSocketURL = (): string => `${getWebSocketBaseURL()}/graphql`;
 
 export const createWsLink = () =>
   new GraphQLWsLink(
@@ -39,5 +32,5 @@ export const createWsLink = () =>
           ? { authorization: `Bearer ${tokens.accessToken}` }
           : {};
       },
-    }),
+    })
   );

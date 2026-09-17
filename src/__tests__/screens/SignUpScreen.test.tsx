@@ -16,11 +16,11 @@ const fillForm = (password = "Supersecret1!") => {
 
   fireEvent.changeText(
     screen.getByPlaceholderText("Prénom et Nom"),
-    "Camille Dupont",
+    "Camille Dupont"
   );
   fireEvent.changeText(
     screen.getByPlaceholderText("votre@email.com"),
-    "camille@example.com",
+    "camille@example.com"
   );
   fireEvent.changeText(passwordFields[0], password);
   fireEvent.changeText(passwordFields[1], password);
@@ -53,16 +53,16 @@ describe("SignUpScreen", () => {
 
     expect(
       await screen.findByText(
-        "Le champs Nom Complet doit comporter au moins 3 caractères",
-      ),
+        "Le champs Nom Complet doit comporter au moins 3 caractères"
+      )
     ).toBeTruthy();
     expect(
-      screen.getByText("Veuillez entrer une adresse e-mail valide"),
+      screen.getByText("Veuillez entrer une adresse e-mail valide")
     ).toBeTruthy();
     expect(
       screen.getAllByText(
-        "Le mot de passe doit comporter au moins 12 caractères",
-      ).length,
+        "Le mot de passe doit comporter au moins 12 caractères"
+      ).length
     ).toBe(2);
     expect(signUp).not.toHaveBeenCalled();
   });
@@ -75,8 +75,8 @@ describe("SignUpScreen", () => {
 
     expect(
       await screen.findAllByText(
-        "Le mot de passe doit contenir au moins une lettre majuscule, un chiffre et un caractère spécial",
-      ),
+        "Le mot de passe doit contenir au moins une lettre majuscule, un chiffre et un caractère spécial"
+      )
     ).toHaveLength(2);
     expect(signUp).not.toHaveBeenCalled();
   });
@@ -93,8 +93,8 @@ describe("SignUpScreen", () => {
         "camille@example.com",
         "Supersecret1!",
         "Camille Dupont",
-        "",
-      ),
+        ""
+      )
     );
     await waitFor(() => expect(router.push).toHaveBeenCalledWith("/welcome"));
   });
@@ -106,7 +106,7 @@ describe("SignUpScreen", () => {
     fillForm();
     fireEvent.changeText(
       screen.getByPlaceholderText("Optionnel — le nom que l’équipe utilise"),
-      "Cami",
+      "Cami"
     );
     fireEvent.press(screen.getByRole("button", { name: "S'inscrire" }));
 
@@ -115,19 +115,32 @@ describe("SignUpScreen", () => {
         "camille@example.com",
         "Supersecret1!",
         "Camille Dupont",
-        "Cami",
-      ),
+        "Cami"
+      )
     );
   });
 
   it("surfaces the server error instead of navigating", async () => {
-    signUp.mockRejectedValue(new Error("Cet email est déjà utilisé"));
+    // The backend answers with a code, never with prose: the screen is
+    // expected to turn that code into French copy.
+    signUp.mockRejectedValue({
+      graphQLErrors: [
+        {
+          message: "USER_EMAIL_ALREADY_EXISTS",
+          extensions: { errorCode: "USER_EMAIL_ALREADY_EXISTS" },
+        },
+      ],
+    });
     render(<SignUpScreen />);
 
     fillForm();
     fireEvent.press(screen.getByRole("button", { name: "S'inscrire" }));
 
-    expect(await screen.findByText("Cet email est déjà utilisé")).toBeTruthy();
+    expect(
+      await screen.findByText(
+        "Un compte existe déjà avec cette adresse e-mail."
+      )
+    ).toBeTruthy();
     expect(router.push).not.toHaveBeenCalled();
   });
 });

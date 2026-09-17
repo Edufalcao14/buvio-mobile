@@ -5,7 +5,10 @@ import {
   createMaterialTopTabNavigator,
 } from "expo-router/js-top-tabs";
 import { withLayoutContext } from "expo-router";
-import { ParamListBase, TabNavigationState } from "expo-router/react-navigation";
+import {
+  ParamListBase,
+  TabNavigationState,
+} from "expo-router/react-navigation";
 import Header from "@/components/navigation/header/header";
 import { useTheme } from "@/providers/ThemeProvider";
 

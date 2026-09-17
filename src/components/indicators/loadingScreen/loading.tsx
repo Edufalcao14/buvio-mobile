@@ -1,6 +1,6 @@
 import { View, ActivityIndicator } from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createStyles } from "./loading.style";
+import { createStyles } from "./loading.styles";
 
 export default function LoadingScreen() {
   const theme = useTheme();

@@ -11,14 +11,15 @@ import { useMemo } from "react";
 import { createStyles } from "./SignIn.styles";
 import { FormTextInput } from "@/components/inputs/formTextInput";
 import { Button } from "@/components/buttons/button";
-import { useSignInForm } from "../hooks/useSignInViewModel";
+import { useSignInViewModel } from "../hooks/useSignInViewModel";
 import { FormPasswordInput } from "@/components/inputs/formPasswordInput";
 import { AuthHero } from "../components/AuthHero";
 
 export default function SignInScreen() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { control, handleSubmit, errors, error, loading } = useSignInForm();
+  const { control, handleSubmit, errors, error, loading } =
+    useSignInViewModel();
 
   return (
     <View style={styles.screen}>

@@ -2,7 +2,6 @@ import { router, Stack } from "expo-router";
 import Header from "@/components/navigation/header/header";
 
 export default function WelcomeLayout() {
-
   return (
     <Stack>
       <Stack.Screen name="index" options={{ header: () => <Header /> }} />

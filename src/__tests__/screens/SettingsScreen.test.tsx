@@ -70,9 +70,7 @@ describe("SettingsScreen", () => {
     render(<SettingsScreen />);
 
     expect(screen.getByLabelText("Changer la photo de profil")).toBeTruthy();
-    expect(
-      screen.queryByLabelText("Changer le blason de l’équipe"),
-    ).toBeNull();
+    expect(screen.queryByLabelText("Changer le blason de l’équipe")).toBeNull();
   });
 
   it("lets the club's founder change the crest", () => {
@@ -86,21 +84,17 @@ describe("SettingsScreen", () => {
 
     render(<SettingsScreen />);
 
-    expect(
-      screen.getByLabelText("Changer le blason de l’équipe"),
-    ).toBeTruthy();
+    expect(screen.getByLabelText("Changer le blason de l’équipe")).toBeTruthy();
   });
 
   it("copies the code and confirms it with a toast", () => {
     render(<SettingsScreen />);
 
-    fireEvent.press(
-      screen.getByLabelText("Copier le code d’invitation"),
-    );
+    fireEvent.press(screen.getByLabelText("Copier le code d’invitation"));
 
     expect(Clipboard.setString).toHaveBeenCalledWith("AB12C");
     expect(Toast.show).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "success", text1: "Code AB12C copié" }),
+      expect.objectContaining({ type: "success", text1: "Code AB12C copié" })
     );
   });
 
@@ -112,7 +106,7 @@ describe("SettingsScreen", () => {
     await waitFor(() =>
       expect(Share.share).toHaveBeenCalledWith({
         message: "Rejoins Les Invincibles sur Buvio avec le code AB12C",
-      }),
+      })
     );
   });
 
@@ -124,7 +118,7 @@ describe("SettingsScreen", () => {
     expect(Alert.alert).toHaveBeenCalledWith(
       "Se déconnecter ?",
       "Tu devras entrer ton email et ton mot de passe pour revenir.",
-      expect.any(Array),
+      expect.any(Array)
     );
     expect(logout).not.toHaveBeenCalled();
 

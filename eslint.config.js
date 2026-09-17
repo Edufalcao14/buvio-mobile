@@ -45,6 +45,15 @@ module.exports = defineConfig([
               message:
                 "Use the @/ path alias instead of deep relative imports.",
             },
+            {
+              // The barrel rule from docs/ARCHITECTURE.md, enforced rather
+              // than merely written down: a feature is reached through its
+              // index.ts, never by reaching into its internals. Adoption was
+              // 1 of 34 imports while this was prose only.
+              group: ["@/features/*/*"],
+              message:
+                "Import a feature through its barrel (@/features/<name>), not its internals.",
+            },
           ],
         },
       ],
@@ -55,6 +64,14 @@ module.exports = defineConfig([
     rules: {
       // Type safety
       "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
+  {
+    // A feature may of course reach into itself, and a test exists precisely
+    // to exercise internals the barrel does not expose.
+    files: ["src/features/**", "src/__tests__/**", "**/*.test.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": "off",
     },
   },
 ]);

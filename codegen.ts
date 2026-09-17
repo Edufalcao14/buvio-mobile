@@ -1,42 +1,21 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-import "dotenv/config";
 
 /**
- * The base URL is resolved here rather than imported from `src/utils`: codegen
- * is loaded by graphql-config's own loader, which does not know about the `@/`
- * path alias the app code uses, so importing app modules breaks the config.
+ * The schema is the committed `schema.graphql` at the repository root, not a
+ * live introspection endpoint.
+ *
+ * Pointing codegen at a running server meant `bun run generate` only worked on
+ * one machine, on one Wi-Fi network, with the backend up - so it could not run
+ * in CI and a drift check was impossible. Vendoring the SDL makes generation
+ * hermetic and lets CI verify that the committed output still matches.
+ *
+ * Refresh it with `bun run schema:pull` when the backend contract changes.
  */
-const getSchemaBaseURL = () => {
-  const environment = process.env.EXPO_PUBLIC_ENV;
-
-  if (!environment) {
-    throw new Error("EXPO_PUBLIC_ENV is not set — check your .env file");
-  }
-
-  const url =
-    process.env[`EXPO_PUBLIC_URL_${environment.toUpperCase()}`];
-
-  if (!url) {
-    throw new Error(
-      `EXPO_PUBLIC_URL_${environment.toUpperCase()} is not set — check your .env file`
-    );
-  }
-
-  return url;
-};
-
 const config: CodegenConfig = {
   overwrite: true,
-  schema: getSchemaBaseURL() + "/graphql",
+  schema: "./schema.graphql",
   documents: "./src/features/**/api/*.graphql",
   generates: {
-    "./src/graphql/generated/": {
-      preset: "client",
-      plugins: [],
-      config: {
-        withHooks: true,
-      },
-    },
     "./src/graphql/generated/hooks.tsx": {
       plugins: [
         "typescript",

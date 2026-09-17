@@ -8,3 +8,5 @@
  */
 export { usePendingVoteViewModel } from "./hooks/usePendingVoteViewModel";
 export type { PendingVote } from "./hooks/usePendingVoteViewModel";
+
+export { default as VoteScreen } from "./screens/VoteScreen";

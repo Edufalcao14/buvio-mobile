@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/providers/ThemeProvider";
-import { createStyles } from "./AuthHero.style";
+import { createStyles } from "./AuthHero.styles";
 
 interface AuthHeroProps {
   /** The goat's line, spoken as display type. */

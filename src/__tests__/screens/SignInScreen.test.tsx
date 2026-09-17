@@ -1,11 +1,6 @@
 import React from "react";
 import { router } from "expo-router";
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@/test-utils/render";
+import { render, screen, fireEvent, waitFor } from "@/test-utils/render";
 import SignInScreen from "@/features/auth/screens/SignInScreen";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -20,7 +15,7 @@ const fillForm = (email = "user@example.com", password = "supersecret") => {
   fireEvent.changeText(screen.getByPlaceholderText("votre@email.com"), email);
   fireEvent.changeText(
     screen.getByPlaceholderText("6 caractères minimum"),
-    password,
+    password
   );
 };
 
@@ -35,7 +30,7 @@ describe("SignInScreen", () => {
 
     expect(screen.getByText("Connexion")).toBeTruthy();
     expect(
-      screen.getByText("Connectez-vous pour retrouver votre équipe"),
+      screen.getByText("Connectez-vous pour retrouver votre équipe")
     ).toBeTruthy();
     expect(screen.getByText("Email")).toBeTruthy();
     expect(screen.getByText("Mot de passe")).toBeTruthy();
@@ -50,10 +45,10 @@ describe("SignInScreen", () => {
     fireEvent.press(screen.getByRole("button", { name: "Se Connecter" }));
 
     expect(
-      await screen.findByText("Veuillez entrer une adresse e-mail valide"),
+      await screen.findByText("Veuillez entrer une adresse e-mail valide")
     ).toBeTruthy();
     expect(
-      screen.getByText("Le mot de passe doit comporter au moins 6 caractères"),
+      screen.getByText("Le mot de passe doit comporter au moins 6 caractères")
     ).toBeTruthy();
     expect(signIn).not.toHaveBeenCalled();
   });
@@ -66,10 +61,10 @@ describe("SignInScreen", () => {
     fireEvent.press(screen.getByRole("button", { name: "Se Connecter" }));
 
     await waitFor(() =>
-      expect(signIn).toHaveBeenCalledWith("user@example.com", "supersecret"),
+      expect(signIn).toHaveBeenCalledWith("user@example.com", "supersecret")
     );
     await waitFor(() =>
-      expect(router.replace).toHaveBeenCalledWith("/(tabs)/team"),
+      expect(router.replace).toHaveBeenCalledWith("/(tabs)/team")
     );
   });
 
@@ -84,13 +79,24 @@ describe("SignInScreen", () => {
   });
 
   it("shows the server error message when the credentials are refused", async () => {
-    signIn.mockRejectedValue(new Error("Identifiants invalides"));
+    signIn.mockRejectedValue({
+      graphQLErrors: [
+        {
+          message: "AUTH_INVALID_CREDENTIALS",
+          extensions: { errorCode: "AUTH_INVALID_CREDENTIALS" },
+        },
+      ],
+    });
     render(<SignInScreen />);
 
     fillForm();
     fireEvent.press(screen.getByRole("button", { name: "Se Connecter" }));
 
-    expect(await screen.findByText("Identifiants invalides")).toBeTruthy();
+    expect(
+      await screen.findByText(
+        "Email ou mot de passe incorrect. Veuillez réessayer."
+      )
+    ).toBeTruthy();
     expect(router.replace).not.toHaveBeenCalled();
   });
 });

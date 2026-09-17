@@ -8,6 +8,7 @@ import {
   TeamHistoryDocument,
   VoteSessionStatus,
 } from "@/graphql/generated/hooks";
+import { HISTORY_PAGE_SIZE } from "@/features/match/hooks/useHistoryViewModel";
 
 type MatchInput = {
   id: string;
@@ -52,7 +53,11 @@ const buildMatch = ({
           votingSession.top && votingSession.flop
             ? {
                 __typename: "VoteResult",
-                top: { __typename: "User", id: "top", displayName: votingSession.top },
+                top: {
+                  __typename: "User",
+                  id: "top",
+                  displayName: votingSession.top,
+                },
                 flop: {
                   __typename: "User",
                   id: "flop",
@@ -65,7 +70,10 @@ const buildMatch = ({
 });
 
 const historyMock = (matches: MatchInput[]): MockedResponse => ({
-  request: { query: TeamHistoryDocument },
+  request: {
+    query: TeamHistoryDocument,
+    variables: { limit: HISTORY_PAGE_SIZE, offset: 0 },
+  },
   result: {
     data: {
       me: {
@@ -96,8 +104,8 @@ describe("HistoryScreen", () => {
 
     expect(
       await screen.findByText(
-        "Rien dans les archives. Le premier match s’écrit tout seul ?",
-      ),
+        "Rien dans les archives. Le premier match s’écrit tout seul ?"
+      )
     ).toBeTruthy();
   });
 
@@ -184,22 +192,25 @@ describe("HistoryScreen", () => {
       "2020-01-12T20:00:00.000Z",
       "✅ Terminé",
     ],
-  ] as const)("tags the %s outcome", async (_kind, votingSession, date, expected) => {
-    render(<HistoryScreen />, {
-      mocks: [
-        historyMock([
-          {
-            id: "1",
-            name: "Match test",
-            date,
-            votingSession: votingSession as MatchInput["votingSession"],
-          },
-        ]),
-      ],
-    });
+  ] as const)(
+    "tags the %s outcome",
+    async (_kind, votingSession, date, expected) => {
+      render(<HistoryScreen />, {
+        mocks: [
+          historyMock([
+            {
+              id: "1",
+              name: "Match test",
+              date,
+              votingSession: votingSession as MatchInput["votingSession"],
+            },
+          ]),
+        ],
+      });
 
-    expect(await screen.findByText(expected)).toBeTruthy();
-  });
+      expect(await screen.findByText(expected)).toBeTruthy();
+    }
+  );
 
   it("tags the match type on every card", async () => {
     render(<HistoryScreen />, {
@@ -263,7 +274,13 @@ describe("HistoryScreen", () => {
   it("offers a retry when the history cannot be loaded", async () => {
     render(<HistoryScreen />, {
       mocks: [
-        { request: { query: TeamHistoryDocument }, error: new Error("offline") },
+        {
+          request: {
+            query: TeamHistoryDocument,
+            variables: { limit: HISTORY_PAGE_SIZE, offset: 0 },
+          },
+          error: new Error("offline"),
+        },
         historyMock([
           { id: "1", name: "Derby retrouvé", date: "2026-01-12T20:00:00.000Z" },
         ]),
@@ -271,14 +288,14 @@ describe("HistoryScreen", () => {
     });
 
     expect(
-      await screen.findByText("Impossible de charger l’historique."),
+      await screen.findByText("Impossible de charger l’historique.")
     ).toBeTruthy();
     expect(screen.getByLabelText("Le tableau du club est tombé…")).toBeTruthy();
 
     fireEvent.press(screen.getByRole("button", { name: "Réessayer" }));
 
     await waitFor(() =>
-      expect(screen.getByText("Derby retrouvé")).toBeTruthy(),
+      expect(screen.getByText("Derby retrouvé")).toBeTruthy()
     );
   });
 });

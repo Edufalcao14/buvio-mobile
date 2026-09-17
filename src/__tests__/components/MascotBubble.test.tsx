@@ -7,15 +7,13 @@ describe("MascotBubble", () => {
     render(<MascotBubble line="La troisième mi-temps commence ici !" />);
 
     expect(
-      screen.getByText("La troisième mi-temps commence ici !"),
+      screen.getByText("La troisième mi-temps commence ici !")
     ).toBeTruthy();
   });
 
   it("exposes the line as the accessible name of the sticker", () => {
     render(<MascotBubble line="Le tableau du club est tombé…" size="sm" />);
 
-    expect(
-      screen.getByLabelText("Le tableau du club est tombé…"),
-    ).toBeTruthy();
+    expect(screen.getByLabelText("Le tableau du club est tombé…")).toBeTruthy();
   });
 });

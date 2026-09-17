@@ -1,6 +1,6 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getEnvironmentBaseURL } from "@/utils/environment";
-import { AuthTokens } from "@/features/auth/types/auth";
+import { saveAuthState } from "@/utils/auth/secureStore";
+import type { AuthTokens } from "@/types/auth";
 
 /**
  * Refresh auth tokens
@@ -47,8 +47,9 @@ export const refreshTokens = async (
     refreshToken: data.data.refreshToken.refreshToken,
   };
 
-  // Update AsyncStorage with new tokens
-  await AsyncStorage.setItem("auth-storage", JSON.stringify(newAuthState));
+  // Straight back into the secure store, so the rotated refresh token
+  // replaces the spent one everywhere it is read from.
+  await saveAuthState(newAuthState);
 
   return newAuthState;
 };

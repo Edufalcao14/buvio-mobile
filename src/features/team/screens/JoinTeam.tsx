@@ -9,16 +9,16 @@ import {
 import { useTheme } from "@/providers/ThemeProvider";
 import { useMemo } from "react";
 import { Button } from "@/components/buttons/button";
-import { createStyles } from "./JoinTeam.style";
+import { createStyles } from "./JoinTeam.styles";
 import CodeInput from "@/components/inputs/codeInput";
-import { useJoinTeamForm } from "../hooks/useJoinTeamViewModel";
+import { useJoinTeamViewModel } from "../hooks/useJoinTeamViewModel";
 
 export default function JoinTeamScreen() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const { control, handleSubmit, code, errors, error, loading } =
-    useJoinTeamForm();
+    useJoinTeamViewModel();
 
   return (
     <KeyboardAvoidingView
@@ -68,7 +68,7 @@ export default function JoinTeamScreen() {
             />
           </View>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          
+
           <View style={styles.helpContainer}>
             <Text style={styles.helpText}>
               Vous ne connaissez pas le code ?

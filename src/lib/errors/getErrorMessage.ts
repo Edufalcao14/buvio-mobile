@@ -67,7 +67,7 @@ export const parseError = (error: unknown): ParsedError => {
  */
 export const getErrorMessage = (
   error: unknown,
-  locale: Locale = DEFAULT_LOCALE,
+  locale: Locale = DEFAULT_LOCALE
 ): string => {
   const { code, field } = parseError(error);
 

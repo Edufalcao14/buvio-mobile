@@ -41,7 +41,7 @@ export const usePendingVoteViewModel = () => {
         }
 
         const myBallot = votingSession.ballots.find(
-          (ballot) => ballot.player.id === meId,
+          (ballot) => ballot.player.id === meId
         );
 
         // No ballot at all means this player is not on the roster: nothing
@@ -50,9 +50,7 @@ export const usePendingVoteViewModel = () => {
       })
       // Several matches can be open at once; the freshest one is the one the
       // team is actually talking about.
-      .sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      );
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const match = candidates[0];
 

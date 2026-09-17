@@ -146,7 +146,7 @@ export const useImageUpload = (target: ImageUploadTarget) => {
 
       return result.data?.createTeamCrestUploadUrl ?? null;
     },
-    [target, createAvatarTicket, createCrestTicket],
+    [target, createAvatarTicket, createCrestTicket]
   );
 
   /**
@@ -174,7 +174,7 @@ export const useImageUpload = (target: ImageUploadTarget) => {
 
       return result.data?.confirmTeamCrestUpload.crestUrl ?? null;
     },
-    [target, confirmAvatar, confirmCrest],
+    [target, confirmAvatar, confirmCrest]
   );
 
   /**
@@ -219,7 +219,7 @@ export const useImageUpload = (target: ImageUploadTarget) => {
         setIsUploading(false);
       }
     },
-    [requestTicket, confirmKey],
+    [requestTicket, confirmKey]
   );
 
   /** Library → resize → upload, for the screens that do both at once. */

@@ -8,7 +8,7 @@ import {
   View,
   Text,
 } from "react-native";
-import { createStyles } from "./style";
+import { createStyles } from "./CodeInput.styles";
 import { useTheme } from "@/providers/ThemeProvider";
 import {
   Control,
@@ -51,7 +51,6 @@ export default function CodeInput<T extends FieldValues>({
       keyboardVerticalOffset={Platform.OS === "ios" ? 160 : 0}
     >
       <View style={styles.container}>
-
         <View style={styles.characterBoxesContainer}>
           <Controller
             control={control}
@@ -135,7 +134,9 @@ export default function CodeInput<T extends FieldValues>({
 
         <View>
           {typeof errors[name]?.message === "string" ? (
-            <Text style={styles.errorText}>{String(errors[name]?.message)}</Text>
+            <Text style={styles.errorText}>
+              {String(errors[name]?.message)}
+            </Text>
           ) : null}
         </View>
       </View>

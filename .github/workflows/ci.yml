@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint, typecheck, tests
+    name: Lint, types, format, tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,61 +37,79 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
-      - name: Tests
-        run: bun run test
+      # Formatting used to be enforced only by the local pre-commit hook, so a
+      # --no-verify commit introduced drift nothing ever caught.
+      - name: Format check
+        run: bun run format:check
 
-  e2e:
-    name: Maestro (Android, advisory)
+      # The committed hooks must match the committed documents and schema. The
+      # schema is vendored, so this runs offline and catches contract drift
+      # before it reaches a device.
+      - name: GraphQL codegen drift
+        run: |
+          bun run generate
+          git diff --exit-code src/graphql/generated \
+            || (echo "::error::Generated GraphQL is stale. Run 'bun run generate'." && exit 1)
+
+      - name: Tests with coverage
+        run: bun run test:coverage
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  security:
+    name: Dependency audit
     runs-on: ubuntu-latest
-    # Advisory until this workflow publishes a dev build artifact: Maestro
-    # drives an *installed* app, and `expo run:android` needs native code plus
-    # a reachable backend. Until an APK is built and installed here, the job
-    # can only prove that the flows parse — so it must never block a PR.
-    continue-on-error: true
-    needs: quality
     steps:
       - uses: actions/checkout@v4
-
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.11
+      - run: bun install --frozen-lockfile
+      # Advisory for now: the current tree carries known toolchain advisories
+      # that only clear with an upstream SDK patch. It reports on every PR so a
+      # NEW one is visible, which is the thing that was missing entirely.
+      - name: bun audit
+        continue-on-error: true
+        run: bun audit
 
-      - uses: actions/setup-java@v4
+  build:
+    name: Build check
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          distribution: temurin
-          java-version: 17
+          bun-version: 1.3.11
+      - run: bun install --frozen-lockfile
 
-      - uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: ${{ runner.os }}-bun-
+      # Proves the app actually bundles for a device, which lint and tests do
+      # not: a broken asset path or a native-only import fails here and only
+      # here. The export is also what a Maestro job would install.
+      - name: Export production bundle
+        run: bunx expo export --platform all --output-dir dist
+        env:
+          EXPO_PUBLIC_ENV: production
+          EXPO_PUBLIC_URL_PRODUCTION: https://api.buvio.app
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Install Maestro
+      # The audit found images were 22 of 29 MB. A budget keeps it that way.
+      - name: Bundle size budget
         run: |
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
-          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+          SIZE_KB=$(du -sk dist | cut -f1)
+          echo "Bundle: ${SIZE_KB} KB (budget 20480 KB)"
+          if [ "$SIZE_KB" -gt 20480 ]; then
+            echo "::error::Bundle is ${SIZE_KB} KB, over the 20 MB budget."
+            exit 1
+          fi
 
-      # KVM has to be enabled by hand on ubuntu runners for a fast emulator.
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
-            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Run the flows on an emulator
-        uses: reactivecircus/android-emulator-runner@v2
+      - uses: actions/upload-artifact@v4
         with:
-          api-level: 34
-          target: google_apis
-          arch: x86_64
-          profile: pixel_6
-          disable-animations: true
-          script: |
-            # Replace this with `adb install <dev-build.apk>` once a build
-            # artifact is published, then drop `continue-on-error` above.
-            maestro test .maestro
+          name: bundle
+          path: dist/
+          retention-days: 7

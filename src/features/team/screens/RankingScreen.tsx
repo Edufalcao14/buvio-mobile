@@ -1,5 +1,11 @@
 import React from "react";
-import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { useTheme } from "@/providers/ThemeProvider";
 import { MascotBubble } from "@/components/mascot/MascotBubble";
 import { Button } from "@/components/buttons/button";

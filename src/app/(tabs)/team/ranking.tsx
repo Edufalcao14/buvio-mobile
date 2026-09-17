@@ -1,6 +1,5 @@
-import Ranking from "@/features/team/screens/RankingScreen";
+import { RankingScreen } from "@/features/team";
 
-
-export default function MatchTab() {
-  return <Ranking/>;
+export default function RankingRoute() {
+  return <RankingScreen />;
 }

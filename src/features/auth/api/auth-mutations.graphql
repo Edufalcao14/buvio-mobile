@@ -17,9 +17,6 @@ mutation SignUp(
       avatarUrl
       email
       createdAt
-      updatedAt
-      deletedAt
-      externalId
       team {
         id
         name
@@ -29,8 +26,7 @@ mutation SignUp(
         creator {
           id
           displayName
-          email
-          externalId
+          nickname
         }
       }
     }
@@ -47,9 +43,6 @@ mutation SignIn($email: String!, $password: String!) {
       nickname
       avatarUrl
       createdAt
-      updatedAt
-      deletedAt
-      externalId
       email
       team {
         id
@@ -60,8 +53,7 @@ mutation SignIn($email: String!, $password: String!) {
         creator {
           id
           displayName
-          externalId
-          email
+          nickname
         }
       }
     }
@@ -87,14 +79,9 @@ mutation CreateTeam($name: String!, $sport: String) {
     creator {
       id
       displayName
-      email
-      createdAt
-      updatedAt
-      deletedAt
-      externalId
+      nickname
     }
     createdAt
-    updatedAt
     sport
   }
 }
@@ -109,14 +96,9 @@ mutation JoinTeam($code: String!) {
     creator {
       id
       displayName
-      email
-      createdAt
-      updatedAt
-      deletedAt
-      externalId
+      nickname
     }
     createdAt
-    updatedAt
   }
 }
 
@@ -127,21 +109,25 @@ mutation CreateMatch($name: String!, $date: DateTime!, $type: MatchType!) {
     date
     type
     creator {
+      id
       displayName
-      email
+      nickname
+      avatarUrl
     }
     team {
+      id
       name
       code
     }
     createdAt
-    updatedAt
-    deletedAt
     players {
+      id
       displayName
-      email
+      nickname
+      avatarUrl
     }
     votingSession {
+      id
       status
       timeRemaining
       voteResult {

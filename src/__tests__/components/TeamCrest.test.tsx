@@ -33,7 +33,7 @@ describe("TeamCrest", () => {
 
   it("wears an uploaded crest instead of the monogram", () => {
     render(
-      <TeamCrest name="Les Invincibles" url="https://cdn.test/crest.jpg" />,
+      <TeamCrest name="Les Invincibles" url="https://cdn.test/crest.jpg" />
     );
 
     expect(screen.queryByText("LI", hidden)).toBeNull();

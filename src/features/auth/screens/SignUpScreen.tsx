@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { createStyles } from "./SignUp.styles";
 import { Link } from "expo-router";
-import { useSignUpForm } from "../hooks/useSignUpViewModel";
+import { useSignUpViewModel } from "../hooks/useSignUpViewModel";
 import { useTheme } from "@/providers/ThemeProvider";
 import React, { useMemo } from "react";
 import { FormTextInput } from "@/components/inputs/formTextInput";
@@ -31,7 +31,7 @@ export default function SignUp() {
     chooseAvatar,
     removeAvatar,
     handleSubmit,
-  } = useSignUpForm();
+  } = useSignUpViewModel();
 
   return (
     <View style={styles.screen}>

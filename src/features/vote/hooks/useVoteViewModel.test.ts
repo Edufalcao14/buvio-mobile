@@ -11,7 +11,11 @@ import { closureLabel } from "./useVoteViewModel";
 const MATCH_ID = "match-1";
 const SESSION_ID = "session-1";
 
-const player = (id: string, displayName: string, nickname: string | null = null) => ({
+const player = (
+  id: string,
+  displayName: string,
+  nickname: string | null = null
+) => ({
   __typename: "User" as const,
   id,
   displayName,
@@ -26,7 +30,7 @@ const session = (
     status: VoteSessionStatus;
     closedReason: VoteClosureReason | null;
     voteResult: unknown;
-  }> = {},
+  }> = {}
 ) => ({
   __typename: "VotingSession" as const,
   id: SESSION_ID,
@@ -35,7 +39,12 @@ const session = (
   closingAt: "2026-08-03T21:00:00.000Z",
   closedAt: null,
   closedReason: null,
-  startedBy: { __typename: "User" as const, id: "user-1", displayName: "Camille", nickname: null },
+  startedBy: {
+    __typename: "User" as const,
+    id: "user-1",
+    displayName: "Camille",
+    nickname: null,
+  },
   match: {
     __typename: "Match" as const,
     id: MATCH_ID,
@@ -133,7 +142,9 @@ describe("voting session cache identity", () => {
       variables: { matchId: MATCH_ID },
     });
 
-    expect(result?.getMatchById.votingSession?.ballots[0].isComplete).toBe(true);
+    expect(result?.getMatchById.votingSession?.ballots[0].isComplete).toBe(
+      true
+    );
     expect(result?.getMatchById.votingSession?.tally[0].topCount).toBe(3);
   });
 
@@ -164,22 +175,22 @@ describe("voting session cache identity", () => {
     });
 
     expect(result?.getMatchById.votingSession?.status).toBe(
-      VoteSessionStatus.Completed,
+      VoteSessionStatus.Completed
     );
-    expect(result?.getMatchById.votingSession?.voteResult?.top.displayName).toBe(
-      "Sofiane",
-    );
+    expect(
+      result?.getMatchById.votingSession?.voteResult?.top.displayName
+    ).toBe("Sofiane");
   });
 });
 
 describe("closureLabel", () => {
   it("says why the vote closed, in words", () => {
     expect(closureLabel(VoteClosureReason.Unanimous)).toBe(
-      "Tout le monde a voté !",
+      "Tout le monde a voté !"
     );
     expect(closureLabel(VoteClosureReason.Deadline)).toBe("Temps écoulé");
     expect(closureLabel(VoteClosureReason.Admin)).toBe(
-      "Clos par l’organisateur",
+      "Clos par l’organisateur"
     );
     expect(closureLabel(null)).toBeNull();
   });

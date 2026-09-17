@@ -2,10 +2,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import { UserInputForms, userInputSchema } from "@/features/auth/schemas/SignInValidation";
+import {
+  UserInputForms,
+  userInputSchema,
+} from "@/features/auth/schemas/SignInValidation";
 import { useAuth } from "@/providers/AuthProvider";
+import { getErrorMessage } from "@/lib/errors";
+import { reportError } from "@/lib/monitoring";
 
-export const useSignInForm = () => {
+export const useSignInViewModel = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -37,9 +42,8 @@ export const useSignInForm = () => {
         router.push("/welcome");
       }
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "An unknown error occurred."
-      );
+      reportError(error, "sign-in-form");
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }

@@ -4,20 +4,24 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useMemo,
   useRef,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  clearAuthState,
+  loadAuthState,
+  saveAuthState,
+} from "@/utils/auth/secureStore";
+import { clearApolloSession } from "@/providers/apollo/client";
+import { identifyUser, reportError } from "@/lib/monitoring";
 import {
   useSignInMutation,
   useSignUpMutation,
   useMeQuery,
 } from "@/graphql/generated/hooks";
-import { AuthState, AuthContextType } from "@/features/auth/types/auth";
-import { UserData } from "@/features/auth/types/user";
+import type { AuthContextType, AuthState, SignedInUser } from "@/types/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const AUTH_STORAGE_KEY = "auth-storage";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -27,7 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     refreshToken: null,
     isAuthenticated: false,
     isLoading: true,
-    _hasHydrated: true,
   });
 
   const isMounted = useRef(true);
@@ -44,42 +47,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Properly extract user data from the query result
   const userData = state.isAuthenticated && meData?.me ? meData.me : null;
 
+  // Ties a crash report to an account by id alone - never an email or a name,
+  // so a stack trace never becomes a personal-data record.
+  useEffect(() => {
+    identifyUser(userData?.id ?? null);
+  }, [userData?.id]);
+
   const setAsyncStorage = useCallback(
     async (accessToken: string, refreshToken: string) => {
       if (!isMounted.current) return;
 
-      const newState = {
+      setState({
         accessToken,
         refreshToken,
         isAuthenticated: true,
         isLoading: false,
-        _hasHydrated: state._hasHydrated,
-      };
-
-      setState(newState);
+      });
 
       try {
-        await AsyncStorage.setItem(
-          AUTH_STORAGE_KEY,
-          JSON.stringify({
-            accessToken,
-            refreshToken,
-            isAuthenticated: true,
-          })
-        );
+        await saveAuthState({ accessToken, refreshToken });
 
         // Refetch user data after login
         if (refetchMe) {
           refetchMe();
         }
-      } catch (error) {
-        console.error(
-          "Échec de la sauvegarde de l'état d'authentification:",
-          error
-        );
+      } catch {
+        // Never log the error object here: it can carry the token value.
+        // The session still works in memory; it just will not survive a
+        // restart, which the next sign-in fixes.
       }
     },
-    [state._hasHydrated, refetchMe]
+    [refetchMe]
   );
 
   const logout = useCallback(async () => {
@@ -93,30 +91,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       isLoading: false,
     }));
 
+    // All three, in order: the stored credential, the cached data of the
+    // user who just left, and the authenticated socket. Clearing only the
+    // first leaves the next person on this phone holding the other two.
     try {
-      await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
-    } catch (error) {
-      console.error(
-        "Échec de la suppression de l'état d'authentification:",
-        error
-      );
+      await clearAuthState();
+    } finally {
+      await clearApolloSession();
     }
   }, []);
 
-  const setHasHydrated = useCallback(() => {
-    if (!isMounted.current) return;
-    setState((prev) => ({ ...prev, _hasHydrated: true }));
-  }, []);
-
   const signIn = useCallback(
-    async (email: string, password: string): Promise<UserData> => {
+    async (email: string, password: string): Promise<SignedInUser> => {
       try {
         const response = await signInMutation({
           variables: { email, password },
         });
 
         if (response.errors) {
-          throw new Error(response.errors[0].message);
+          // Rethrown whole, not flattened to a string: the caller needs
+          // extensions.errorCode to map this to French copy.
+          throw { graphQLErrors: response.errors };
         }
 
         if (response?.data?.signIn) {
@@ -133,7 +128,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           );
         }
       } catch (error) {
-        throw new Error((error as Error).message);
+        reportError(error, "sign-in");
+        throw error;
       }
     },
     [signInMutation, setAsyncStorage]
@@ -159,7 +155,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
 
         if (response.errors) {
-          throw new Error(response.errors[0].message);
+          // Rethrown whole, not flattened to a string: the caller needs
+          // extensions.errorCode to map this to French copy.
+          throw { graphQLErrors: response.errors };
         }
 
         if (response?.data?.createUser) {
@@ -175,8 +173,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           );
         }
       } catch (error) {
-        console.error("Échec de l'inscription:", error);
-        throw new Error((error as Error).message);
+        reportError(error, "sign-up");
+        throw error;
       }
     },
     [signUpMutation, setAsyncStorage]
@@ -185,67 +183,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     isMounted.current = true;
 
-    const loadAsyncStorage = async () => {
-      try {
-        const storedAuthState = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
-        if (!isMounted.current) return;
+    const restoreSession = async () => {
+      // Reads the secure store, migrating a pre-upgrade plaintext session on
+      // the way, so an existing install is not signed out by the change.
+      const tokens = await loadAuthState();
 
-        if (storedAuthState) {
-          const parsedState = JSON.parse(storedAuthState);
+      if (!isMounted.current) return;
 
-          // load data from Async Storage
-          setState({
-            accessToken: parsedState.accessToken,
-            refreshToken: parsedState.refreshToken,
-            isAuthenticated: Boolean(parsedState.accessToken),
-            isLoading: false,
-            _hasHydrated: false,
-          });
+      setState({
+        accessToken: tokens?.accessToken ?? null,
+        refreshToken: tokens?.refreshToken ?? null,
+        isAuthenticated: Boolean(tokens?.accessToken),
+        isLoading: false,
+      });
 
-          // After restoring tokens, refetch user data
-          if (parsedState.accessToken && refetchMe) {
-            refetchMe();
-          }
-        } else {
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            _hasHydrated: false,
-          }));
-        }
-      } catch (error) {
-        console.error(
-          "Échec du chargement de l'état d'authentification:",
-          error
-        );
-        if (isMounted.current) {
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            _hasHydrated: false,
-          }));
-        }
+      if (tokens?.accessToken && refetchMe) {
+        refetchMe();
       }
     };
 
-    loadAsyncStorage();
+    restoreSession();
 
     return () => {
       isMounted.current = false;
     };
   }, [refetchMe]);
 
-  const contextValue: AuthContextType = {
-    ...state,
-    setAsyncStorage,
-    logout,
-    setHasHydrated,
-    signIn,
-    signUp,
-    signInLoading,
-    signUpLoading,
-    userData,
-  };
+  // Memoised: without this every state change hands a brand-new object to
+  // every useAuth() consumer, re-rendering the whole tree.
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      ...state,
+      setAsyncStorage,
+      logout,
+      signIn,
+      signUp,
+      signInLoading,
+      signUpLoading,
+      userData,
+    }),
+    [
+      state,
+      setAsyncStorage,
+      logout,
+      signIn,
+      signUp,
+      signInLoading,
+      signUpLoading,
+      userData,
+    ]
+  );
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

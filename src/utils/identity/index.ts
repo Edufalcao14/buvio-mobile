@@ -19,7 +19,10 @@ export type PlayerIdentity = {
  * Both names are treated as possibly absent: a player rendered from a partial
  * cache entry must still get a name to show, never a crash.
  */
-export const nicknameOf = ({ displayName, nickname }: PlayerIdentity): string => {
+export const nicknameOf = ({
+  displayName,
+  nickname,
+}: PlayerIdentity): string => {
   const chosen = nickname?.trim();
 
   if (chosen) {

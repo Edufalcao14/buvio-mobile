@@ -7,7 +7,7 @@ import Toast from "react-native-toast-message";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTheme } from "@/providers/ThemeProvider";
 import { TeamCrest } from "./TeamCrest";
-import { createStyles } from "./header.style";
+import { createStyles } from "./header.styles";
 
 interface HeaderProps {
   handlerBack?: () => void;

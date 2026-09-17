@@ -1,12 +1,16 @@
 # Kept apart from `TeamHistory`: the Matchs tab only needs to know whether the
 # squad owes a vote right now, and the history list must not pay for the
 # ballot fan-out on every refresh.
-query TeamVoteState {
+#
+# Bounded to the most recent matches rather than the whole archive: a vote is
+# open on a match that has just been played, so an unbounded scan of every
+# match a club ever played is work that can never change the answer.
+query TeamVoteState($limit: Int = 10) {
   me {
     id
     team {
       id
-      matches {
+      matches(limit: $limit) {
         id
         name
         date

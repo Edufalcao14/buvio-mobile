@@ -1,5 +1,8 @@
 import React, { ReactElement, ReactNode } from "react";
-import { render as rntlRender, RenderOptions } from "@testing-library/react-native";
+import {
+  render as rntlRender,
+  RenderOptions,
+} from "@testing-library/react-native";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "@/providers/ThemeProvider";
@@ -22,7 +25,7 @@ type Options = Omit<RenderOptions, "wrapper"> & {
  */
 export const renderWithProviders = (
   ui: ReactElement,
-  { mocks = [], ...options }: Options = {},
+  { mocks = [], ...options }: Options = {}
 ) => {
   const Wrapper = ({ children }: { children: ReactNode }) => (
     <SafeAreaProvider initialMetrics={SAFE_AREA_METRICS}>

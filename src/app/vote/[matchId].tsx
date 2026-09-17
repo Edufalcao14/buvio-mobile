@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import VoteScreen from "@/features/vote/screens/VoteScreen";
+import { VoteScreen } from "@/features/vote";
 
 export default function VoteRoute() {
   const { matchId } = useLocalSearchParams<{ matchId: string }>();

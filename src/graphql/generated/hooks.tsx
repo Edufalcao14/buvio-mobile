@@ -139,6 +139,17 @@ export type Mutation = {
   createUser: AuthPayload;
   /** Creates a new vote session for a specified match (optionnal) */
   createVotingSession: VotingSession;
+  /**
+   * Permanently deletes the caller's own account.
+   *
+   * The person is erased - name, nickname, email address, photograph and their
+   * place in the squad - and every token they hold stops working immediately.
+   * The votes they cast about other players are kept and anonymised, because
+   * those belong to their team-mates' history rather than to them.
+   *
+   * There is no user id argument: a player deletes only themselves
+   */
+  deleteAccount: Scalars["Boolean"]["output"];
   /** Join a new team with a specified name and optional sport */
   joinTeam: Team;
   /** Refreshes the token of an existing user and returns new tokens */
@@ -327,7 +338,14 @@ export type Team = {
   crestUrl?: Maybe<Scalars["String"]["output"]>;
   /** Unique internal identifier for the team */
   id: Scalars["ID"]["output"];
-  /** Returns a list of all matches in the system */
+  /**
+   * The team's matches, most recent first.
+   *
+   * Paginated because this list grows without bound in time: a club two seasons
+   * in has hundreds of matches, and the history screen used to fetch every one of
+   * them on each visit. `limit` and `offset` are optional so an existing caller
+   * keeps working, but a client showing a list should always pass them.
+   */
   matches: Array<Maybe<Match>>;
   /** Team's display name shown across the application */
   name: Scalars["String"]["output"];
@@ -335,6 +353,12 @@ export type Team = {
   sport?: Maybe<Scalars["String"]["output"]>;
   /** Timestamp when the team was last modified */
   updatedAt: Scalars["DateTime"]["output"];
+};
+
+/** Team */
+export type TeamMatchesArgs = {
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 /**
@@ -483,9 +507,6 @@ export type SignUpMutation = {
       avatarUrl?: string | null;
       email: string;
       createdAt: any;
-      updatedAt: any;
-      deletedAt?: any | null;
-      externalId: string;
       team?: {
         __typename?: "Team";
         id: string;
@@ -497,8 +518,7 @@ export type SignUpMutation = {
           __typename?: "User";
           id: string;
           displayName: string;
-          email: string;
-          externalId: string;
+          nickname?: string | null;
         };
       } | null;
     };
@@ -523,9 +543,6 @@ export type SignInMutation = {
       nickname?: string | null;
       avatarUrl?: string | null;
       createdAt: any;
-      updatedAt: any;
-      deletedAt?: any | null;
-      externalId: string;
       email: string;
       team?: {
         __typename?: "Team";
@@ -538,8 +555,7 @@ export type SignInMutation = {
           __typename?: "User";
           id: string;
           displayName: string;
-          externalId: string;
-          email: string;
+          nickname?: string | null;
         };
       } | null;
     };
@@ -574,17 +590,12 @@ export type CreateTeamMutation = {
     code: string;
     crestUrl?: string | null;
     createdAt: any;
-    updatedAt: any;
     sport?: string | null;
     creator: {
       __typename?: "User";
       id: string;
       displayName: string;
-      email: string;
-      createdAt: any;
-      updatedAt: any;
-      deletedAt?: any | null;
-      externalId: string;
+      nickname?: string | null;
     };
   };
 };
@@ -603,16 +614,11 @@ export type JoinTeamMutation = {
     sport?: string | null;
     crestUrl?: string | null;
     createdAt: any;
-    updatedAt: any;
     creator: {
       __typename?: "User";
       id: string;
       displayName: string;
-      email: string;
-      createdAt: any;
-      updatedAt: any;
-      deletedAt?: any | null;
-      externalId: string;
+      nickname?: string | null;
     };
   };
 };
@@ -632,13 +638,24 @@ export type CreateMatchMutation = {
     date: any;
     type: MatchType;
     createdAt: any;
-    updatedAt: any;
-    deletedAt?: any | null;
-    creator: { __typename?: "User"; displayName: string; email: string };
-    team: { __typename?: "Team"; name: string; code: string };
-    players: Array<{ __typename?: "User"; displayName: string; email: string }>;
+    creator: {
+      __typename?: "User";
+      id: string;
+      displayName: string;
+      nickname?: string | null;
+      avatarUrl?: string | null;
+    };
+    team: { __typename?: "Team"; id: string; name: string; code: string };
+    players: Array<{
+      __typename?: "User";
+      id: string;
+      displayName: string;
+      nickname?: string | null;
+      avatarUrl?: string | null;
+    }>;
     votingSession?: {
       __typename?: "VotingSession";
+      id: string;
       status: VoteSessionStatus;
       timeRemaining: number;
       voteResult?: {
@@ -672,8 +689,7 @@ export type MeQuery = {
         __typename?: "User";
         id: string;
         displayName: string;
-        externalId: string;
-        email: string;
+        nickname?: string | null;
       };
     } | null;
   };
@@ -698,25 +714,27 @@ export type GetTeamMembersQuery = {
     displayName: string;
     nickname?: string | null;
     avatarUrl?: string | null;
-    email: string;
-    createdAt: any;
-    updatedAt: any;
-    deletedAt?: any | null;
-    externalId: string;
     team?: {
       __typename?: "Team";
+      id: string;
       name: string;
       code: string;
       sport?: string | null;
       crestUrl?: string | null;
-      createdAt: any;
-      updatedAt: any;
-      creator: { __typename?: "User"; displayName: string; email: string };
+      creator: {
+        __typename?: "User";
+        id: string;
+        displayName: string;
+        nickname?: string | null;
+      };
     } | null;
   }>;
 };
 
-export type TeamHistoryQueryVariables = Exact<{ [key: string]: never }>;
+export type TeamHistoryQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
 
 export type TeamHistoryQuery = {
   __typename?: "Query";
@@ -770,7 +788,9 @@ export type TeamHistoryQuery = {
   };
 };
 
-export type TeamVoteStateQueryVariables = Exact<{ [key: string]: never }>;
+export type TeamVoteStateQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
 
 export type TeamVoteStateQuery = {
   __typename?: "Query";
@@ -874,6 +894,13 @@ export type ConfirmTeamCrestUploadMutation = {
     sport?: string | null;
     crestUrl?: string | null;
   };
+};
+
+export type DeleteAccountMutationVariables = Exact<{ [key: string]: never }>;
+
+export type DeleteAccountMutation = {
+  __typename?: "Mutation";
+  deleteAccount: boolean;
 };
 
 export type TeamRankingQueryVariables = Exact<{ [key: string]: never }>;
@@ -1374,9 +1401,6 @@ export const SignUpDocument = gql`
         avatarUrl
         email
         createdAt
-        updatedAt
-        deletedAt
-        externalId
         team {
           id
           name
@@ -1386,8 +1410,7 @@ export const SignUpDocument = gql`
           creator {
             id
             displayName
-            email
-            externalId
+            nickname
           }
         }
       }
@@ -1448,9 +1471,6 @@ export const SignInDocument = gql`
         nickname
         avatarUrl
         createdAt
-        updatedAt
-        deletedAt
-        externalId
         email
         team {
           id
@@ -1461,8 +1481,7 @@ export const SignInDocument = gql`
           creator {
             id
             displayName
-            externalId
-            email
+            nickname
           }
         }
       }
@@ -1574,14 +1593,9 @@ export const CreateTeamDocument = gql`
       creator {
         id
         displayName
-        email
-        createdAt
-        updatedAt
-        deletedAt
-        externalId
+        nickname
       }
       createdAt
-      updatedAt
       sport
     }
   }
@@ -1641,14 +1655,9 @@ export const JoinTeamDocument = gql`
       creator {
         id
         displayName
-        email
-        createdAt
-        updatedAt
-        deletedAt
-        externalId
+        nickname
       }
       createdAt
-      updatedAt
     }
   }
 `;
@@ -1700,21 +1709,25 @@ export const CreateMatchDocument = gql`
       date
       type
       creator {
+        id
         displayName
-        email
+        nickname
+        avatarUrl
       }
       team {
+        id
         name
         code
       }
       createdAt
-      updatedAt
-      deletedAt
       players {
+        id
         displayName
-        email
+        nickname
+        avatarUrl
       }
       votingSession {
+        id
         status
         timeRemaining
         voteResult {
@@ -1793,8 +1806,7 @@ export const MeDocument = gql`
         creator {
           id
           displayName
-          externalId
-          email
+          nickname
         }
       }
     }
@@ -1963,22 +1975,17 @@ export const GetTeamMembersDocument = gql`
       displayName
       nickname
       avatarUrl
-      email
-      createdAt
-      updatedAt
-      deletedAt
-      externalId
       team {
+        id
         name
         code
         sport
         crestUrl
         creator {
+          id
           displayName
-          email
+          nickname
         }
-        createdAt
-        updatedAt
       }
     }
   }
@@ -2075,7 +2082,7 @@ export type GetTeamMembersQueryResult = Apollo.QueryResult<
   GetTeamMembersQueryVariables
 >;
 export const TeamHistoryDocument = gql`
-  query TeamHistory {
+  query TeamHistory($limit: Int, $offset: Int) {
     me {
       id
       team {
@@ -2083,7 +2090,7 @@ export const TeamHistoryDocument = gql`
         name
         code
         sport
-        matches {
+        matches(limit: $limit, offset: $offset) {
           id
           name
           date
@@ -2131,6 +2138,8 @@ export const TeamHistoryDocument = gql`
  * @example
  * const { data, loading, error } = useTeamHistoryQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */
@@ -2205,12 +2214,12 @@ export type TeamHistoryQueryResult = Apollo.QueryResult<
   TeamHistoryQueryVariables
 >;
 export const TeamVoteStateDocument = gql`
-  query TeamVoteState {
+  query TeamVoteState($limit: Int = 10) {
     me {
       id
       team {
         id
-        matches {
+        matches(limit: $limit) {
           id
           name
           date
@@ -2243,6 +2252,7 @@ export const TeamVoteStateDocument = gql`
  * @example
  * const { data, loading, error } = useTeamVoteStateQuery({
  *   variables: {
+ *      limit: // value for 'limit'
  *   },
  * });
  */
@@ -2586,6 +2596,53 @@ export type ConfirmTeamCrestUploadMutationResult =
 export type ConfirmTeamCrestUploadMutationOptions = Apollo.BaseMutationOptions<
   ConfirmTeamCrestUploadMutation,
   ConfirmTeamCrestUploadMutationVariables
+>;
+export const DeleteAccountDocument = gql`
+  mutation DeleteAccount {
+    deleteAccount
+  }
+`;
+export type DeleteAccountMutationFn = Apollo.MutationFunction<
+  DeleteAccountMutation,
+  DeleteAccountMutationVariables
+>;
+
+/**
+ * __useDeleteAccountMutation__
+ *
+ * To run a mutation, you first call `useDeleteAccountMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteAccountMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteAccountMutation, { data, loading, error }] = useDeleteAccountMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDeleteAccountMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteAccountMutation,
+    DeleteAccountMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteAccountMutation,
+    DeleteAccountMutationVariables
+  >(DeleteAccountDocument, options);
+}
+export type DeleteAccountMutationHookResult = ReturnType<
+  typeof useDeleteAccountMutation
+>;
+export type DeleteAccountMutationResult =
+  Apollo.MutationResult<DeleteAccountMutation>;
+export type DeleteAccountMutationOptions = Apollo.BaseMutationOptions<
+  DeleteAccountMutation,
+  DeleteAccountMutationVariables
 >;
 export const TeamRankingDocument = gql`
   query TeamRanking {

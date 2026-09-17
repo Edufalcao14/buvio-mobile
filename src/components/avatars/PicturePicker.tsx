@@ -64,11 +64,7 @@ export const PicturePicker: React.FC<PicturePickerProps> = ({
         {isBusy ? (
           <ActivityIndicator color={theme.colors.primary.light} />
         ) : (
-          <Feather
-            name="image"
-            size={18}
-            color={theme.colors.text.secondary}
-          />
+          <Feather name="image" size={18} color={theme.colors.text.secondary} />
         )}
       </Pressable>
 

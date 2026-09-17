@@ -24,14 +24,14 @@ const fr: Messages = {
   AUTH_REFRESH_TOKEN_MISSING:
     "Votre session a expiré. Veuillez vous reconnecter.",
   AUTH_ADMIN_REQUIRED: "Cette action est réservée aux administrateurs.",
-  AUTH_ALREADY_IMPERSONATING: "Une session d'emprunt d'identité est déjà active.",
+  AUTH_ALREADY_IMPERSONATING:
+    "Une session d'emprunt d'identité est déjà active.",
   AUTH_NOT_IMPERSONATING: "Aucune session d'emprunt d'identité en cours.",
   AUTH_RATE_LIMITED:
     "Trop de tentatives. Veuillez patienter un instant avant de réessayer.",
 
   USER_NOT_FOUND: "Utilisateur introuvable.",
-  USER_EMAIL_ALREADY_EXISTS:
-    "Un compte existe déjà avec cette adresse e-mail.",
+  USER_EMAIL_ALREADY_EXISTS: "Un compte existe déjà avec cette adresse e-mail.",
   USER_ALREADY_IN_TEAM: "Vous faites déjà partie d'une équipe.",
   USER_NOT_IN_TEAM:
     "Vous devez d'abord créer ou rejoindre une équipe pour continuer.",
@@ -73,10 +73,8 @@ const en: Messages = {
   AUTH_TOKEN_INVALID: "Your session is no longer valid. Please sign in again.",
   AUTH_TOKEN_EXPIRED: "Your session has expired. Please sign in again.",
   AUTH_TOKEN_REVOKED: "Your session was revoked. Please sign in again.",
-  AUTH_REFRESH_TOKEN_INVALID:
-    "Your session has expired. Please sign in again.",
-  AUTH_REFRESH_TOKEN_MISSING:
-    "Your session has expired. Please sign in again.",
+  AUTH_REFRESH_TOKEN_INVALID: "Your session has expired. Please sign in again.",
+  AUTH_REFRESH_TOKEN_MISSING: "Your session has expired. Please sign in again.",
   AUTH_ADMIN_REQUIRED: "Only an administrator can do this.",
   AUTH_ALREADY_IMPERSONATING: "An impersonation session is already active.",
   AUTH_NOT_IMPERSONATING: "No impersonation session is active.",
@@ -153,7 +151,7 @@ const validationFieldLabels: Record<Locale, Record<string, string>> = {
 
 export const validationMessage = (
   locale: Locale,
-  field?: string,
+  field?: string
 ): string | null => {
   if (!field) {
     return null;

@@ -92,8 +92,8 @@ describe("RankingScreen", () => {
 
     expect(
       await screen.findByLabelText(
-        "Personne n\u2019a encore de troph\u00e9e. Premier match, premier verdict !",
-      ),
+        "Personne n\u2019a encore de troph\u00e9e. Premier match, premier verdict !"
+      )
     ).toBeTruthy();
     expect(screen.getByText("Aucun top pour l\u2019instant.")).toBeTruthy();
     expect(screen.getByText("Aucun flop pour l\u2019instant.")).toBeTruthy();
@@ -110,7 +110,7 @@ describe("RankingScreen", () => {
     });
 
     expect(
-      await screen.findByText("Impossible de charger le classement."),
+      await screen.findByText("Impossible de charger le classement.")
     ).toBeTruthy();
 
     // The retry affordance is what matters here; the refetch path itself is

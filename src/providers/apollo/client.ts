@@ -10,9 +10,13 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { getEnvironmentBaseURL } from "@/utils/environment";
 import { createErrorLink } from "./error";
 import { createWsLink } from "./wsLink";
-import { loadAuthState } from "./authState";
+import { loadAuthState } from "@/utils/auth/secureStore";
 
-export { loadAuthState };
+/**
+ * The normalised cache, created once and exported so it can be persisted
+ * to disk (see ApolloProvider) and cleared on sign-out.
+ */
+export const apolloCache = new InMemoryCache();
 
 /**
  * Create and return Apollo client with auth handling
@@ -22,7 +26,7 @@ export function createAuthenticatedApolloClient() {
   const httpLink = new HttpLink({
     uri: getEnvironmentBaseURL() + "/graphql",
   });
-  
+
   const authMiddleware = new ApolloLink((operation, forward) => {
     return new Observable((observer) => {
       loadAuthState()
@@ -56,12 +60,12 @@ export function createAuthenticatedApolloClient() {
       );
     },
     createWsLink(),
-    ApolloLink.from([authMiddleware, httpLink]),
+    ApolloLink.from([authMiddleware, httpLink])
   );
 
   const client = new ApolloClient({
     link: ApolloLink.from([createErrorLink(), transportLink]),
-    cache: new InMemoryCache(),
+    cache: apolloCache,
     defaultOptions: {
       watchQuery: {
         fetchPolicy: "cache-and-network",
@@ -81,7 +85,27 @@ export function createAuthenticatedApolloClient() {
   return client;
 }
 
-// Export default instance for backward compatibility
 export const apolloClient = createAuthenticatedApolloClient();
+
+/**
+ * Drops everything the signed-in session left behind.
+ *
+ * Removing the stored token is not signing out: the normalised cache still
+ * holds the previous user's profile, their squad's email addresses and every
+ * ballot, and the subscription socket is still open and authenticated. On a
+ * shared phone that is the next person's to read, so logout has to clear both.
+ *
+ * `clearStore` rather than `resetStore`, because resetting refetches the
+ * active queries - as the user we just signed out.
+ */
+export const clearApolloSession = async (): Promise<void> => {
+  try {
+    await apolloClient.clearStore();
+  } finally {
+    // Ends the socket and its retry loop; a later sign-in opens a new one,
+    // which re-reads connectionParams and so authenticates as the new user.
+    apolloClient.stop();
+  }
+};
 
 export default apolloClient;

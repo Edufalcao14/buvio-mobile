@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # The audit found 66 advisory paths that nobody knew about, because nothing
+  # was watching. Weekly, grouped, so it is one reviewable PR rather than noise.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      expo:
+        patterns: ["expo", "expo-*", "@expo/*", "react-native", "react-native-*"]
+      dev-tooling:
+        dependency-type: development
+    labels: ["dependencies"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    labels: ["dependencies"]
