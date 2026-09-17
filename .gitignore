@@ -76,3 +76,6 @@ credentials.json
 audit-report/
 *.pdf
 *.docx
+
+# Architecture decision records stay local
+docs/adr/
