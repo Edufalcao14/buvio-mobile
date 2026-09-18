@@ -8,7 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "generate": "graphql-codegen --config codegen.ts",
+    "generate": "graphql-codegen --config codegen.ts && prettier --write src/graphql/generated",
     "lint": "expo lint",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" \"*.{ts,js,json,md}\"",
     "typecheck": "tsc --noEmit",
