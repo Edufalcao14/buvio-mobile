@@ -1,10 +1,6 @@
 import { ErrorCode, isErrorCode } from "./errorCodes";
-import {
-  DEFAULT_LOCALE,
-  Locale,
-  MESSAGES,
-  validationMessage,
-} from "./messages";
+import { Locale, MESSAGES, validationMessage } from "./messages";
+import { currentLocale } from "@/i18n";
 
 type GraphQLErrorLike = {
   message?: string;
@@ -60,14 +56,12 @@ export const parseError = (error: unknown): ParsedError => {
 };
 
 /**
- * The message to show the user for a failed request.
- *
- * Pass the locale from wherever the app tracks language; it defaults to French,
- * which is what the product ships with today.
+ * The message to show the user for a failed request, in the app's current
+ * locale (English by default, French when the device asks for it).
  */
 export const getErrorMessage = (
   error: unknown,
-  locale: Locale = DEFAULT_LOCALE
+  locale: Locale = currentLocale()
 ): string => {
   const { code, field } = parseError(error);
 

@@ -8,6 +8,7 @@ import {
   useCreateTeamCrestUploadUrlMutation,
 } from "@/graphql/generated/hooks";
 import { getErrorMessage } from "@/lib/errors";
+import { t } from "@/i18n";
 
 /**
  * Picking, shrinking and uploading one picture — an avatar or a team crest.
@@ -50,14 +51,10 @@ export type ImageUploadResult =
   | { status: "cancelled" }
   | { status: "failed"; message: string };
 
-const PERMISSION_DENIED =
-  "Buvio n’a pas accès à tes photos. Autorise l’accès dans les réglages du téléphone.";
-const PREPARE_FAILED =
-  "Cette image n’a pas pu être préparée. Choisis-en une autre.";
-const TRANSFER_FAILED =
-  "L’envoi de la photo a échoué. Vérifie ta connexion et réessaie.";
-const TOO_LARGE =
-  "Cette image reste trop lourde même réduite. Choisis-en une autre.";
+const PERMISSION_DENIED = t("upload.permissionDenied");
+const PREPARE_FAILED = t("upload.prepareFailed");
+const TRANSFER_FAILED = t("upload.transferFailed");
+const TOO_LARGE = t("upload.tooLarge");
 
 /**
  * A failure this module already phrased for the player. Anything else is a

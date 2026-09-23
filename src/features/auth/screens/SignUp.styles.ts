@@ -1,23 +1,17 @@
 import { StyleSheet } from "react-native";
 import { Theme } from "@/theme";
+import { EdgeInsets } from "react-native-safe-area-context";
 
-export const createStyles = (theme: Theme) =>
+// One flat canvas: wordmark, one headline, one form, one gold action. The
+// mascot no longer opens the app — the data does (DESIGN.md).
+export const createStyles = (theme: Theme, insets: EdgeInsets) =>
   StyleSheet.create({
-    // The vestiaire stage: green owns the screen; the form is the white
-    // team sheet sliding up under the mascot (see DESIGN.md).
     screen: {
       flex: 1,
-      backgroundColor: theme.colors.primary.main,
+      backgroundColor: theme.colors.background.default,
     },
     keyboard: {
       flex: 1,
-    },
-    sheet: {
-      flex: 1,
-      backgroundColor: theme.colors.background.default,
-      borderTopLeftRadius: 32,
-      borderTopRightRadius: 32,
-      overflow: "hidden",
     },
     container: {
       flex: 1,
@@ -25,43 +19,54 @@ export const createStyles = (theme: Theme) =>
     scrollContent: {
       flexGrow: 1,
       paddingHorizontal: theme.spacing.lg,
-      paddingTop: theme.spacing.xl,
-      paddingBottom: theme.spacing.xl,
+      paddingTop: insets.top + theme.spacing.lg,
+      paddingBottom: Math.max(theme.spacing.xl, insets.bottom),
+    },
+    wordmark: {
+      fontFamily: theme.typography.fontFamily.display,
+      fontSize: theme.typography.fontSize.md,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.secondary.main,
     },
     sheetTitle: {
       fontFamily: theme.typography.fontFamily.display,
-      fontSize: theme.typography.fontSize.xxl,
+      fontSize: theme.typography.fontSize.xxxl,
+      lineHeight:
+        theme.typography.fontSize.xxxl * theme.typography.lineHeight.tight,
+      letterSpacing: theme.typography.letterSpacing.tight,
       color: theme.colors.text.primary,
+      marginTop: theme.spacing.xl,
     },
     subtitle: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.md,
       lineHeight:
         theme.typography.fontSize.md * theme.typography.lineHeight.normal,
       color: theme.colors.text.secondary,
-      marginTop: theme.spacing.tiny,
-      // Clear the goat's overhang into the sheet.
-      paddingRight: 96,
+      marginTop: theme.spacing.xs,
     },
     formContainer: {
       gap: theme.spacing.md,
-      paddingTop: theme.spacing.lg,
+      paddingTop: theme.spacing.xl,
     },
     inputContainer: {
       gap: theme.spacing.md,
-      paddingTop: theme.spacing.md,
+      paddingTop: theme.spacing.sm,
     },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.error.main,
       fontSize: theme.typography.fontSize.sm,
     },
     textLink: {
       alignSelf: "center",
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.text.secondary,
       fontSize: theme.typography.fontSize.sm,
     },
     link: {
-      textDecorationLine: "underline",
-      fontWeight: "600",
-      color: theme.colors.primary.light,
+      fontFamily: theme.typography.fontFamily.semiBold,
+      color: theme.colors.text.primary,
     },
   });

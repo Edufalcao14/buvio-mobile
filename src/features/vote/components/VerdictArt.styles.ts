@@ -13,17 +13,18 @@ export const createStyles = (theme: Theme, size: number, isTop: boolean) =>
       width: size,
       height: size,
     },
-    // Last resort: the honors medallion from DESIGN.md — gold disc for the
-    // Top, neutral disc for the Flop (the roast never gets its own colour).
+    // Last resort: the honours medallion — gold disc for the Top, neutral
+    // disc for the Flop (the roast never gets its own colour).
     medallion: {
       width: size * 0.72,
       height: size * 0.72,
       borderRadius: theme.borderRadius.round,
       backgroundColor: isTop
         ? theme.colors.secondary.main
-        : theme.colors.grey[100],
+        : theme.colors.grey[200],
+      borderWidth: isTop ? 0 : 1,
+      borderColor: theme.colors.grey[300],
       alignItems: "center",
       justifyContent: "center",
-      ...theme.shadows.card,
     },
   });

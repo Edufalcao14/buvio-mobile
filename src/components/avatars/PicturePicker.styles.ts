@@ -6,18 +6,17 @@ export const createStyles = (theme: Theme) =>
     field: {
       gap: theme.spacing.xs,
     },
-    // A row, not a card: the picker is a secondary move next to the one gold
-    // action the screen already carries (see DESIGN.md).
+    // A row on paper, like every other input.
     row: {
       flexDirection: "row",
       alignItems: "center",
       gap: theme.spacing.md,
       minHeight: 52,
       paddingVertical: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.input,
-      borderRadius: theme.borderRadius.xl,
-      borderWidth: 1.5,
-      borderColor: theme.colors.grey.border,
+      paddingHorizontal: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+      borderColor: theme.colors.grey[300],
       backgroundColor: theme.colors.background.paper,
     },
     rowPressed: {
@@ -32,17 +31,21 @@ export const createStyles = (theme: Theme) =>
       gap: 2,
     },
     label: {
-      fontSize: theme.typography.fontSize.sm,
-      color: theme.colors.text.primary,
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.text.secondary,
     },
     action: {
+      fontFamily: theme.typography.fontFamily.semiBold,
       fontSize: theme.typography.fontSize.sm,
       color: theme.colors.primary.light,
-      textDecorationLine: "underline",
     },
     hint: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.xs,
-      color: theme.colors.text.secondary,
+      color: theme.colors.text.hint,
     },
     remove: {
       minHeight: 44,
@@ -50,11 +53,12 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.xs,
     },
     removeText: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.sm,
       color: theme.colors.text.secondary,
-      textDecorationLine: "underline",
     },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.error.main,
       fontSize: theme.typography.fontSize.sm,
     },

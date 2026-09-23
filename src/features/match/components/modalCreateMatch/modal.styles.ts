@@ -4,182 +4,107 @@ import { EdgeInsets } from "react-native-safe-area-context";
 
 export const createStyles = (theme: Theme, insets: EdgeInsets) =>
   StyleSheet.create({
-    safeArea: {
-      flex: 1,
-      backgroundColor: theme.colors.overlay,
-    },
-    modalOverlay: {
-      flex: 1,
-      backgroundColor: theme.colors.overlay,
-      justifyContent: "center",
-      alignItems: "center",
-    },
+    safeArea: { flex: 1, backgroundColor: theme.colors.overlay },
+    keyboardAvoidingView: { flex: 1 },
+    modalOverlay: { flex: 1, backgroundColor: theme.colors.overlay },
     modalContainer: {
+      flex: 1,
       backgroundColor: theme.colors.background.default,
-      width: "100%",
-      height: "100%",
-      overflow: "hidden",
-      ...theme.shadows.raised,
-    },
-    tabletModal: {
-      width: "80%",
-      height: "80%",
-      maxWidth: 500,
-      borderRadius: theme.borderRadius.xl,
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      backgroundColor: theme.colors.primary.main,
-      paddingTop: Math.max(theme.spacing.md, insets.top),
-      paddingBottom: theme.spacing.md,
-      paddingHorizontal: theme.spacing.lg,
-      borderBottomWidth: 3,
-      borderBottomColor: theme.colors.secondary.main,
+      paddingTop: Math.max(theme.spacing.sm, insets.top),
+      paddingBottom: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
     },
     headerTitle: {
-      color: theme.colors.primary.contrastText,
-      fontFamily: theme.typography.fontFamily.display,
-      fontSize: theme.typography.fontSize.xl,
-      letterSpacing: theme.typography.letterSpacing.wide,
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.text.secondary,
     },
-    headerSpacer: {
-      width: 24,
+    closeButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: theme.colors.grey[200],
+      alignItems: "center",
+      justifyContent: "center",
     },
-    formContainer: {
-      flex: 1,
-      paddingHorizontal: theme.spacing.lg,
-      paddingTop: theme.spacing.lg,
-    },
+    formContainer: { flex: 1, paddingHorizontal: theme.spacing.md },
     scrollContent: {
+      paddingTop: theme.spacing.xs,
       paddingBottom: Math.max(theme.spacing.lg, insets.bottom),
-      gap: theme.spacing.lg,
+      gap: theme.spacing.xl,
     },
     formTitle: {
       fontFamily: theme.typography.fontFamily.display,
-      fontSize: theme.typography.fontSize.xxl,
+      fontSize: theme.typography.fontSize.xxxl,
+      lineHeight:
+        theme.typography.fontSize.xxxl * theme.typography.lineHeight.tight,
+      letterSpacing: theme.typography.letterSpacing.tight,
       color: theme.colors.text.primary,
     },
-    formSubtitle: {
-      fontSize: theme.typography.fontSize.md,
-      lineHeight:
-        theme.typography.fontSize.md * theme.typography.lineHeight.normal,
+    sectionGroup: { gap: theme.spacing.sm },
+    inputLabel: {
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
       color: theme.colors.text.secondary,
     },
-    sectionGroup: {
-      gap: theme.spacing.xs,
-    },
-    inputLabel: {
-      fontSize: theme.typography.fontSize.md,
-      fontWeight: "600",
+    // The headline field: display type on a hairline, no box.
+    nameInput: {
+      fontFamily: theme.typography.fontFamily.display,
+      fontSize: theme.typography.fontSize.xxl,
+      letterSpacing: theme.typography.letterSpacing.tight,
       color: theme.colors.text.primary,
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: 0,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.grey[300],
     },
-    input: {
-      minHeight: 48,
-      borderWidth: 1,
-      borderColor: theme.colors.grey.border,
-      borderRadius: theme.borderRadius.md,
-      paddingHorizontal: theme.spacing.input,
-      fontSize: theme.typography.fontSize.md,
-      color: theme.colors.text.primary,
-      backgroundColor: theme.colors.background.paper,
-    },
-    inputError: {
-      borderColor: theme.colors.error.main,
-    },
+    nameInputError: { borderBottomColor: theme.colors.error.main },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.error.main,
       fontSize: theme.typography.fontSize.sm,
-      marginTop: theme.spacing.tiny,
     },
-    buttonGroup: {
-      flexDirection: "row",
-      gap: theme.spacing.xs,
-    },
-    typeButton: {
-      minHeight: 44,
-      borderWidth: 1,
-      borderColor: theme.colors.grey.border,
-      borderRadius: theme.borderRadius.md,
-      paddingVertical: theme.spacing.input,
-      paddingHorizontal: theme.spacing.sm,
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: theme.colors.background.paper,
-    },
-    selectedTypeButton: {
-      backgroundColor: theme.colors.primary.light,
-      borderColor: theme.colors.primary.light,
-    },
-    typeButtonText: {
-      fontSize: theme.typography.fontSize.sm,
-      fontWeight: "600",
-      color: theme.colors.text.secondary,
-    },
-    selectedTypeText: {
-      color: theme.colors.primary.contrastText,
-      fontWeight: "700",
-    },
-    playersSection: {
-      gap: theme.spacing.xs,
-    },
+    segmented: { height: 40 },
     playersSectionHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
     },
-    playersTitle: {
-      fontSize: theme.typography.fontSize.md,
-      fontWeight: "700",
+    playersCount: {
+      fontFamily: theme.typography.fontFamily.numeric,
+      fontSize: theme.typography.fontSize.sm,
       color: theme.colors.text.primary,
     },
-    playersCount: {
-      fontSize: theme.typography.fontSize.sm,
-      fontWeight: "600",
-      color: theme.colors.primary.light,
+    roster: {
+      gap: theme.spacing.sm,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.lg,
+      borderWidth: 1,
+      borderColor: theme.colors.grey.border,
+      backgroundColor: theme.colors.background.paper,
     },
     playersSubtitle: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.sm,
       lineHeight:
         theme.typography.fontSize.sm * theme.typography.lineHeight.normal,
-      color: theme.colors.text.secondary,
-    },
-    playerList: {
-      borderWidth: 1,
-      borderColor: theme.colors.grey.border,
-      borderRadius: theme.borderRadius.lg,
-      backgroundColor: theme.colors.background.paper,
-      paddingHorizontal: theme.spacing.md,
-      marginTop: theme.spacing.xs,
-    },
-    playerItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingVertical: theme.spacing.sm,
-      gap: theme.spacing.md,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.grey[100],
-    },
-    lastPlayerItem: {
-      borderBottomWidth: 0,
-    },
-    // The roster wears the shared `PlayerAvatar`, so the monogram that used to
-    // live here is gone with its styles.
-    playerName: {
-      fontSize: theme.typography.fontSize.md,
-      color: theme.colors.text.primary,
+      color: theme.colors.text.hint,
     },
     buttonContainer: {
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-      backgroundColor: theme.colors.background.default,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.grey.border,
+      paddingHorizontal: theme.spacing.md,
+      paddingTop: theme.spacing.sm,
       paddingBottom: Math.max(theme.spacing.md, insets.bottom),
-    },
-    keyboardAvoidingView: {
-      flex: 1,
+      backgroundColor: theme.colors.background.default,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: theme.colors.grey.border,
     },
   });

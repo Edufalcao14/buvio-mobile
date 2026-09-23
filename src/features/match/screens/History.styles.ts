@@ -8,7 +8,8 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.background.default,
     },
     listContent: {
-      padding: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
+      paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.xxl,
     },
     footerSpinner: {
@@ -22,17 +23,17 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.lg,
       backgroundColor: theme.colors.background.default,
     },
-    // The season at a glance: how much was played, how much was judged.
+    banner: { marginBottom: theme.spacing.md },
+    // Scoreboard tiles: big condensed number, small caps label.
     summary: {
       flexDirection: "row",
-      alignItems: "center",
+      alignItems: "stretch",
       backgroundColor: theme.colors.background.paper,
-      borderRadius: theme.borderRadius.bubble,
+      borderRadius: theme.borderRadius.lg,
       borderWidth: 1,
       borderColor: theme.colors.grey.border,
       paddingVertical: theme.spacing.md,
       marginBottom: theme.spacing.lg,
-      ...theme.shadows.card,
     },
     summaryItem: {
       flex: 1,
@@ -40,57 +41,86 @@ export const createStyles = (theme: Theme) =>
       gap: 2,
     },
     summaryValue: {
-      fontFamily: theme.typography.fontFamily.display,
-      fontSize: theme.typography.fontSize.xxl,
+      fontFamily: theme.typography.fontFamily.numeric,
+      fontSize: theme.typography.fontSize.xxxl,
+      lineHeight: theme.typography.fontSize.xxxl,
       color: theme.colors.text.primary,
     },
     summaryLabel: {
-      fontSize: theme.typography.fontSize.sm,
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
       color: theme.colors.text.secondary,
     },
     summaryLiveValue: {
-      color: theme.colors.error.main,
+      color: theme.colors.primary.light,
+    },
+    // The hot-streak strip under the scoreboard.
+    streak: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.xs,
+      marginTop: -theme.spacing.sm,
+      marginBottom: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.xs,
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+      borderColor: theme.colors.grey.border,
+      backgroundColor: theme.colors.grey[100],
+    },
+    streakText: {
+      fontFamily: theme.typography.fontFamily.regular,
+      fontSize: theme.typography.fontSize.sm,
+      color: theme.colors.text.secondary,
+    },
+    streakName: {
+      fontFamily: theme.typography.fontFamily.displayBold,
+      color: theme.colors.text.primary,
     },
     summaryDivider: {
-      width: 1,
+      width: StyleSheet.hairlineWidth,
       alignSelf: "stretch",
-      backgroundColor: theme.colors.grey[100],
+      backgroundColor: theme.colors.grey[300],
     },
     // Sticky, so it must paint the ground it floats over.
     sectionHeader: {
       flexDirection: "row",
       alignItems: "center",
-      gap: theme.spacing.xs,
+      gap: theme.spacing.sm,
       backgroundColor: theme.colors.background.default,
       paddingBottom: theme.spacing.xs,
-      paddingTop: theme.spacing.tiny,
+      paddingTop: theme.spacing.xs,
     },
     sectionTitle: {
-      fontFamily: theme.typography.fontFamily.displayBold,
-      fontSize: theme.typography.fontSize.md,
-      color: theme.colors.text.primary,
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.text.secondary,
     },
-    // A hairline pushes the count to the edge and gives the month a baseline.
     sectionRule: {
       flex: 1,
-      height: 1,
+      height: StyleSheet.hairlineWidth,
       backgroundColor: theme.colors.grey.border,
     },
     sectionCount: {
-      fontFamily: theme.typography.fontFamily.displaySemiBold,
-      fontSize: theme.typography.fontSize.xs,
-      color: theme.colors.text.secondary,
+      fontFamily: theme.typography.fontFamily.numeric,
+      fontSize: theme.typography.fontSize.sm,
+      color: theme.colors.text.hint,
     },
     sectionSpacer: {
       height: theme.spacing.md,
     },
     itemSpacer: {
-      height: theme.spacing.sm,
+      height: theme.spacing.xs,
     },
     empty: {
       paddingTop: theme.spacing.xl,
     },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.md,
       color: theme.colors.text.secondary,
       textAlign: "center",

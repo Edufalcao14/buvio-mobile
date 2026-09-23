@@ -185,12 +185,10 @@ describe("voting session cache identity", () => {
 
 describe("closureLabel", () => {
   it("says why the vote closed, in words", () => {
-    expect(closureLabel(VoteClosureReason.Unanimous)).toBe(
-      "Tout le monde a voté !"
-    );
-    expect(closureLabel(VoteClosureReason.Deadline)).toBe("Temps écoulé");
+    expect(closureLabel(VoteClosureReason.Unanimous)).toBe("Everyone voted!");
+    expect(closureLabel(VoteClosureReason.Deadline)).toBe("Time's up");
     expect(closureLabel(VoteClosureReason.Admin)).toBe(
-      "Clos par l’organisateur"
+      "Closed by the organiser"
     );
     expect(closureLabel(null)).toBeNull();
   });

@@ -18,29 +18,33 @@ export const createStyles = (theme: Theme, insets: EdgeInsets) =>
       paddingBottom: Math.max(theme.spacing.lg, insets.bottom),
     },
     textContainer: {
-      flexDirection: "column",
-      gap: theme.spacing.md,
-      paddingTop: insets.top > 0 ? 0 : theme.spacing.md,
+      gap: theme.spacing.xs,
     },
-    cardContainer: {
-      width: "100%",
-      gap: theme.spacing.lg,
-      alignItems: "center",
-      marginTop: theme.spacing.xl,
-      marginBottom: theme.spacing.lg,
+    eyebrow: {
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.secondary.main,
     },
     title: {
       fontFamily: theme.typography.fontFamily.display,
-      fontSize: theme.typography.fontSize.xxl,
-      textAlign: "center",
+      fontSize: theme.typography.fontSize.xxxl,
+      lineHeight:
+        theme.typography.fontSize.xxxl * theme.typography.lineHeight.tight,
+      letterSpacing: theme.typography.letterSpacing.tight,
       color: theme.colors.text.primary,
     },
     descriptionHeader: {
-      textAlign: "center",
-      marginHorizontal: theme.spacing.lg,
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.md,
       lineHeight:
         theme.typography.fontSize.md * theme.typography.lineHeight.normal,
       color: theme.colors.text.secondary,
+    },
+    cardContainer: {
+      width: "100%",
+      gap: theme.spacing.sm,
+      marginTop: theme.spacing.xl,
     },
   });

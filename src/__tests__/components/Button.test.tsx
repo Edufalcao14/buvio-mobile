@@ -12,27 +12,27 @@ describe("Button", () => {
 
   it("calls onPress when tapped", () => {
     const onPress = jest.fn();
-    render(<Button text="Réessayer" onPress={onPress} />);
+    render(<Button text="Try again" onPress={onPress} />);
 
-    fireEvent.press(screen.getByRole("button", { name: "Réessayer" }));
+    fireEvent.press(screen.getByRole("button", { name: "Try again" }));
 
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it("swaps the label for a spinner and stops responding while loading", () => {
     const onPress = jest.fn();
-    render(<Button text="Créer l'équipe" onPress={onPress} isLoading />);
+    render(<Button text="Create the team" onPress={onPress} isLoading />);
 
-    expect(screen.queryByText("Créer l'équipe")).toBeNull();
-    fireEvent.press(screen.getByRole("button", { name: "Créer l'équipe" }));
+    expect(screen.queryByText("Create the team")).toBeNull();
+    fireEvent.press(screen.getByRole("button", { name: "Create the team" }));
     expect(onPress).not.toHaveBeenCalled();
   });
 
   it("does not fire when disabled", () => {
     const onPress = jest.fn();
-    render(<Button text="Rejoindre l’équipe" onPress={onPress} disabled />);
+    render(<Button text="Join the team" onPress={onPress} disabled />);
 
-    const button = screen.getByRole("button", { name: "Rejoindre l’équipe" });
+    const button = screen.getByRole("button", { name: "Join the team" });
     fireEvent.press(button);
 
     expect(onPress).not.toHaveBeenCalled();

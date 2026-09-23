@@ -10,6 +10,7 @@ import Animated, {
 import { useTheme } from "@/providers/ThemeProvider";
 import { PlayerAvatar } from "@/components/avatars/PlayerAvatar";
 import { createStyles } from "./TallyRow.styles";
+import { t } from "@/i18n";
 
 interface MeterProps {
   label: string;
@@ -103,8 +104,13 @@ export const TallyRow: React.FC<TallyRowProps> = ({
         </Text>
       </View>
       <View style={styles.meters}>
-        <Meter label="Top" count={topCount} max={max} tone="top" />
-        <Meter label="Flop" count={flopCount} max={max} tone="flop" />
+        <Meter label={t("common.top")} count={topCount} max={max} tone="top" />
+        <Meter
+          label={t("common.flop")}
+          count={flopCount}
+          max={max}
+          tone="flop"
+        />
       </View>
     </View>
   );

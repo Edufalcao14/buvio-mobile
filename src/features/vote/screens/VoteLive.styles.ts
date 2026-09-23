@@ -3,90 +3,79 @@ import { Theme } from "@/theme";
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      flex: 1,
-    },
+    container: { flex: 1 },
     scroll: {
-      padding: theme.spacing.lg,
+      padding: theme.spacing.md,
       paddingBottom: theme.spacing.xxl,
       gap: theme.spacing.md,
     },
-    title: {
-      fontFamily: theme.typography.fontFamily.display,
-      fontSize: theme.typography.fontSize.xxl,
-      lineHeight:
-        theme.typography.fontSize.xxl * theme.typography.lineHeight.tight,
-      color: theme.colors.text.primary,
+    hero: {
+      alignItems: "center",
+      paddingVertical: theme.spacing.lg,
+      gap: theme.spacing.xs,
+      overflow: "hidden",
     },
-    countdown: {
-      alignSelf: "flex-start",
+    liveRow: {
       flexDirection: "row",
       alignItems: "center",
       gap: theme.spacing.xs,
-      paddingVertical: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.borderRadius.round,
-      backgroundColor: theme.colors.primary.main,
     },
-    countdownText: {
-      fontFamily: theme.typography.fontFamily.displayBold,
-      fontSize: theme.typography.fontSize.md,
-      color: theme.colors.primary.contrastText,
+    liveLabel: {
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.primary.light,
+    },
+    // The clock: the biggest number in the app.
+    clock: {
+      fontFamily: theme.typography.fontFamily.numeric,
+      fontSize: 72,
+      lineHeight: 76,
+      letterSpacing: -1,
+      color: theme.colors.text.primary,
       fontVariant: ["tabular-nums"],
     },
-    sectionTitle: {
-      marginTop: theme.spacing.sm,
-      fontFamily: theme.typography.fontFamily.displayBold,
+    ballotsCard: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: theme.spacing.md,
+      padding: theme.spacing.md,
+      borderRadius: theme.borderRadius.lg,
+      borderWidth: 1,
+      borderColor: theme.colors.grey.border,
+      backgroundColor: theme.colors.background.paper,
+    },
+    ballotsText: { flex: 1, gap: theme.spacing.xs },
+    ringValue: {
+      fontFamily: theme.typography.fontFamily.numeric,
+      fontSize: theme.typography.fontSize.xl,
+      color: theme.colors.text.primary,
+    },
+    ballotCount: {
+      fontFamily: theme.typography.fontFamily.display,
       fontSize: theme.typography.fontSize.lg,
       color: theme.colors.text.primary,
     },
+    sectionTitle: {
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.text.secondary,
+    },
     caption: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.sm,
       lineHeight:
         theme.typography.fontSize.sm * theme.typography.lineHeight.normal,
       color: theme.colors.text.secondary,
     },
-    voters: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      gap: theme.spacing.xs,
-    },
-    voterChip: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: theme.spacing.tiny,
-      paddingVertical: theme.spacing.tiny,
-      paddingHorizontal: theme.spacing.sm,
-      minHeight: 36,
-      borderRadius: theme.borderRadius.round,
-      borderWidth: 1.5,
-      borderColor: theme.colors.grey.border,
-      backgroundColor: theme.colors.background.paper,
-    },
-    voterChipDone: {
-      borderColor: theme.colors.primary.light,
-    },
-    voterName: {
-      fontSize: theme.typography.fontSize.sm,
-      color: theme.colors.text.primary,
-    },
-    voterNamePending: {
-      color: theme.colors.text.secondary,
-    },
-    rows: {
-      gap: theme.spacing.sm,
-    },
-    emptyText: {
-      fontSize: theme.typography.fontSize.md,
-      lineHeight:
-        theme.typography.fontSize.md * theme.typography.lineHeight.normal,
-      color: theme.colors.text.secondary,
-    },
+    rows: { gap: theme.spacing.xs },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.sm,
       color: theme.colors.error.main,
     },
-    adminAction: {
-      marginTop: theme.spacing.md,
-    },
+    adminAction: { marginTop: theme.spacing.md },
   });

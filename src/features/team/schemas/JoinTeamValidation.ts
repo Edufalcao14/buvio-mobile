@@ -1,15 +1,14 @@
 import { z } from "zod";
+import { t } from "@/i18n";
 
 export const userInputSchema = z.object({
   code: z
     .string()
     .length(5, {
-      message:
-        "Veuillez entrer un code de 5 caractères qui contient uniquement des lettres et des chiffres.",
+      message: t("validation.codeLength"),
     })
     .regex(/^[a-zA-Z0-9]+$/, {
-      message:
-        "Veuillez vous assurer que le code contient seulement des lettres et des chiffres.",
+      message: t("validation.codeAlnum"),
     })
     .transform((val) => val.toUpperCase()),
 });

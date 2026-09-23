@@ -62,13 +62,23 @@ describe("JoinTeamScreen", () => {
   it("asks for a five character code and keeps the action disabled until then", () => {
     render(<JoinTeamScreen />);
 
-    expect(screen.getByText("Rejoindre une équipe")).toBeTruthy();
+    expect(screen.getByText("Join a team")).toBeTruthy();
     expect(
-      screen.getByText("Le code est composé de 5 caractères alphanumériques")
+      screen.getByText("The code is 5 alphanumeric characters")
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "Rejoindre l’équipe" })
+      screen.getByRole("button", { name: "Join the team" })
     ).toBeDisabled();
+  });
+
+  it("spreads a pasted code across the boxes instead of keeping one letter", async () => {
+    render(<JoinTeamScreen />, { mocks: validationMocks(true) });
+
+    // A paste (or a fast typist) lands the whole code in the first box.
+    fireEvent.changeText(screen.getByTestId("code-input-0"), CODE);
+
+    await waitFor(() => expect(screen.getByText(CODE)).toBeTruthy());
+    expect(screen.getByRole("button", { name: "Join the team" })).toBeEnabled();
   });
 
   it("enables the action once the five boxes are filled", async () => {
@@ -77,7 +87,7 @@ describe("JoinTeamScreen", () => {
     await typeCode();
 
     expect(
-      screen.getByRole("button", { name: "Rejoindre l’équipe" })
+      screen.getByRole("button", { name: "Join the team" })
     ).not.toBeDisabled();
   });
 
@@ -93,15 +103,15 @@ describe("JoinTeamScreen", () => {
     });
 
     await typeCode();
-    fireEvent.press(screen.getByRole("button", { name: "Rejoindre l’équipe" }));
+    fireEvent.press(screen.getByRole("button", { name: "Join the team" }));
 
     await waitFor(() =>
-      expect(router.push).toHaveBeenCalledWith("/(tabs)/team")
+      expect(router.replace).toHaveBeenCalledWith("/(tabs)/team")
     );
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "success",
-        text1: "Vous avez rejoint l'équipe Les Invincibles avec succès.",
+        text1: "You joined the team Les Invincibles.",
       })
     );
   });
@@ -110,16 +120,16 @@ describe("JoinTeamScreen", () => {
     render(<JoinTeamScreen />, { mocks: validationMocks(false) });
 
     await typeCode();
-    fireEvent.press(screen.getByRole("button", { name: "Rejoindre l’équipe" }));
+    fireEvent.press(screen.getByRole("button", { name: "Join the team" }));
 
     await waitFor(() =>
       expect(Toast.show).toHaveBeenCalledWith(
         expect.objectContaining({
           type: "error",
-          text1: `Aucune équipe trouvée avec le code ${CODE}`,
+          text1: `No team found with the code ${CODE}`,
         })
       )
     );
-    expect(router.push).not.toHaveBeenCalled();
+    expect(router.replace).not.toHaveBeenCalled();
   });
 });

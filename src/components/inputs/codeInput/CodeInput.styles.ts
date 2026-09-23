@@ -12,26 +12,25 @@ export const createStyles = (theme: Theme) =>
       gap: theme.spacing.sm,
     },
     characterBox: {
-      width: 48,
-      height: 60,
+      width: 52,
+      height: 64,
       borderWidth: 1,
-      borderColor: theme.colors.grey.border,
+      borderColor: theme.colors.grey[300],
       borderRadius: theme.borderRadius.md,
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: theme.colors.background.paper,
     },
-    // A filled box earns the gold — the code taking shape.
+    // A filled cell earns the gold — the code taking shape.
     filledCharacterBox: {
-      borderWidth: 2,
       borderColor: theme.colors.secondary.main,
     },
     characterInput: {
       width: "100%",
       height: "100%",
       textAlign: "center",
+      fontFamily: theme.typography.fontFamily.numeric,
       fontSize: theme.typography.fontSize.xxl,
-      fontWeight: "700",
       color: theme.colors.text.primary,
     },
     errorContainer: {
@@ -40,6 +39,7 @@ export const createStyles = (theme: Theme) =>
       alignItems: "center",
     },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.error.main,
       fontSize: theme.typography.fontSize.sm,
       textAlign: "center",

@@ -1,40 +1,66 @@
 import { StyleSheet } from "react-native";
 import { Theme } from "@/theme";
 
-export type ButtonVariant = "primary" | "secondary";
+/**
+ * "primary" — Dourado, the one action of the screen.
+ * "secondary" — paper surface with a hairline, supporting actions.
+ * "ghost" — no surface at all, for tertiary moves inside a footer.
+ */
+export type ButtonVariant = "primary" | "secondary" | "ghost";
 
 export const createStyles = (theme: Theme, variant: ButtonVariant) => {
-  const palette =
-    variant === "primary" ? theme.colors.secondary : theme.colors.primary;
+  const surface = {
+    primary: {
+      backgroundColor: theme.colors.secondary.main,
+      borderColor: theme.colors.secondary.main,
+      pressed: theme.colors.secondary.dark,
+      text: theme.colors.secondary.contrastText,
+    },
+    secondary: {
+      backgroundColor: theme.colors.background.paper,
+      borderColor: theme.colors.grey[300],
+      pressed: theme.colors.grey[200],
+      text: theme.colors.text.primary,
+    },
+    ghost: {
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+      pressed: theme.colors.grey[100],
+      text: theme.colors.text.secondary,
+    },
+  }[variant];
 
   return StyleSheet.create({
     button: {
       justifyContent: "center",
       alignItems: "center",
-      minHeight: 54,
-      backgroundColor: palette.main,
+      minHeight: 52,
+      backgroundColor: surface.backgroundColor,
+      borderWidth: 1,
+      borderColor: surface.borderColor,
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.sm,
-      borderRadius: theme.borderRadius.round,
-      ...theme.shadows.card,
+      borderRadius: theme.borderRadius.md,
     },
+    // The scale lives on the Animated.View as a CSS transition; this only
+    // darkens the surface.
     pressed: {
-      backgroundColor: palette.dark,
-      transform: [{ scale: 0.98 }],
+      backgroundColor: surface.pressed,
+      borderColor: surface.pressed,
     },
     disabled: {
-      backgroundColor: theme.colors.grey.disable,
-      shadowOpacity: 0,
-      elevation: 0,
+      backgroundColor: theme.colors.grey[200],
+      borderColor: theme.colors.grey[200],
     },
     buttonText: {
-      color: palette.contrastText,
+      color: surface.text,
       fontFamily: theme.typography.fontFamily.displayBold,
       fontSize: theme.typography.fontSize.lg,
-      letterSpacing: theme.typography.letterSpacing.normal,
+      letterSpacing: theme.typography.letterSpacing.wide,
+      textTransform: "uppercase",
     },
     disabledText: {
-      color: theme.colors.grey[700],
+      color: theme.colors.text.disabled,
     },
   });
 };

@@ -10,6 +10,7 @@ import VoteBallotScreen from "./VoteBallotScreen";
 import VoteLiveScreen from "./VoteLiveScreen";
 import VoteResultScreen from "./VoteResultScreen";
 import { createStyles } from "./Vote.styles";
+import { t } from "@/i18n";
 
 interface VoteScreenProps {
   matchId: string;
@@ -67,23 +68,23 @@ export default function VoteScreen({ matchId, onClose }: VoteScreenProps) {
           style={styles.backButton}
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel="Fermer"
+          accessibilityLabel={t("common.close")}
         >
           <Feather
             name="chevron-left"
             size={24}
-            color={theme.colors.primary.contrastText}
+            color={theme.colors.text.primary}
           />
         </Pressable>
         <Text style={styles.topBarTitle} numberOfLines={1}>
-          {matchName ?? "Vote"}
+          {matchName ?? t("vote.fallbackTitle")}
         </Text>
       </View>
 
       {liveErrorMessage ? (
         <View style={styles.notice}>
           <Text style={styles.noticeText}>
-            {`${liveErrorMessage} Les résultats peuvent avoir du retard.`}
+            {t("vote.liveNotice", { message: liveErrorMessage })}
           </Text>
         </View>
       ) : null}
@@ -100,13 +101,13 @@ export default function VoteScreen({ matchId, onClose }: VoteScreenProps) {
 
         {phase === "error" ? (
           <View style={styles.centered}>
-            <MascotBubble line="Le vote a filé aux vestiaires…" />
+            <MascotBubble line={t("vote.errorMascot")} />
             <Text style={styles.stateText}>
-              {errorMessage ?? "Impossible de charger le vote."}
+              {errorMessage ?? t("vote.errorFallback")}
             </Text>
             <View style={styles.action}>
               <Button
-                text="Réessayer"
+                text={t("common.retry")}
                 onPress={async () => {
                   await refetch();
                 }}
@@ -117,16 +118,14 @@ export default function VoteScreen({ matchId, onClose }: VoteScreenProps) {
 
         {phase === "noSession" ? (
           <View style={styles.centered}>
-            <MascotBubble line="Le vote n’est pas encore ouvert. Qui s’y colle ?" />
-            <Text style={styles.stateText}>
-              Ouvrez le vote pour que l’équipe désigne son Top et son Flop.
-            </Text>
+            <MascotBubble line={t("vote.noSessionMascot")} />
+            <Text style={styles.stateText}>{t("vote.noSessionText")}</Text>
             {startError ? (
               <Text style={styles.stateText}>{startError}</Text>
             ) : null}
             <View style={styles.action}>
               <Button
-                text="Ouvrir le vote"
+                text={t("vote.open")}
                 isLoading={isStarting}
                 onPress={handleStart}
               />

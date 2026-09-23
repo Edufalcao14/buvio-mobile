@@ -36,6 +36,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
     bundleIdentifier: "com.buvio.app",
     buildNumber: BUILD_NUMBER,
+    // ProMotion caps third-party animation at 60fps unless asked; Reanimated
+    // runs its worklets at 120 once this is set.
+    infoPlist: { CADisableMinimumFrameDurationOnPhone: true },
   },
   android: {
     adaptiveIcon: {

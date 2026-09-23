@@ -20,6 +20,7 @@ import {
   useMeQuery,
 } from "@/graphql/generated/hooks";
 import type { AuthContextType, AuthState, SignedInUser } from "@/types/auth";
+import { t } from "@/i18n";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -39,10 +40,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [signInMutation, { loading: signInLoading }] = useSignInMutation();
   const [signUpMutation, { loading: signUpLoading }] = useSignUpMutation();
 
-  const { data: meData, refetch: refetchMe } = useMeQuery({
+  const {
+    data: meData,
+    loading: meLoading,
+    refetch: refetchMe,
+  } = useMeQuery({
     skip: !state.isAuthenticated,
     fetchPolicy: "network-only",
   });
+
+  // The session is not "loaded" until the first `me` has landed: the token
+  // restore and the profile fetch are two steps, and a router that redirects
+  // between them sees an authenticated user with no team and strands a
+  // player who *has* one on the welcome screen. Only the first fetch gates —
+  // a refetch keeps the previous `data`, so it never flips this back on.
+  const isSessionLoading =
+    state.isLoading || (state.isAuthenticated && meLoading && !meData);
 
   // Properly extract user data from the query result
   const userData = state.isAuthenticated && meData?.me ? meData.me : null;
@@ -123,9 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           }));
           return response.data.signIn.user;
         } else {
-          throw new Error(
-            "Erreur lors de la connexion, veuillez réessayer plus tard"
-          );
+          throw new Error(t("auth.signInError"));
         }
       } catch (error) {
         reportError(error, "sign-in");
@@ -168,9 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             isAuthenticated: true,
           }));
         } else {
-          throw new Error(
-            "Échec de l'inscription, veuillez réessayer plus tard"
-          );
+          throw new Error(t("auth.signUpError"));
         }
       } catch (error) {
         reportError(error, "sign-up");
@@ -214,6 +223,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const contextValue = useMemo<AuthContextType>(
     () => ({
       ...state,
+      isLoading: isSessionLoading,
       setAsyncStorage,
       logout,
       signIn,
@@ -224,6 +234,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }),
     [
       state,
+      isSessionLoading,
       setAsyncStorage,
       logout,
       signIn,

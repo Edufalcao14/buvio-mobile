@@ -17,6 +17,7 @@ import {
   FieldValues,
   Path,
 } from "react-hook-form";
+import { t } from "@/i18n";
 
 interface CodeInputProps<T extends FieldValues> {
   code: string;
@@ -72,29 +73,43 @@ export default function CodeInput<T extends FieldValues>({
                       <TextInput
                         ref={inputRefs.current[index]}
                         testID={`code-input-${index}`}
-                        accessibilityLabel={`Caractère ${index + 1} du code`}
+                        accessibilityLabel={t("team.join.cellA11y", {
+                          index: index + 1,
+                        })}
                         style={styles.characterInput}
-                        maxLength={1}
+                        // No native maxLength: a fast typist's second key
+                        // would be dropped before focus moves on. The
+                        // handler below keeps one character per cell and
+                        // spreads the rest forward.
                         value={codeArray[index] || ""}
                         onChangeText={(text) => {
-                          if (text.length <= 1) {
-                            const newCodeArray = [...codeArray];
-                            newCodeArray[index] = text.toUpperCase();
+                          // A paste, an autofill, or a fast typist lands more
+                          // than one character in a single cell. Spread them
+                          // across the cells from here on instead of keeping
+                          // only the first and dropping the rest.
+                          const chars = text
+                            .toUpperCase()
+                            .replace(/[^A-Z0-9]/g, "")
+                            .slice(0, 5 - index)
+                            .split("");
+                          const newCodeArray = [...codeArray];
 
-                            // Update the full code string
-                            const newCode = newCodeArray.join("");
-                            onChange(newCode);
+                          if (chars.length === 0) {
+                            newCodeArray[index] = "";
+                          } else {
+                            chars.forEach((char, offset) => {
+                              newCodeArray[index + offset] = char;
+                            });
+                          }
 
-                            // Auto-advance to next input
-                            if (text.length === 1 && index < 4) {
-                              setTimeout(() => {
-                                const nextInputRef =
-                                  inputRefs.current[index + 1]?.current;
-                                if (nextInputRef) {
-                                  nextInputRef.focus();
-                                }
-                              }, 0);
-                            }
+                          onChange(newCodeArray.join(""));
+
+                          // Focus follows the last character written.
+                          const last = Math.min(4, index + chars.length);
+                          if (last !== index) {
+                            setTimeout(() => {
+                              inputRefs.current[last]?.current?.focus();
+                            }, 0);
                           }
                         }}
                         onKeyPress={(

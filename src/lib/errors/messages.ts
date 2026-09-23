@@ -116,7 +116,7 @@ const en: Messages = {
 
 export const MESSAGES: Record<Locale, Messages> = { fr, en };
 
-export const DEFAULT_LOCALE: Locale = "fr";
+export const DEFAULT_LOCALE: Locale = "en";
 
 /**
  * Per-field wording for VALIDATION_FAILED, which carries `details.field` and

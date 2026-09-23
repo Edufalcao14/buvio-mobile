@@ -19,15 +19,13 @@ import type {
   VoteHistoryGroup,
 } from "@/features/vote/hooks/useVoteHistoryViewModel";
 import { createStyles } from "./VoteHistory.styles";
+import { t } from "@/i18n";
 
 interface VoteHistoryScreenProps {
   matchId: string;
   visible: boolean;
   onClose: () => void;
 }
-
-const TOP_EMOJI = "👑";
-const FLOP_EMOJI = "💩";
 
 /**
  * Every ballot of a closed match, grouped by the player it was cast for.
@@ -55,7 +53,11 @@ export default function VoteHistoryScreen({
     <View
       style={styles.groupHeader}
       accessible
-      accessibilityLabel={`Votes pour ${group.player.nickname} : ${group.topCount} top, ${group.flopCount} flop`}
+      accessibilityLabel={t("vote.history.groupA11y", {
+        name: group.player.nickname,
+        top: group.topCount,
+        flop: group.flopCount,
+      })}
     >
       <PlayerAvatar
         name={group.player.nickname}
@@ -66,14 +68,18 @@ export default function VoteHistoryScreen({
         {group.player.nickname}
       </Text>
       {group.topCount > 0 ? (
-        <View style={styles.countPill}>
-          <Text style={styles.emoji}>{TOP_EMOJI}</Text>
-          <Text style={styles.countText}>{group.topCount}</Text>
+        <View style={[styles.countPill, styles.countPillTop]}>
+          <Text style={[styles.countKind, styles.countKindTop]}>
+            {t("common.top")}
+          </Text>
+          <Text style={[styles.countText, styles.countKindTop]}>
+            {group.topCount}
+          </Text>
         </View>
       ) : null}
       {group.flopCount > 0 ? (
         <View style={styles.countPill}>
-          <Text style={styles.emoji}>{FLOP_EMOJI}</Text>
+          <Text style={styles.countKind}>{t("common.flop")}</Text>
           <Text style={styles.countText}>{group.flopCount}</Text>
         </View>
       ) : null}
@@ -81,16 +87,18 @@ export default function VoteHistoryScreen({
   );
 
   const renderEntry = (entry: VoteHistoryEntry) => {
-    const verdict = entry.kind === "top" ? "Top" : "Flop";
-    const emoji = entry.kind === "top" ? TOP_EMOJI : FLOP_EMOJI;
+    const verdict = entry.kind === "top" ? t("common.top") : t("common.flop");
 
     return (
       <View
         style={styles.entry}
         accessible
         accessibilityLabel={
-          `${entry.voter.nickname} a donné un ${verdict} à ${entry.voted.nickname}. ` +
-          (entry.comment ?? "Sans commentaire.")
+          t("vote.history.gaveA11y", {
+            voter: entry.voter.nickname,
+            verdict,
+            voted: entry.voted.nickname,
+          }) + (entry.comment ?? t("vote.history.noCommentDot"))
         }
       >
         <PlayerAvatar
@@ -103,15 +111,17 @@ export default function VoteHistoryScreen({
             <Text style={styles.voterName} numberOfLines={1}>
               {entry.voter.nickname}
             </Text>
-            <Text style={styles.emoji}>{emoji}</Text>
             <Text style={styles.verdictWord} numberOfLines={1}>
-              {`${verdict} pour ${entry.voted.nickname}`}
+              {t("vote.history.verdictFor", {
+                verdict,
+                name: entry.voted.nickname,
+              })}
             </Text>
           </View>
           {entry.comment ? (
             <Text style={styles.comment}>{entry.comment}</Text>
           ) : (
-            <Text style={styles.noComment}>Sans commentaire</Text>
+            <Text style={styles.noComment}>{t("vote.history.noComment")}</Text>
           )}
         </View>
       </View>
@@ -131,7 +141,7 @@ export default function VoteHistoryScreen({
             style={styles.closeButton}
             onPress={onClose}
             accessibilityRole="button"
-            accessibilityLabel="Fermer"
+            accessibilityLabel={t("common.close")}
           >
             <Feather
               name="x"
@@ -140,7 +150,7 @@ export default function VoteHistoryScreen({
             />
           </Pressable>
           <Text style={styles.topBarTitle} numberOfLines={1}>
-            Tous les votes
+            {t("vote.history.title")}
           </Text>
         </View>
 
@@ -159,7 +169,7 @@ export default function VoteHistoryScreen({
               <Text style={styles.stateText}>{errorMessage}</Text>
               <View style={styles.action}>
                 <Button
-                  text="Réessayer"
+                  text={t("common.retry")}
                   variant="secondary"
                   onPress={async () => {
                     await refetch();
@@ -171,9 +181,9 @@ export default function VoteHistoryScreen({
 
           {!isLoading && !errorMessage && isEmpty ? (
             <View style={styles.centered}>
-              <MascotBubble line="Vote clos, bulletins vides. Silence radio." />
+              <MascotBubble line={t("vote.history.emptyMascot")} />
               <Text style={styles.stateText}>
-                Personne n’a voté sur ce match : il n’y a rien à raconter.
+                {t("vote.history.emptyText")}
               </Text>
             </View>
           ) : null}
@@ -186,9 +196,7 @@ export default function VoteHistoryScreen({
               stickySectionHeadersEnabled={false}
               ListHeaderComponent={
                 <Text style={styles.caption}>
-                  {totalVotes > 1
-                    ? `${totalVotes} votes, commentaires compris.`
-                    : `${totalVotes} vote, commentaire compris.`}
+                  {t("vote.history.caption", { count: totalVotes })}
                 </Text>
               }
               renderSectionHeader={({ section }) => renderHeader(section.group)}

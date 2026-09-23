@@ -50,10 +50,10 @@ describe("VoteBallotScreen", () => {
   it("asks for the Top first and keeps the ballot from advancing empty", () => {
     renderBallot();
 
-    expect(screen.getByText("Qui a été le TOP ? 👑")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Continuer" })).toBeTruthy();
+    expect(screen.getByText("Who was the Top?")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Continue" })).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "Continuer" }).props.accessibilityState
+      screen.getByRole("button", { name: "Continue" }).props.accessibilityState
         .disabled
     ).toBe(true);
   });
@@ -62,9 +62,9 @@ describe("VoteBallotScreen", () => {
     renderBallot();
 
     await press("Sofiane Bel");
-    await press("Continuer");
+    await press("Continue");
 
-    expect(screen.getByText("Et le FLOP ? 💩")).toBeTruthy();
+    expect(screen.getByText("And the Flop?")).toBeTruthy();
     expect(screen.queryByLabelText("Sofiane Bel")).toBeNull();
     expect(screen.getByLabelText("Inès Roy")).toBeTruthy();
   });
@@ -73,13 +73,13 @@ describe("VoteBallotScreen", () => {
     const onSubmit = renderBallot();
 
     await press("Sofiane Bel");
-    await press("Continuer");
+    await press("Continue");
     await press("Inès Roy");
-    await press("Continuer");
+    await press("Continue");
 
-    expect(screen.getByText("On envoie ?")).toBeTruthy();
+    expect(screen.getByText("Send it?")).toBeTruthy();
 
-    await press("Envoyer mon vote");
+    await press("Send my vote");
 
     expect(onSubmit).toHaveBeenCalledWith("user-2", "", "user-3", "");
   });
@@ -92,14 +92,14 @@ describe("VoteBallotScreen", () => {
     renderBallot(onSubmit);
 
     await press("Sofiane Bel");
-    await press("Continuer");
+    await press("Continue");
     await press("Inès Roy");
-    await press("Continuer");
-    await press("Envoyer mon vote");
+    await press("Continue");
+    await press("Send my vote");
 
     expect(
       screen.getByText(
-        "Ton Top a bien été enregistré, mais le Flop n’est pas passé. Réessayez dans un instant."
+        "Your Top was recorded, but the Flop didn't go through. Réessayez dans un instant."
       )
     ).toBeTruthy();
   });
@@ -115,9 +115,7 @@ describe("VoteBallotScreen", () => {
     );
 
     expect(
-      screen.getByText(
-        "Il faut au moins deux joueurs sur la feuille de match pour voter."
-      )
+      screen.getByText("The match sheet needs at least two players to vote.")
     ).toBeTruthy();
   });
 });

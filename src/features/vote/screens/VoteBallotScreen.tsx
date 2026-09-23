@@ -22,6 +22,7 @@ import type {
   BallotOutcome,
   VotePlayer,
 } from "@/features/vote/hooks/useVoteViewModel";
+import { t } from "@/i18n";
 import { createStyles } from "./VoteBallot.styles";
 
 const COMMENT_MAX_LENGTH = 256;
@@ -43,10 +44,24 @@ interface VoteBallotScreenProps {
 const nameOf = (players: VotePlayer[], id: string | null) =>
   players.find((player) => player.id === id)?.nickname ?? "";
 
+/** Two segments that fill as the ballot advances: the whole progress UI. */
+const StepBar: React.FC<{
+  step: Step;
+  styles: ReturnType<typeof createStyles>;
+}> = ({ step, styles }) => {
+  const filled = step === "top" ? 1 : step === "flop" ? 2 : 2;
+  return (
+    <View style={styles.stepBar} accessibilityElementsHidden>
+      <View style={[styles.stepSegment, filled >= 1 && styles.stepSegmentOn]} />
+      <View style={[styles.stepSegment, filled >= 2 && styles.stepSegmentOn]} />
+    </View>
+  );
+};
+
 /**
  * The ballot itself: Top, then Flop, then one confirmation that sends both.
- * The steps slide in the direction of travel so going back reads as going
- * back.
+ * Candidates are a grid of faces; the steps slide in the direction of travel
+ * so going back reads as going back.
  */
 export default function VoteBallotScreen({
   eligibleForTop,
@@ -78,44 +93,27 @@ export default function VoteBallotScreen({
 
   const selectTop = (playerId: string) => {
     setTopId(playerId);
-
-    // Crowning the player already picked as Flop would leave an impossible
-    // ballot behind; the Flop simply goes back to unchosen.
-    if (flopId === playerId) {
-      setFlopId(null);
-    }
+    if (flopId === playerId) setFlopId(null);
   };
 
   const handleSubmit = async () => {
-    if (!topId || !flopId) {
-      return;
-    }
-
+    if (!topId || !flopId) return;
     setErrorText(null);
     const outcome = await onSubmit(topId, topComment, flopId, flopComment);
-
     if (outcome.status === "topOnly") {
       setIsTopRecorded(true);
-      setErrorText(
-        `Ton Top a bien été enregistré, mais le Flop n’est pas passé. ${outcome.message}`
-      );
+      setErrorText(t("vote.ballot.topOnly", { message: outcome.message }));
       return;
     }
-
-    if (outcome.status === "failed") {
-      setErrorText(outcome.message);
-    }
-    // On success the session state changes and the parent screen moves on.
+    if (outcome.status === "failed") setErrorText(outcome.message);
   };
 
   if (eligibleForTop.length === 0) {
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <MascotBubble line="Tout seul dans le vestiaire, c’est dur de voter…" />
-          <Text style={styles.emptyText}>
-            Il faut au moins deux joueurs sur la feuille de match pour voter.
-          </Text>
+          <MascotBubble line={t("vote.ballot.aloneMascot")} />
+          <Text style={styles.emptyText}>{t("vote.ballot.aloneText")}</Text>
         </ScrollView>
       </View>
     );
@@ -123,6 +121,30 @@ export default function VoteBallotScreen({
 
   const entering = isGoingBack ? FadeInLeft : FadeInRight;
   const exiting = isGoingBack ? FadeOutRight : FadeOutLeft;
+
+  const comment = (
+    label: string,
+    a11y: string,
+    value: string,
+    onChange: (text: string) => void
+  ) => (
+    <View style={styles.commentBlock}>
+      <Text style={styles.commentLabel}>{label}</Text>
+      <TextInput
+        style={styles.commentInput}
+        value={value}
+        onChangeText={onChange}
+        placeholder={t("vote.ballot.commentPlaceholder")}
+        placeholderTextColor={theme.colors.text.hint}
+        multiline
+        maxLength={COMMENT_MAX_LENGTH}
+        accessibilityLabel={a11y}
+      />
+      <Text style={styles.counter}>
+        {value.length}/{COMMENT_MAX_LENGTH}
+      </Text>
+    </View>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -134,19 +156,19 @@ export default function VoteBallotScreen({
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
       >
+        <StepBar step={step} styles={styles} />
+
         {step === "top" ? (
           <Animated.View
             key="top"
             entering={entering.duration(240)}
             exiting={exiting.duration(180)}
-            style={styles.cards}
+            style={styles.section}
           >
-            <Text style={styles.stepMarker}>Étape 1 sur 2</Text>
-            <Text style={styles.title}>Qui a été le TOP ? 👑</Text>
-            <Text style={styles.subtitle}>
-              Un seul choix. Tu ne peux pas te voter toi-même.
-            </Text>
-            <View style={styles.cards}>
+            <Text style={styles.stepMarker}>{t("vote.ballot.step1")}</Text>
+            <Text style={styles.title}>{t("vote.ballot.topTitle")}</Text>
+            <Text style={styles.subtitle}>{t("vote.ballot.topSubtitle")}</Text>
+            <View style={styles.grid}>
               {eligibleForTop.map((player) => (
                 <PlayerChoiceCard
                   key={player.id}
@@ -157,22 +179,12 @@ export default function VoteBallotScreen({
                 />
               ))}
             </View>
-            <View style={styles.commentBlock}>
-              <Text style={styles.commentLabel}>Un mot pour le Top ?</Text>
-              <TextInput
-                style={styles.commentInput}
-                value={topComment}
-                onChangeText={setTopComment}
-                placeholder="Optionnel"
-                placeholderTextColor={theme.colors.text.hint}
-                multiline
-                maxLength={COMMENT_MAX_LENGTH}
-                accessibilityLabel="Commentaire pour le Top"
-              />
-              <Text style={styles.counter}>
-                {topComment.length}/{COMMENT_MAX_LENGTH}
-              </Text>
-            </View>
+            {comment(
+              t("vote.ballot.topComment"),
+              t("vote.ballot.topCommentA11y"),
+              topComment,
+              setTopComment
+            )}
           </Animated.View>
         ) : null}
 
@@ -181,14 +193,16 @@ export default function VoteBallotScreen({
             key="flop"
             entering={entering.duration(240)}
             exiting={exiting.duration(180)}
-            style={styles.cards}
+            style={styles.section}
           >
-            <Text style={styles.stepMarker}>Étape 2 sur 2</Text>
-            <Text style={styles.title}>Et le FLOP ? 💩</Text>
+            <Text style={styles.stepMarker}>{t("vote.ballot.step2")}</Text>
+            <Text style={styles.title}>{t("vote.ballot.flopTitle")}</Text>
             <Text style={styles.subtitle}>
-              {`Ton Top, ${nameOf(eligibleForTop, topId)}, n’est plus dans la liste.`}
+              {t("vote.ballot.flopSubtitle", {
+                name: nameOf(eligibleForTop, topId),
+              })}
             </Text>
-            <View style={styles.cards}>
+            <View style={styles.grid}>
               {flopCandidates.map((player) => (
                 <PlayerChoiceCard
                   key={player.id}
@@ -200,27 +214,14 @@ export default function VoteBallotScreen({
               ))}
             </View>
             {flopCandidates.length === 0 ? (
-              <Text style={styles.emptyText}>
-                Aucun autre joueur à désigner : il faut un troisième joueur sur
-                la feuille de match.
-              </Text>
+              <Text style={styles.emptyText}>{t("vote.ballot.noOther")}</Text>
             ) : null}
-            <View style={styles.commentBlock}>
-              <Text style={styles.commentLabel}>Un mot pour le Flop ?</Text>
-              <TextInput
-                style={styles.commentInput}
-                value={flopComment}
-                onChangeText={setFlopComment}
-                placeholder="Optionnel"
-                placeholderTextColor={theme.colors.text.hint}
-                multiline
-                maxLength={COMMENT_MAX_LENGTH}
-                accessibilityLabel="Commentaire pour le Flop"
-              />
-              <Text style={styles.counter}>
-                {flopComment.length}/{COMMENT_MAX_LENGTH}
-              </Text>
-            </View>
+            {comment(
+              t("vote.ballot.flopComment"),
+              t("vote.ballot.flopCommentA11y"),
+              flopComment,
+              setFlopComment
+            )}
           </Animated.View>
         ) : null}
 
@@ -229,35 +230,33 @@ export default function VoteBallotScreen({
             key="confirm"
             entering={entering.duration(240)}
             exiting={exiting.duration(180)}
-            style={styles.cards}
+            style={styles.section}
           >
-            <Text style={styles.stepMarker}>Récapitulatif</Text>
-            <Text style={styles.title}>On envoie ?</Text>
-            <Text style={styles.subtitle}>
-              Le vote part en une fois et ne peut plus être modifié.
-            </Text>
+            <Text style={styles.stepMarker}>{t("vote.ballot.recap")}</Text>
+            <Text style={styles.title}>{t("vote.ballot.send")}</Text>
+            <Text style={styles.subtitle}>{t("vote.ballot.sendSubtitle")}</Text>
             <View style={styles.summary}>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Top 👑</Text>
+              <View style={[styles.summaryRow, styles.summaryRowTop]}>
+                <Text style={styles.summaryLabel}>{t("common.top")}</Text>
                 <Text style={styles.summaryName}>
                   {nameOf(eligibleForTop, topId)}
                 </Text>
               </View>
               {topComment.trim().length > 0 ? (
-                <Text style={styles.summaryComment}>
-                  {`« ${topComment.trim()} »`}
-                </Text>
+                <Text
+                  style={styles.summaryComment}
+                >{`« ${topComment.trim()} »`}</Text>
               ) : null}
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Flop 💩</Text>
+                <Text style={styles.summaryLabel}>{t("common.flop")}</Text>
                 <Text style={styles.summaryName}>
                   {nameOf(eligibleForTop, flopId)}
                 </Text>
               </View>
               {flopComment.trim().length > 0 ? (
-                <Text style={styles.summaryComment}>
-                  {`« ${flopComment.trim()} »`}
-                </Text>
+                <Text
+                  style={styles.summaryComment}
+                >{`« ${flopComment.trim()} »`}</Text>
               ) : null}
             </View>
             {errorText ? (
@@ -265,7 +264,7 @@ export default function VoteBallotScreen({
             ) : null}
             {isTopRecorded ? (
               <Text style={styles.subtitle}>
-                Renvoyer le vote ne changera pas le Top déjà enregistré.
+                {t("vote.ballot.resubmitNote")}
               </Text>
             ) : null}
           </Animated.View>
@@ -275,21 +274,25 @@ export default function VoteBallotScreen({
       <View style={styles.footer}>
         {step === "top" ? (
           <Button
-            text="Continuer"
+            text={t("common.continue")}
             disabled={!topId}
             onPress={async () => goTo("flop")}
           />
         ) : null}
         {step === "flop" ? (
           <Button
-            text="Continuer"
+            text={t("common.continue")}
             disabled={!flopId}
             onPress={async () => goTo("confirm")}
           />
         ) : null}
         {step === "confirm" ? (
           <Button
-            text={isTopRecorded ? "Renvoyer mon vote" : "Envoyer mon vote"}
+            text={
+              isTopRecorded
+                ? t("vote.ballot.resubmit")
+                : t("vote.ballot.submit")
+            }
             isLoading={isSubmitting}
             onPress={handleSubmit}
           />
@@ -299,9 +302,9 @@ export default function VoteBallotScreen({
             style={styles.secondaryAction}
             onPress={() => goTo(step === "confirm" ? "flop" : "top")}
             accessibilityRole="button"
-            accessibilityLabel="Revenir à l’étape précédente"
+            accessibilityLabel={t("vote.ballot.backA11y")}
           >
-            <Text style={styles.secondaryActionText}>Retour</Text>
+            <Text style={styles.secondaryActionText}>{t("common.back")}</Text>
           </Pressable>
         )}
       </View>

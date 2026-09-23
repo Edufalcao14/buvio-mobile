@@ -1,18 +1,11 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  Platform,
-  Modal,
-} from "react-native";
+import { View, Text, TextInput, Pressable, Platform } from "react-native";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { FontAwesome } from "@expo/vector-icons";
-import { Calendar } from "react-native-calendars";
+import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
+import { t } from "@/i18n";
 import { createDatePickerStyles } from "./DatePicker.styles";
+import { CalendarSheet } from "./CalendarSheet";
 import { DateFormat, parseInputDate } from "./utils";
 
 interface DatePickerProps {
@@ -24,8 +17,8 @@ interface DatePickerProps {
   showCalendar: boolean;
   setShowCalendar: (show: boolean) => void;
 }
-const PLACEHOLDER_DATE = "jj/mm/aaaa";
 
+/** A typed date field with a calendar button. The chips variant lives in the match form. */
 const DatePicker: React.FC<DatePickerProps> = ({
   label,
   value,
@@ -38,25 +31,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const theme = useTheme();
   const styles = createDatePickerStyles(theme);
 
-  const handleDateSelect = (date: {
-    timestamp: number;
-    dateString: string;
-  }) => {
-    const selectedDate = new Date(date.timestamp);
-    onChangeText(selectedDate);
-    setShowCalendar(false);
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <View style={[styles.inputContainer, error && styles.inputError]}>
         <TextInput
           style={styles.input}
-          placeholder={PLACEHOLDER_DATE}
+          placeholder={t("datePicker.placeholder")}
           placeholderTextColor={theme.colors.text.secondary}
-          value={value ? format(value, DateFormat.DISPLAY, { locale: fr }) : ""}
-          onChangeText={parseInputDate}
+          value={value ? format(value, DateFormat.DISPLAY) : ""}
+          onChangeText={(text) => onChangeText(parseInputDate(text))}
           onBlur={onBlur}
           keyboardType={
             Platform.OS === "ios" ? "numbers-and-punctuation" : "default"
@@ -64,12 +48,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
         />
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Ouvrir le calendrier"
+          accessibilityLabel={t("datePicker.open")}
           style={styles.calendarButton}
           onPress={() => setShowCalendar(!showCalendar)}
           hitSlop={10}
         >
-          <FontAwesome
+          <Feather
             name="calendar"
             size={20}
             color={theme.colors.text.secondary}
@@ -77,53 +61,15 @@ const DatePicker: React.FC<DatePickerProps> = ({
         </Pressable>
       </View>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-      <Modal
+      <CalendarSheet
         visible={showCalendar}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowCalendar(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.calendarContainer}>
-            <Calendar
-              onDayPress={handleDateSelect}
-              markedDates={
-                value
-                  ? {
-                      [format(value, DateFormat.KEY)]: {
-                        selected: true,
-                      },
-                    }
-                  : {}
-              }
-              theme={{
-                backgroundColor: theme.colors.background.paper,
-                calendarBackground: theme.colors.background.paper,
-                textSectionTitleColor: theme.colors.calendar.textSectionTitle,
-                selectedDayBackgroundColor: theme.colors.secondary.main,
-                selectedDayTextColor: theme.colors.secondary.contrastText,
-                todayTextColor: theme.colors.primary.light,
-                dayTextColor: theme.colors.calendar.dayText,
-                textDisabledColor: theme.colors.calendar.textDisabled,
-                dotColor: theme.colors.secondary.main,
-                selectedDotColor: theme.colors.secondary.contrastText,
-                arrowColor: theme.colors.primary.light,
-                monthTextColor: theme.colors.text.primary,
-                indicatorColor: theme.colors.primary.light,
-              }}
-            />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Fermer le calendrier"
-              style={styles.closeButton}
-              onPress={() => setShowCalendar(false)}
-            >
-              <Text style={styles.closeButtonText}>Fermer</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+        value={value}
+        onSelect={(date) => {
+          onChangeText(date);
+          setShowCalendar(false);
+        }}
+        onClose={() => setShowCalendar(false)}
+      />
     </View>
   );
 };

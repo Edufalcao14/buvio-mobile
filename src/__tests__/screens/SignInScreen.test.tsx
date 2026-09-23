@@ -12,9 +12,9 @@ const signIn = jest.fn();
 const mockedUseAuth = useAuth as unknown as jest.Mock;
 
 const fillForm = (email = "user@example.com", password = "supersecret") => {
-  fireEvent.changeText(screen.getByPlaceholderText("votre@email.com"), email);
+  fireEvent.changeText(screen.getByPlaceholderText("you@email.com"), email);
   fireEvent.changeText(
-    screen.getByPlaceholderText("6 caractères minimum"),
+    screen.getByPlaceholderText("6 characters minimum"),
     password
   );
 };
@@ -25,30 +25,30 @@ describe("SignInScreen", () => {
     mockedUseAuth.mockReturnValue({ signIn });
   });
 
-  it("renders the hero, the fields and the call to action", () => {
+  it("renders the title, the fields and the call to action", () => {
     render(<SignInScreen />);
 
-    expect(screen.getByText("Connexion")).toBeTruthy();
+    expect(screen.getByRole("header", { name: "Sign in" })).toBeTruthy();
     expect(
-      screen.getByText("Connectez-vous pour retrouver votre équipe")
+      screen.getByText("Back to your team and the latest verdict.")
     ).toBeTruthy();
     expect(screen.getByText("Email")).toBeTruthy();
-    expect(screen.getByText("Mot de passe")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Se Connecter" })).toBeTruthy();
-    expect(screen.getByText("Mot de passe oublié ?")).toBeTruthy();
-    expect(screen.getByText("S’inscrire")).toBeTruthy();
+    expect(screen.getByText("Password")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeTruthy();
+    expect(screen.getByText("Forgot your password?")).toBeTruthy();
+    expect(screen.getByText("Sign up")).toBeTruthy();
   });
 
   it("blocks the submit and shows the field errors when the form is empty", async () => {
     render(<SignInScreen />);
 
-    fireEvent.press(screen.getByRole("button", { name: "Se Connecter" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign in" }));
 
     expect(
-      await screen.findByText("Veuillez entrer une adresse e-mail valide")
+      await screen.findByText("Please enter a valid email address")
     ).toBeTruthy();
     expect(
-      screen.getByText("Le mot de passe doit comporter au moins 6 caractères")
+      screen.getByText("The password must be at least 6 characters")
     ).toBeTruthy();
     expect(signIn).not.toHaveBeenCalled();
   });
@@ -58,7 +58,7 @@ describe("SignInScreen", () => {
     render(<SignInScreen />);
 
     fillForm();
-    fireEvent.press(screen.getByRole("button", { name: "Se Connecter" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign in" }));
 
     await waitFor(() =>
       expect(signIn).toHaveBeenCalledWith("user@example.com", "supersecret")
@@ -73,9 +73,11 @@ describe("SignInScreen", () => {
     render(<SignInScreen />);
 
     fillForm();
-    fireEvent.press(screen.getByRole("button", { name: "Se Connecter" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign in" }));
 
-    await waitFor(() => expect(router.push).toHaveBeenCalledWith("/welcome"));
+    await waitFor(() =>
+      expect(router.replace).toHaveBeenCalledWith("/welcome")
+    );
   });
 
   it("shows the server error message when the credentials are refused", async () => {
@@ -90,12 +92,10 @@ describe("SignInScreen", () => {
     render(<SignInScreen />);
 
     fillForm();
-    fireEvent.press(screen.getByRole("button", { name: "Se Connecter" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign in" }));
 
     expect(
-      await screen.findByText(
-        "Email ou mot de passe incorrect. Veuillez réessayer."
-      )
+      await screen.findByText("Incorrect email or password. Please try again.")
     ).toBeTruthy();
     expect(router.replace).not.toHaveBeenCalled();
   });

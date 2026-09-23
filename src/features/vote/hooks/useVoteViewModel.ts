@@ -12,6 +12,7 @@ import {
 } from "@/graphql/generated/hooks";
 import { getErrorMessage } from "@/lib/errors";
 import { nicknameOf } from "@/utils/identity";
+import { t } from "@/i18n";
 
 /**
  * A player as the vote screens read them: the nickname is the name the squad
@@ -51,9 +52,9 @@ export type VotePhase =
   "loading" | "error" | "noSession" | "ballot" | "live" | "result";
 
 const CLOSURE_LABELS: Record<VoteClosureReason, string> = {
-  [VoteClosureReason.Unanimous]: "Tout le monde a voté !",
-  [VoteClosureReason.Deadline]: "Temps écoulé",
-  [VoteClosureReason.Admin]: "Clos par l’organisateur",
+  [VoteClosureReason.Unanimous]: t("vote.closure.unanimous"),
+  [VoteClosureReason.Deadline]: t("vote.closure.deadline"),
+  [VoteClosureReason.Admin]: t("vote.closure.admin"),
 };
 
 export const closureLabel = (
@@ -254,7 +255,7 @@ export const useVoteViewModel = (matchId: string) => {
       flopComment: string
     ): Promise<BallotOutcome> => {
       if (!sessionId) {
-        return { status: "failed", message: "Le vote n’est pas ouvert." };
+        return { status: "failed", message: t("vote.notOpen") };
       }
 
       const trim = (comment: string) => {
@@ -309,7 +310,7 @@ export const useVoteViewModel = (matchId: string) => {
 
   const closeSession = useCallback(async (): Promise<string | null> => {
     if (!sessionId) {
-      return "Le vote n’est pas ouvert.";
+      return t("vote.notOpen");
     }
 
     try {
@@ -325,7 +326,7 @@ export const useVoteViewModel = (matchId: string) => {
 
   const startSession = useCallback(async (): Promise<string | null> => {
     if (!matchId) {
-      return "Match introuvable.";
+      return t("vote.matchNotFound");
     }
 
     try {
@@ -392,7 +393,7 @@ export const useVoteViewModel = (matchId: string) => {
     closedReasonLabel: closureLabel(session?.closedReason),
     // A dropped socket must not read as a broken screen: the data on it is
     // still the last server truth, so it is a notice, not the error state.
-    liveErrorMessage: liveError ? "Connexion temps réel interrompue." : null,
+    liveErrorMessage: liveError ? t("vote.liveInterrupted") : null,
     errorMessage: error && !data ? getErrorMessage(error) : null,
     refetch,
     submitBallot,

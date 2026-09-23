@@ -10,6 +10,7 @@ import { FormTextInput } from "@/components/inputs/formTextInput";
 import { Button } from "@/components/buttons/button";
 import { useSettingsViewModel } from "../hooks/useSettingsViewModel";
 import { createStyles } from "./Settings.styles";
+import { t } from "@/i18n";
 
 export default function SettingsScreen() {
   const theme = useTheme();
@@ -42,7 +43,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.screen}>
-      <Header title="Réglages" handlerBack={goBack} />
+      <Header title={t("settings.title")} handlerBack={goBack} />
 
       <ScrollView
         style={styles.scroll}
@@ -50,13 +51,15 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>Joueur</Text>
+          <Text style={styles.cardLabel}>{t("settings.player")}</Text>
 
           <View style={styles.form}>
             <PicturePicker
-              label="Photo de profil"
-              accessibilityLabel="Changer la photo de profil"
-              actionLabel={avatarUrl ? "Changer la photo" : "Ajouter une photo"}
+              label={t("settings.photo")}
+              accessibilityLabel={t("settings.photoA11y")}
+              actionLabel={
+                avatarUrl ? t("settings.changePhoto") : t("settings.addPhoto")
+              }
               isBusy={isUploadingAvatar}
               onPress={changeAvatar}
               errorText={avatarError}
@@ -72,25 +75,23 @@ export default function SettingsScreen() {
             <FormTextInput
               control={control}
               errors={errors}
-              label="Nom Complet"
-              placeHolder="Prénom et Nom"
+              label={t("settings.fullName")}
+              placeHolder={t("settings.fullNamePlaceholder")}
               name="displayName"
             />
 
             <FormTextInput
               control={control}
               errors={errors}
-              label="Surnom"
-              placeHolder="Le nom que l’équipe utilise"
+              label={t("settings.nickname")}
+              placeHolder={t("settings.nicknamePlaceholder")}
               name="nickname"
             />
-            <Text style={styles.fieldHint}>
-              Laisse le surnom vide pour revenir au prénom de ton nom complet.
-            </Text>
+            <Text style={styles.fieldHint}>{t("settings.nicknameHint")}</Text>
 
             <View style={styles.emailRow}>
-              <Text style={styles.emailLabel}>Email</Text>
-              <Text style={styles.secondaryValue}>{email ?? "—"}</Text>
+              <Text style={styles.emailLabel}>{t("settings.email")}</Text>
+              <Text style={styles.emailValue}>{email ?? t("common.dash")}</Text>
             </View>
 
             {profileError ? (
@@ -100,7 +101,7 @@ export default function SettingsScreen() {
             {/* The only gold action on this screen (see DESIGN.md). */}
             <View style={styles.saveAction}>
               <Button
-                text="Enregistrer"
+                text={t("settings.save")}
                 isLoading={isSavingProfile}
                 disabled={!isDirty}
                 onPress={saveProfile}
@@ -111,7 +112,7 @@ export default function SettingsScreen() {
 
         {team ? (
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>Équipe</Text>
+            <Text style={styles.cardLabel}>{t("settings.team")}</Text>
             <View style={styles.teamRow}>
               <TeamCrest name={team.name} url={team.crestUrl} size={52} />
               <View style={styles.teamText}>
@@ -125,12 +126,14 @@ export default function SettingsScreen() {
             {isTeamCreator ? (
               <View style={styles.crestPicker}>
                 <PicturePicker
-                  label="Blason de l’équipe"
-                  accessibilityLabel="Changer le blason de l’équipe"
+                  label={t("settings.crest")}
+                  accessibilityLabel={t("settings.crestA11y")}
                   actionLabel={
-                    team.crestUrl ? "Changer le blason" : "Ajouter un blason"
+                    team.crestUrl
+                      ? t("settings.changeCrest")
+                      : t("settings.addCrest")
                   }
-                  hint="Visible par toute l’équipe."
+                  hint={t("settings.crestHint")}
                   isBusy={isUploadingCrest}
                   onPress={changeCrest}
                   errorText={crestError}
@@ -142,11 +145,9 @@ export default function SettingsScreen() {
             ) : null}
 
             <View style={styles.codeBlock}>
-              <Text style={styles.codeLabel}>Code d’invitation</Text>
+              <Text style={styles.codeLabel}>{t("settings.inviteCode")}</Text>
               <Text style={styles.codeValue}>{team.code}</Text>
-              <Text style={styles.codeHint}>
-                Partage-le pour que tes coéquipiers rejoignent l’équipe.
-              </Text>
+              <Text style={styles.codeHint}>{t("settings.inviteHint")}</Text>
 
               <View style={styles.codeActions}>
                 <Pressable
@@ -156,14 +157,16 @@ export default function SettingsScreen() {
                     pressed && styles.codeActionPressed,
                   ]}
                   accessibilityRole="button"
-                  accessibilityLabel="Copier le code d’invitation"
+                  accessibilityLabel={t("settings.copyA11y")}
                 >
                   <Feather
                     name="copy"
                     size={16}
                     color={theme.colors.primary.light}
                   />
-                  <Text style={styles.codeActionText}>Copier</Text>
+                  <Text style={styles.codeActionText}>
+                    {t("settings.copy")}
+                  </Text>
                 </Pressable>
 
                 <Pressable
@@ -173,14 +176,16 @@ export default function SettingsScreen() {
                     pressed && styles.codeActionPressed,
                   ]}
                   accessibilityRole="button"
-                  accessibilityLabel="Partager le code d’invitation"
+                  accessibilityLabel={t("settings.shareA11y")}
                 >
                   <Feather
                     name="share-2"
                     size={16}
                     color={theme.colors.primary.light}
                   />
-                  <Text style={styles.codeActionText}>Partager</Text>
+                  <Text style={styles.codeActionText}>
+                    {t("settings.share")}
+                  </Text>
                 </Pressable>
               </View>
             </View>
@@ -194,10 +199,10 @@ export default function SettingsScreen() {
             pressed && styles.logoutPressed,
           ]}
           accessibilityRole="button"
-          accessibilityLabel="Se déconnecter"
+          accessibilityLabel={t("settings.logout")}
         >
           <Feather name="log-out" size={18} color={theme.colors.error.main} />
-          <Text style={styles.logoutText}>Se déconnecter</Text>
+          <Text style={styles.logoutText}>{t("settings.logout")}</Text>
         </Pressable>
 
         {/*
@@ -212,11 +217,11 @@ export default function SettingsScreen() {
             pressed && styles.deleteAccountPressed,
           ]}
           accessibilityRole="button"
-          accessibilityLabel="Supprimer mon compte"
+          accessibilityLabel={t("settings.deleteAccount")}
           accessibilityState={{ disabled: isDeletingAccount }}
         >
           <Text style={styles.deleteAccountText}>
-            {isDeletingAccount ? "Suppression…" : "Supprimer mon compte"}
+            {isDeletingAccount ? "Suppression…" : t("settings.deleteAccount")}
           </Text>
         </Pressable>
       </ScrollView>

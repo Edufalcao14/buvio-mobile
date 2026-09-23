@@ -108,21 +108,19 @@ describe("VoteHistoryScreen", () => {
 
     // One block per player who received votes.
     expect(
-      await screen.findByLabelText("Votes pour Sofiane : 1 top, 0 flop")
+      await screen.findByLabelText("Votes for Sofiane: 1 top, 0 flop")
     ).toBeTruthy();
-    expect(
-      screen.getByLabelText("Votes pour Inès : 0 top, 1 flop")
-    ).toBeTruthy();
+    expect(screen.getByLabelText("Votes for Inès: 0 top, 1 flop")).toBeTruthy();
 
     // Each ballot: its comment, its voter, and which way it went.
     expect(screen.getByText("Doublé en seconde période.")).toBeTruthy();
     expect(screen.getByText("Trois passes, trois adversaires.")).toBeTruthy();
     expect(screen.getByText("Cami")).toBeTruthy();
-    expect(screen.getByText("Top pour Sofiane")).toBeTruthy();
-    expect(screen.getByText("Flop pour Inès")).toBeTruthy();
+    expect(screen.getByText("Top for Sofiane")).toBeTruthy();
+    expect(screen.getByText("Flop for Inès")).toBeTruthy();
     expect(
       screen.getByLabelText(
-        "Cami a donné un Top à Sofiane. Doublé en seconde période."
+        "Cami gave a Top to Sofiane. Doublé en seconde période."
       )
     ).toBeTruthy();
   });
@@ -149,7 +147,7 @@ describe("VoteHistoryScreen", () => {
     ]);
 
     expect(await screen.findByText("Le patron du milieu.")).toBeTruthy();
-    expect(screen.getByText("Sans commentaire")).toBeTruthy();
+    expect(screen.getByText("No comment")).toBeTruthy();
   });
 
   // A comment that is only whitespace is no comment at all.
@@ -166,7 +164,7 @@ describe("VoteHistoryScreen", () => {
       ]),
     ]);
 
-    expect(await screen.findByText("Sans commentaire")).toBeTruthy();
+    expect(await screen.findByText("No comment")).toBeTruthy();
   });
 
   it("counts the tops and the flops each player collected", async () => {
@@ -197,12 +195,10 @@ describe("VoteHistoryScreen", () => {
     ]);
 
     expect(
-      await screen.findByLabelText("Votes pour Sofiane : 2 top, 0 flop")
+      await screen.findByLabelText("Votes for Sofiane: 2 top, 0 flop")
     ).toBeTruthy();
-    expect(
-      screen.getByLabelText("Votes pour Inès : 0 top, 1 flop")
-    ).toBeTruthy();
-    expect(screen.getByText("3 votes, commentaires compris.")).toBeTruthy();
+    expect(screen.getByLabelText("Votes for Inès: 0 top, 1 flop")).toBeTruthy();
+    expect(screen.getByText("3 votes, comments included.")).toBeTruthy();
   });
 
   // A closed session nobody voted on.
@@ -211,7 +207,7 @@ describe("VoteHistoryScreen", () => {
 
     expect(
       await screen.findByText(
-        "Personne n’a voté sur ce match : il n’y a rien à raconter."
+        "Nobody voted on this match: there's nothing to tell."
       )
     ).toBeTruthy();
   });
@@ -227,6 +223,6 @@ describe("VoteHistoryScreen", () => {
       { mocks: [] }
     );
 
-    expect(screen.queryByText("Tous les votes")).toBeNull();
+    expect(screen.queryByText("All votes")).toBeNull();
   });
 });

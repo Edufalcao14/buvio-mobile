@@ -7,14 +7,15 @@ export const createStyles = (theme: Theme) =>
       flex: 1,
       backgroundColor: theme.colors.background.default,
     },
-    // Green chrome, as everywhere else the app owns the top of the screen.
+    // Flat on the ground with a hairline, like every other chrome.
     topBar: {
       flexDirection: "row",
       alignItems: "center",
       gap: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.md,
+      paddingHorizontal: theme.spacing.xs,
       paddingVertical: theme.spacing.xs,
-      backgroundColor: theme.colors.primary.main,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.colors.grey.border,
     },
     backButton: {
       width: 44,
@@ -25,9 +26,10 @@ export const createStyles = (theme: Theme) =>
     },
     topBarTitle: {
       flex: 1,
-      fontFamily: theme.typography.fontFamily.displayBold,
+      fontFamily: theme.typography.fontFamily.display,
       fontSize: theme.typography.fontSize.lg,
-      color: theme.colors.primary.contrastText,
+      letterSpacing: theme.typography.letterSpacing.tight,
+      color: theme.colors.text.primary,
     },
     body: {
       flex: 1,
@@ -40,6 +42,7 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.lg,
     },
     stateText: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.md,
       lineHeight:
         theme.typography.fontSize.md * theme.typography.lineHeight.normal,
@@ -51,15 +54,18 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.xl,
     },
     notice: {
-      marginHorizontal: theme.spacing.lg,
+      marginHorizontal: theme.spacing.md,
       marginTop: theme.spacing.sm,
       paddingVertical: theme.spacing.xs,
       paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borderRadius.md,
+      borderWidth: 1,
+      borderColor: theme.colors.warning.main,
       backgroundColor: theme.colors.warning.light,
     },
     noticeText: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.xs,
-      color: theme.colors.warning.main,
+      color: theme.colors.warning.dark,
     },
   });

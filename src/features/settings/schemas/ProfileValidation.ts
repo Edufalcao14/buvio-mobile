@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { t } from "@/i18n";
 
 /**
  * The two names a player carries. The display name is the real one and is
@@ -7,10 +8,10 @@ import { z } from "zod";
  */
 export const profileSchema = z.object({
   displayName: z.string().min(3, {
-    message: "Le champs Nom Complet doit comporter au moins 3 caractères",
+    message: t("validation.fullNameMin"),
   }),
   nickname: z.string().max(40, {
-    message: "Le surnom ne peut pas dépasser 40 caractères",
+    message: t("validation.nicknameMax"),
   }),
 });
 

@@ -10,7 +10,7 @@ const backgroundFor = (theme: Theme, tone: AvatarTone) => {
     case "green":
       return theme.colors.primary.main;
     default:
-      return theme.colors.grey[100];
+      return theme.colors.grey[200];
   }
 };
 
@@ -21,7 +21,7 @@ const textFor = (theme: Theme, tone: AvatarTone) => {
     case "green":
       return theme.colors.primary.contrastText;
     default:
-      return theme.colors.text.secondary;
+      return theme.colors.text.variant;
   }
 };
 
@@ -32,6 +32,8 @@ export const createStyles = (theme: Theme, size: number, tone: AvatarTone) =>
       height: size,
       borderRadius: theme.borderRadius.round,
       backgroundColor: backgroundFor(theme, tone),
+      borderWidth: tone === "neutral" ? 1 : 0,
+      borderColor: theme.colors.grey[300],
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
@@ -41,10 +43,9 @@ export const createStyles = (theme: Theme, size: number, tone: AvatarTone) =>
       height: "100%",
     },
     initials: {
-      // Baloo bakes its weight in — never pair it with a fontWeight.
-      fontFamily: theme.typography.fontFamily.displayBold,
-      fontSize: Math.round(size * 0.38),
+      fontFamily: theme.typography.fontFamily.display,
+      fontSize: Math.round(size * 0.4),
       color: textFor(theme, tone),
-      letterSpacing: theme.typography.letterSpacing.wide,
+      letterSpacing: theme.typography.letterSpacing.tight,
     },
   });

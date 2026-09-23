@@ -12,6 +12,7 @@ import { Button } from "@/components/buttons/button";
 import { createStyles } from "./JoinTeam.styles";
 import CodeInput from "@/components/inputs/codeInput";
 import { useJoinTeamViewModel } from "../hooks/useJoinTeamViewModel";
+import { t } from "@/i18n";
 
 export default function JoinTeamScreen() {
   const theme = useTheme();
@@ -32,27 +33,29 @@ export default function JoinTeamScreen() {
       >
         <View style={styles.container}>
           <View style={styles.headerContainer}>
-            <Text style={styles.title}>Rejoindre une équipe</Text>
-            <Text style={styles.description}>
-              Entrez le code à 5 caractères fourni par le créateur de l’équipe.
-            </Text>
+            <Text style={styles.title}>{t("team.join.title")}</Text>
+            <Text style={styles.description}>{t("team.join.subtitle")}</Text>
           </View>
           <View style={styles.containerMain}>
             <View style={styles.inputContainers}>
               <View style={styles.displayCodeInfoContainer}>
-                <Text style={styles.inputLabel}>Code d’équipe</Text>
+                <Text style={styles.inputLabel}>
+                  {t("team.join.codeLabel")}
+                </Text>
+                {/* Five blanks until the first character lands, so the
+                    readout never sits as an empty box. */}
                 <Text
                   style={[
                     styles.displayCode,
-                    code?.length ? styles.displayCodeActive : null,
+                    code?.length
+                      ? styles.displayCodeActive
+                      : styles.displayCodeEmpty,
                   ]}
                 >
-                  {code}
+                  {code?.length ? code : "_____"}
                 </Text>
               </View>
-              <Text style={styles.codeHint}>
-                Le code est composé de 5 caractères alphanumériques
-              </Text>
+              <Text style={styles.codeHint}>{t("team.join.codeHint")}</Text>
               <CodeInput
                 code={code}
                 control={control}
@@ -61,7 +64,7 @@ export default function JoinTeamScreen() {
               />
             </View>
             <Button
-              text={"Rejoindre l’équipe"}
+              text={t("team.join.submit")}
               onPress={handleSubmit}
               disabled={code?.length !== 5}
               isLoading={loading}
@@ -70,13 +73,9 @@ export default function JoinTeamScreen() {
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <View style={styles.helpContainer}>
-            <Text style={styles.helpText}>
-              Vous ne connaissez pas le code ?
-            </Text>
+            <Text style={styles.helpText}>{t("team.join.noCode")}</Text>
             <Pressable accessibilityRole="button">
-              <Text style={styles.helpLink}>
-                Demandez-le au créateur de l’équipe
-              </Text>
+              <Text style={styles.helpLink}>{t("team.join.askCreator")}</Text>
             </Pressable>
           </View>
         </View>

@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Button } from "@/components/buttons/button";
 import { MascotBubble } from "@/components/mascot/MascotBubble";
 import { TallyRow } from "@/features/vote/components/TallyRow";
+import { ProgressRing } from "@/components/motion/ProgressRing";
+import { StaggerItem } from "@/components/motion/StaggerItem";
+import { LiveDot } from "@/components/motion/LiveDot";
+import { Glow } from "@/components/motion/Glow";
+import { AvatarStack } from "@/components/avatars/AvatarStack";
 import type {
   VoteBallotRow,
   VoteTallyRow,
 } from "@/features/vote/hooks/useVoteViewModel";
+import { t } from "@/i18n";
 import { createStyles } from "./VoteLive.styles";
 
 interface VoteLiveScreenProps {
@@ -26,13 +31,13 @@ export const formatCountdown = (totalSeconds: number): string => {
   const safe = Math.max(0, Math.floor(totalSeconds));
   const minutes = Math.floor(safe / 60);
   const seconds = safe % 60;
-
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 };
 
 /**
- * The vote in flight: who has posted a ballot, what the running count says,
- * and how long is left. Everything here arrives over the subscription.
+ * The vote in flight, laid out like a live match: the clock as the hero,
+ * the ballots as a ring and a row of faces (green ring = has voted), then
+ * the running count. Everything arrives over the subscription.
  */
 export default function VoteLiveScreen({
   ballots,
@@ -53,110 +58,98 @@ export default function VoteLiveScreen({
   const handleClose = async () => {
     setErrorText(null);
     const failure = await onClose();
-
-    if (failure) {
-      setErrorText(failure);
-    }
+    if (failure) setErrorText(failure);
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
-      <Text style={styles.title}>Vote en cours</Text>
-
-      {secondsRemaining !== null && secondsRemaining > 0 ? (
-        <View
-          style={styles.countdown}
-          accessible
-          accessibilityLabel={`Temps restant : ${formatCountdown(secondsRemaining)}`}
-        >
-          <Feather
-            name="clock"
-            size={16}
-            color={theme.colors.primary.contrastText}
-          />
-          <Text style={styles.countdownText}>
-            {formatCountdown(secondsRemaining)}
-          </Text>
-        </View>
-      ) : null}
-
-      {secondsRemaining === 0 ? (
-        <Text style={styles.caption}>
-          Le temps est écoulé, la clôture arrive.
-        </Text>
-      ) : null}
-
-      <Text style={styles.sectionTitle}>Bulletins</Text>
-      <Text style={styles.caption}>
-        {`${doneCount} sur ${ballots.length} ont voté.`}
-      </Text>
-      {ballots.length === 0 ? (
-        <Text style={styles.emptyText}>
-          Personne n’est inscrit sur la feuille de match.
-        </Text>
-      ) : (
-        <View style={styles.voters}>
-          {ballots.map((ballot) => (
-            <View
-              key={ballot.player.id}
-              style={[
-                styles.voterChip,
-                ballot.isComplete ? styles.voterChipDone : null,
-              ]}
-              accessible
-              accessibilityLabel={`${ballot.player.nickname} ${
-                ballot.isComplete ? "a voté" : "n’a pas encore voté"
-              }`}
+      {/* Hero: the clock. */}
+      <StaggerItem index={0}>
+        <View style={styles.hero}>
+          <Glow color={theme.colors.primary.main} size={260} intensity={0.35} />
+          <View style={styles.liveRow}>
+            <LiveDot color={theme.colors.primary.light} />
+            <Text style={styles.liveLabel}>{t("vote.live.title")}</Text>
+          </View>
+          {secondsRemaining !== null && secondsRemaining > 0 ? (
+            <Text
+              style={styles.clock}
+              accessibilityLabel={t("vote.live.remaining", {
+                time: formatCountdown(secondsRemaining),
+              })}
             >
-              <Feather
-                name={ballot.isComplete ? "check-circle" : "clock"}
-                size={14}
-                color={
-                  ballot.isComplete
-                    ? theme.colors.primary.light
-                    : theme.colors.text.hint
-                }
-              />
-              <Text
-                style={[
-                  styles.voterName,
-                  ballot.isComplete ? null : styles.voterNamePending,
-                ]}
-              >
-                {ballot.isMe
-                  ? `${ballot.player.nickname} (toi)`
-                  : ballot.player.nickname}
-              </Text>
-            </View>
-          ))}
+              {formatCountdown(secondsRemaining)}
+            </Text>
+          ) : null}
+          {secondsRemaining === 0 ? (
+            <Text style={styles.caption}>{t("vote.live.timeUp")}</Text>
+          ) : null}
         </View>
-      )}
+      </StaggerItem>
 
-      <Text style={styles.sectionTitle}>Décompte</Text>
+      {/* Ballots: how much of the squad has spoken. */}
+      <StaggerItem index={1}>
+        <View style={styles.ballotsCard}>
+          <ProgressRing
+            progress={ballots.length > 0 ? doneCount / ballots.length : 0}
+            size={72}
+            strokeWidth={7}
+            color={theme.colors.primary.main}
+            trackColor={theme.colors.grey[200]}
+          >
+            <Text style={styles.ringValue}>{doneCount}</Text>
+          </ProgressRing>
+          <View style={styles.ballotsText}>
+            <Text style={styles.sectionTitle}>{t("vote.live.ballots")}</Text>
+            <Text style={styles.ballotCount}>
+              {t("vote.live.voted", { done: doneCount, total: ballots.length })}
+              <Text style={styles.caption}> {t("vote.live.votedSuffix")}</Text>
+            </Text>
+            {ballots.length === 0 ? (
+              <Text style={styles.caption}>{t("vote.live.nobody")}</Text>
+            ) : (
+              <AvatarStack
+                size={30}
+                max={8}
+                players={ballots.map((ballot) => ({
+                  id: ballot.player.id,
+                  // Plain nickname: the monogram is built from it, and
+                  // "(you)" would become an initial.
+                  name: ballot.player.nickname,
+                  avatarUrl: ballot.player.avatarUrl,
+                  done: ballot.isComplete,
+                }))}
+              />
+            )}
+          </View>
+        </View>
+      </StaggerItem>
+
+      <Text style={styles.sectionTitle}>{t("vote.live.tally")}</Text>
       {hasVotes ? (
         <View style={styles.rows}>
-          {tally.map((row) => (
-            <TallyRow
-              key={row.player.id}
-              name={row.player.nickname}
-              avatarUrl={row.player.avatarUrl}
-              topCount={row.topCount}
-              flopCount={row.flopCount}
-              max={maxTallyCount}
-            />
+          {tally.map((row, index) => (
+            <StaggerItem key={row.player.id} index={index + 2}>
+              <TallyRow
+                name={row.player.nickname}
+                avatarUrl={row.player.avatarUrl}
+                topCount={row.topCount}
+                flopCount={row.flopCount}
+                max={maxTallyCount}
+              />
+            </StaggerItem>
           ))}
         </View>
       ) : (
-        <MascotBubble line="Zéro bulletin pour l’instant. Ça se joue au comptoir ?" />
+        <MascotBubble line={t("vote.live.emptyMascot")} />
       )}
 
       {errorText ? <Text style={styles.errorText}>{errorText}</Text> : null}
 
       {isAdmin ? (
         <View style={styles.adminAction}>
-          {/* The only action on this screen, so it takes the gold. */}
           <Button
-            text="Clore le vote"
+            text={t("vote.live.close")}
             isLoading={isClosing}
             onPress={handleClose}
           />

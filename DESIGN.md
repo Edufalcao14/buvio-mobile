@@ -1,122 +1,176 @@
 # Buvio — Design System
 
-<!-- World v2 "La Bulle de Vestiaire" (2026-08-03), replacing v1 "Clube de
-Várzea" after owner steer: modern + humor + mascot-led. Palette unchanged
-(owner-pinned). The retro-material renditions (chalk, enamel, kicker) are
-anti-reference. -->
+<!-- World v3 "Pelouse sous projecteurs" (2026-09-18), replacing v2 "La Bulle
+de Vestiaire" after owner steer: minimalist, modern, sports-data aesthetic
+(Sofascore / bet365 / DAZN family). Palette equity kept (green + gold),
+rebuilt dark-first. Mascot demoted from headline to accent. -->
 
-## World: "La Bulle de Vestiaire"
+## World: "Pelouse sous projecteurs"
 
-Buvio is la troisième mi-temps made app: the locker-room/group-chat banter
-between friends after the whistle. The interface speaks it with **bubble
-geometry** (fat radii, pill buttons, speech-bubble cards), **rounded chubby
-display type** (Baloo 2), and the **goat mascot as a die-cut sticker** —
-white outline, slapped slightly askew — who comments the key moments. Modern
-and fresh (Duolingo/Discord energy), never retro, never corporate.
+Buvio reads like a live scoreboard. It is the data surface of an amateur
+team — who played, who voted, who won the night — and it borrows its posture
+from the sports-data category: **near-black ground**, **condensed numerals**,
+**hairline borders instead of shadows**, one accent that means _act_
+(Dourado) and one that means _alive / positive_ (Verde Vif).
 
-Mode: **Operate**. The humor frames the task, never blocks it: forms,
-rankings, and votes stay instantly scannable.
+Mode: **Operate**. Every screen is scannable in one glance; the primary
+action sits in the bottom third, reachable by thumb; at most two taps from
+the team home to any action.
 
-## Color tokens (`src/theme/colors.ts`) — unchanged, owner-pinned
+Anti-references: bubble geometry, fat radii, the green header bar, the gold
+stripe, sticker-tilted mascot, emoji in labels, drop shadows on cards.
 
-| Role                                                      | Light     | Dark      |
-| --------------------------------------------------------- | --------- | --------- |
-| `primary.main` (Verde Gramado — chrome)                   | `#1B4D3E` | `#164534` |
-| `primary.light` (Verde Campo — active, links, focus)      | `#0E5C36` | `#4FA37B` |
-| `secondary.main` (Dourado Chopp — primary action, honors) | `#F4C430` | `#F4C430` |
-| `background.default` (Branco Gelo / deep pitch)           | `#F9F9F9` | `#0B1D15` |
-| `background.paper` (bubbles, cards, inputs)               | `#FFFFFF` | `#122A20` |
-| `text.primary` (Grafite / ice)                            | `#1E1E1E` | `#F2F5F3` |
-| `text.secondary` (green-tinted)                           | `#5D7168` | `#A9BFB4` |
+## Color tokens (`src/theme/colors.ts`) — dark-locked
 
-Gold discipline holds: one gold action per screen, plus MVP/honors. Text on
-gold is always Grafite; text on green is always Ice.
+There is no light scheme. `makeTheme("light")` resolves to the same palette so
+existing call sites keep compiling.
 
-## Signature: the vestiaire stage + the goat's line as headline
+| Role                          | Hex                   | Use                                       |
+| ----------------------------- | --------------------- | ----------------------------------------- |
+| `background.default`          | `#0A0C0B`             | the ground                                |
+| `background.paper`            | `#121614`             | cards, inputs, sheets                     |
+| `background.elevated`         | `#1A201C`             | modals, menus, floating strips            |
+| `grey.border`                 | `#232A26`             | every hairline                            |
+| `secondary.main` (Dourado)    | `#F4C430`             | the one primary action + honours (Top #1) |
+| `primary.main` (Verde Vif)    | `#2FA968`             | live state, selected, positive            |
+| `primary.light`               | `#4FC98A`             | Verde Vif as text / icon on the ground    |
+| `success.light`               | `#0F2A1C`             | tint behind a live / selected element     |
+| `text.primary` / `.secondary` | `#F4F6F5` / `#8A9691` |                                           |
+| `error.main`                  | `#FF5C5C`             | destructive, validation                   |
 
-`assets/images/sticker_goat.png` (die-cut, white outline) — **synthetic
-placeholder**: generated from the current 3D mascot render; replace with the
-final flat character art when it exists.
+**Gold discipline holds:** one gold action per screen, plus the Top honours.
+Text on gold is always `#0A0C0B`. Green is never a surface — it is a state.
 
-Two devices, no speech-bubble chrome (the boxed bubble was rejected):
+## Typography (`src/theme/typography.ts`) — one grotesk superfamily
 
-1. **The stage (auth + entry surfaces):** Verde Gramado owns the whole
-   screen; the goat leans large over the edge of a Branco Gelo "team sheet"
-   (32px top radius) that carries the task; his line IS the headline — Baloo
-   display in Ice with one accent word in Dourado (`AuthHero`).
-2. **Mascot moments (empty states, celebrations):** sticker tilted ~-4° with
-   the line set directly in Baloo display (`MascotBubble` component).
+- **Barlow** carries body, labels, inputs (`regular / medium / semiBold /
+bold`).
+- **Barlow Semi Condensed** carries the display layer AND every number
+  (`display` 700 / `displayBold` 600 / `displaySemiBold` 500 / `numeric` 700).
+  Condensed so long French names survive a tight row; heavy so a score reads
+  across the bar — the Sofascore principle.
+- **NEVER pair a `fontWeight` with one of these families.** Weight is in the
+  file name; a mismatch makes iOS synthesize a fake one.
+- Micro-labels above fields and sections: `semiBold`, `fontSize.xs`,
+  `letterSpacing.caps`, `textTransform: "uppercase"`, `text.secondary`.
 
-His lines are short French banter (light teasing, never mean, never blocking
-info) — he greets on auth, cheers on success, mopes on empty states, raises
-the mug on MVP. One mascot appearance per screen at most. New poses must
-keep the die-cut white outline (~16px at 1200w) and be labeled synthetic
-until final art arrives.
+## Geometry (`src/theme/index.ts`)
 
-## Typography (`src/theme/typography.ts`)
+- Radii: `sm 6 / md 10 / lg 14 / xl 18 / round`. Inputs and buttons `md`,
+  cards `lg`, chips `sm`, avatars `round`. `bubble` is an alias of `xl` kept
+  for compilation; do not use it in new code.
+- Depth is the surface step (default → paper → elevated) plus a 1px
+  `grey.border`. `shadows.card` is flat by design. `shadows.raised` exists only
+  for things that truly float (FAB, floating pills, toasts).
 
-- **Display: Baloo 2** (`Baloo2_800ExtraBold` titles/wordmark,
-  `Baloo2_700Bold` buttons, `Baloo2_600SemiBold` accents). NEVER pair a
-  `fontWeight` with a Baloo `fontFamily` — the weight is baked in.
-- **Body/labels/inputs: system faces** — Operate legibility.
-- Scale: `xs 12 · sm 14 · md 16 · lg 18 · xl 22 · xxl 28 · xxxl 34`.
-- Titles: `xxl` Baloo ExtraBold, `text.primary`.
+## Chrome
 
-## Geometry & elevation
+- Header, top tabs, modal headers and the vote top bar are all **flat on
+  `background.default` with a bottom hairline**. No colored bar anywhere.
+- Top tabs: active label `text.primary`, inactive `text.secondary`, **2pt gold
+  underline**. Never a percentage-height indicator (it measures padding and
+  overflows).
+- Buttons: `primary` gold / `secondary` paper + border / `ghost` transparent.
+  Label is `displayBold`, uppercase, `letterSpacing.wide`.
 
-- Radii: `sm 8 · md 12 · lg 18 · xl 24 · bubble 28 · round`. Buttons are
-  pills (`round`); cards and speech bubbles use `bubble`; inputs `xl`.
-- The team sheet: `background.default` surface with 32px top radius rising
-  over the green stage (auth/entry screens).
-- Shadows via `theme.shadows` (card/raised) — soft, y-offset, green-tinted.
+## The mascot — accent, not headline
 
-## Components
+`assets/images/sticker_goat.png` and `coach_goat_white.png` appear in exactly
+two places: **empty states** and **the verdict**. Straight (no tilt), small
+(`MascotBubble` `sm`/`md`), his line in `displayBold` `text.variant`. He is
+gone from auth, welcome, the header, and every data screen. One appearance per
+screen, still.
 
-- **Button**: pill, min 52pt; `primary` gold with Grafite Baloo Bold label;
-  `secondary` green/ice. Pressed = `dark` tone + scale 0.98.
-- **MascotBubble**: the signature; props `line` (the goat's text) and
-  `size`. One per screen.
-- **Inputs**: paper, 1.5px `grey.border`, radius `xl`, focus border Verde
-  Campo, 52pt min height.
-- **Header**: green chrome, Baloo wordmark, circular crest, 3px gold club
-  stripe at the bottom edge (omitted when tabs continue the chrome).
-- **Tabs**: green bar, gold indicator, ice labels.
-- **Toast**: paper bubble + status dot (no fat colored borders).
-- **Header** (team area): the club owns the bar — monogram `TeamCrest`,
-  team name in Baloo, and the invite code as a translucent pill that copies
-  on tap and shares on long press, with a settings button on the right.
-  The crest is a monogram until teams can upload their own badge.
-- **Podiums** (`team/components/podium`): the standings are two cards, most
-  Tops and most Flops, three players each with medal emoji. Players with no
-  votes are left off — a podium is for those the squad actually voted for.
-  Your own row is outlined in Verde Campo, never filled, so it cannot outrank
-  the leader. Gold tints only the honours podium's counts.
-- **Settings**: card sections on Branco Gelo; the invite code lives here in
-  full size with Copier / Partager actions, and sign-out is an outlined
-  destructive pill.
-- **Match card** (`MatchHistoryCard`): paper bubble; a date block anchors the
-  row, then the match name in Baloo Bold over a wrapping row of tags. It
-  becomes a button only when given somewhere to go.
-- **Tag** (`matchHistoryCard/Tag`): the only place a chip is styled, with
-  three variants. `honours` is the sole gold bearer — the crown pill
-  `👑 <name>` is the MVP medallion in chip form. `live` borrows the error
-  colour so a running vote reads as urgent without stealing the gold.
-  `neutral` is everything else, including the flop: the roast is
-  affectionate, so it never gets a colour of its own. Gold is never a
-  fallback — a tag has to ask for `honours` to get it.
-- **Pending verdicts**: a match whose vote has not been started, is still
-  running, or drew no votes says so in italic secondary text. Never fake a
-  result, and never leave the state blank.
+## Data patterns
+
+- **Scoreboard tiles** (`History` summary): big `numeric` value, caps label
+  below, hairline dividers between tiles.
+- **Fixture row** (`MatchHistoryCard`): 48pt date column (`numeric` day, caps
+  month), then name + chips + player count.
+- **Standings** (`PodiumCard`): rank number column, avatar, name, `numeric`
+  count; gold count on the Top podium, neutral on the Flop.
+- **Chips** (`Tag`): `sm` radius, caps, text prefix instead of emoji
+  (`Top Camille`, `Flop Sacha`, `Vote en cours`). Live is Verde Vif on
+  `success.light`; honours is gold; everything else neutral.
+- **Meters** (`TallyRow`): 6pt bars, gold for Top, `grey[500]` for Flop, on a
+  `grey[200]` track.
 
 ## Copy voice
 
-French, first-person club banter: short, warm, lightly teasing ("Alors, on
-signe où ?"). Factual copy (labels, errors, legal) stays plain and precise —
-humor lives in the mascot's bubble and empty states only. Errors name the
-problem and the fix, without jokes.
+English first (see below); the French keeps the original locker-room voice.
 
-## Accessibility floor
+French, second person singular, short. No emoji in UI strings — the chip
+variant or the section carries the meaning. The goat's banter survives only
+in his two slots.
 
-Contrast ≥ 4.5:1 both schemes; touch targets ≥ 44/48pt; the mascot bubble is
-decorative-plus-text (accessible label = its line); humor never replaces
-state information.
+## Motion (`src/components/motion/`)
+
+Every animation passes the frequency gate first: things touched a hundred
+times a day (tab switches, keyboard) do not animate; press feedback is under
+150ms; the delight budget is spent only on the verdict.
+
+- **`PressableScale`** — every tappable surface: scale 0.97 in 120ms as a
+  Reanimated CSS transition (UI thread, no shared value). Optional
+  `selectionAsync` on press-in.
+- **`StaggerItem`** — `FadeInDown` 260ms, 40ms per sibling, for content the
+  player waited on (standings, verdict, tally). Never on a virtualized row.
+- **`AnimatedNumber`** — scoreboard values count up once via
+  `useAnimatedProps` on a read-only TextInput. Tests read `getByDisplayValue`.
+- **`ProgressRing`** — SVG ring whose dash offset is the one animated
+  property; ballots cast on the live vote.
+- **`Skeleton` / `ListSkeleton`** — CSS keyframe pulse, shaped like the
+  content. Replaces every first-load spinner.
+- **Haptics** (`haptics.ts`) — one per user action, always with a visual:
+  `tapSelection` picking a candidate or a segment, `tapImpact` on the primary
+  button and on copying the code, `notifySuccess` once when the verdict lands.
+- Reduced motion: translations and count-ups collapse to fades and final
+  values; the stack transition becomes `fade`.
+- Native pieces over rebuilt ones: `UISegmentedControl` for the match type,
+  the platform push for screens, `RefreshControl` for pull to refresh.
+
+## Gamification (`src/features/team/gamification.ts`)
+
+- **Trophy tiers** on Top counts: Bronze 1, Argent 3, Or 5. Shown as a chip
+  on the Top podium rows and on the "Ma saison" card, with the gap to the
+  next tier always visible (the Nike Run Club rule: first win reachable on
+  night one, the season goal never out of sight).
+- **"Ma saison"** (Ranking): my place in the Top race, tops, flops, tier.
+- **Streak** (History): the same player crowned Top on ≥ 2 consecutive
+  decided nights, as a strip under the scoreboard. Undecided nights do not
+  break it; a no-vote night does.
+
+## Copy and locales (`src/i18n/`)
+
+- **English is the default.** French is served only when the device language
+  is French; anything else falls back to English key by key (`i18n-js`,
+  `enableFallback`).
+- Every user-facing string goes through `t("feature.key")` from `@/i18n`;
+  `en.ts` is the source of truth and `fr.ts` is typed against it, so a key
+  missing in one locale is a compile error. Backend error codes resolve
+  through `lib/errors` in the same locale.
+- Plurals use `one`/`other` with `count`; interpolations use `%{name}`.
+- Dates follow the app locale (date-fns `enUS`/`fr`, calendar Monday-first).
+- Tests run in the shipped default, English (`expo-localization` is mocked).
+
+## Signature screens (v3.1, 2026-09-20)
+
+- **Team hero** (`Header` with `showTeamActions`): crest 56, name in
+  display type that shrinks rather than truncates, sport + invite code pill.
+- **Matches tab** = "now and next": `LiveVoteBanner` (Verde Vif surface,
+  `LiveDot`, gold CTA) when the player owes a vote, then upcoming fixtures.
+- **Fixture card**: type/state chips, and once decided a **verdict spotlight**
+  — gold spot with the `GoatIcon` (the GOAT) for the Top, neutral spot with
+  `trending-down` for the Flop, both with the player's monogram.
+- **Standings**: `Podium` (2 · 1 · 3, first under a gold `Glow`, counts on the
+  steps, tier under the name), "Ma saison", then the Flop list.
+- **Create match**: display-type name on a hairline, native segmented control
+  (active = gold), `DateChips` (Today + weekdays + calendar; selected = gold),
+  roster as `AvatarStack`, gold CTA pinned.
+- **Ballot**: two-segment progress bar, candidates as a 2-column grid of
+  faces, check lands top-right.
+- **Live vote**: 72pt clock under a green glow with `LiveDot`, ballots ring +
+  faces (green ring = voted), tally.
+- **Verdict**: winner face at 104 in a gold ring under a 320 glow, name in
+  display; Flop as a quiet card; final tally; confetti + success haptic once.
+- Selected/active state is **always the gold**: segments, date chips, the one
+  CTA. Verde Vif is reserved for _live_.

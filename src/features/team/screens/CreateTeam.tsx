@@ -15,6 +15,7 @@ import { TeamCrest } from "@/components/navigation/header/TeamCrest";
 import { useWatch } from "react-hook-form";
 import { Button } from "@/components/buttons/button";
 import { useCreateTeamViewModel } from "../hooks/useCreateTeamViewModel";
+import { t } from "@/i18n";
 
 export default function CreateTeamScreen() {
   const theme = useTheme();
@@ -46,18 +47,19 @@ export default function CreateTeamScreen() {
       >
         <View style={styles.container}>
           <View style={styles.headerContainer}>
-            <Text style={styles.title}>Créer une équipe</Text>
-            <Text style={styles.subtitle}>
-              Donnez un nom à votre équipe pour obtenir un code d’invitation
-              unique.
-            </Text>
+            <Text style={styles.title}>{t("team.create.title")}</Text>
+            <Text style={styles.subtitle}>{t("team.create.subtitle")}</Text>
           </View>
           <View style={styles.containerInputs}>
             <PicturePicker
-              label="Blason (optionnel)"
-              accessibilityLabel="Choisir le blason de l’équipe"
-              actionLabel={crestUri ? "Changer le blason" : "Ajouter un blason"}
-              hint="Sans blason, l’équipe porte ses initiales."
+              label={t("team.create.crestLabel")}
+              accessibilityLabel={t("team.create.crestA11y")}
+              actionLabel={
+                crestUri
+                  ? t("team.create.changeCrest")
+                  : t("team.create.addCrest")
+              }
+              hint={t("team.create.crestHint")}
               isBusy={isLoading}
               onPress={chooseCrest}
               errorText={crestError}
@@ -73,21 +75,21 @@ export default function CreateTeamScreen() {
             <FormTextInput
               control={control}
               errors={errors}
-              label="Nom de l'équipe"
-              placeHolder="Ex: Les Invincibles"
+              label={t("team.create.name")}
+              placeHolder={t("team.create.namePlaceholder")}
               name="name"
             />
             <FormTextInput
               control={control}
               errors={errors}
-              label="Sport (optionnel)"
-              placeHolder="Ex: Football,Basketball..."
+              label={t("team.create.sport")}
+              placeHolder={t("team.create.sportPlaceholder")}
               name="sport"
             />
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
           </View>
           <Button
-            text={"Créer l'équipe"}
+            text={t("team.create.submit")}
             onPress={handleSubmit}
             isLoading={isLoading}
           />

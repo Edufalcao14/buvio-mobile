@@ -22,8 +22,8 @@ const makeMatch = (overrides: Partial<HistoryMatch> = {}): HistoryMatch => ({
   playerCount: 8,
   outcome: { kind: "voting" },
   tags: [
-    { id: "type", label: "Amical", variant: "neutral" },
-    { id: "status", label: "🔴 Vote en cours", variant: "live" },
+    { id: "type", label: "Friendly", variant: "neutral" },
+    { id: "status", label: "🔴 Vote open", variant: "live" },
   ],
   ...overrides,
 });
@@ -57,19 +57,19 @@ describe("MatchHistoryCard", () => {
     expect(screen.getByText("12")).toBeTruthy();
     expect(screen.getByText("janv")).toBeTruthy();
     expect(screen.getByText("Match du dimanche")).toBeTruthy();
-    expect(screen.getByText("8 joueurs")).toBeTruthy();
+    expect(screen.getByText("8 players")).toBeTruthy();
   });
 
   it("uses the singular for a lone player", () => {
     render(<MatchHistoryCard match={makeMatch({ playerCount: 1 })} />);
 
-    expect(screen.getByText("1 joueur")).toBeTruthy();
+    expect(screen.getByText("1 player")).toBeTruthy();
   });
 
   it("renders every tag it is given, in order", () => {
     const tags: MatchTag[] = [
-      { id: "type", label: "Tournoi", variant: "neutral" },
-      { id: "status", label: "✅ Terminé", variant: "neutral" },
+      { id: "type", label: "Tournament", variant: "neutral" },
+      { id: "status", label: "✅ Finished", variant: "neutral" },
       { id: "top", label: "👑 Camille", variant: "honours" },
       { id: "flop", label: "💩 Sacha", variant: "neutral" },
     ];
@@ -100,8 +100,8 @@ describe("Tag", () => {
     render(
       <>
         <Tag label="👑 Camille" variant="honours" />
-        <Tag label="🔴 Vote en cours" variant="live" />
-        <Tag label="Amical" variant="neutral" />
+        <Tag label="🔴 Vote open" variant="live" />
+        <Tag label="Friendly" variant="neutral" />
         <Tag label="💩 Sacha" />
       </>
     );
@@ -109,20 +109,20 @@ describe("Tag", () => {
     expect(tagStyleOf("👑 Camille").backgroundColor).toBe(
       theme.colors.secondary.main
     );
-    expect(tagStyleOf("🔴 Vote en cours").backgroundColor).toBe(
-      theme.colors.error.light
+    expect(tagStyleOf("🔴 Vote open").backgroundColor).toBe(
+      theme.colors.success.light
     );
-    expect(tagStyleOf("Amical").backgroundColor).toBe(theme.colors.grey[50]);
+    expect(tagStyleOf("Friendly").backgroundColor).toBe(theme.colors.grey[100]);
     // No variant means neutral — gold is never the fallback.
-    expect(tagStyleOf("💩 Sacha").backgroundColor).toBe(theme.colors.grey[50]);
+    expect(tagStyleOf("💩 Sacha").backgroundColor).toBe(theme.colors.grey[100]);
   });
 
-  it("never pairs a fontWeight with the Baloo display face", () => {
-    render(<Tag label="Amical" />);
+  it("never pairs a fontWeight with the display face", () => {
+    render(<Tag label="Friendly" />);
 
-    const label = flatten(screen.getByText("Amical").props.style);
+    const label = flatten(screen.getByText("Friendly").props.style);
 
-    expect(label.fontFamily).toBe(theme.typography.fontFamily.displaySemiBold);
+    expect(label.fontFamily).toBe(theme.typography.fontFamily.displayBold);
     expect(label.fontWeight).toBeUndefined();
   });
 });

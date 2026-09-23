@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
 import { createStyles } from "./PicturePicker.styles";
+import { t } from "@/i18n";
 
 interface PicturePickerProps {
   /** What the picture is: "Photo de profil", "Blason de l'équipe". */
@@ -36,7 +37,7 @@ export const PicturePicker: React.FC<PicturePickerProps> = ({
   hint,
   isBusy = false,
   onRemove,
-  removeLabel = "Retirer",
+  removeLabel = t("picturePicker.remove"),
   errorText,
   accessibilityLabel,
 }) => {

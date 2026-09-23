@@ -1,5 +1,6 @@
 import { router, Stack } from "expo-router";
 import Header from "@/components/navigation/header/header";
+import { t } from "@/i18n";
 
 export default function WelcomeLayout() {
   return (
@@ -10,7 +11,7 @@ export default function WelcomeLayout() {
         options={{
           header: () => (
             <Header
-              title={"Crée"}
+              title={t("welcome.headerCreate")}
               handlerBack={() => router.dismissTo("/welcome")}
             />
           ),
@@ -21,7 +22,7 @@ export default function WelcomeLayout() {
         options={{
           header: () => (
             <Header
-              title={"Rejoindre"}
+              title={t("welcome.headerJoin")}
               handlerBack={() => router.dismissTo("/welcome")}
             />
           ),

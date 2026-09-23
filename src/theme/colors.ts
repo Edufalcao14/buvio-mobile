@@ -1,157 +1,99 @@
-// Buvio palette — "La Bulle de Vestiaire" (see DESIGN.md).
-// Verde Gramado carries the chrome, Dourado Chopp is the honors color,
-// Branco Gelo is the task surface, Preto Grafite is the text.
-// Components consume semantic roles only — never hardcode hex in styles.
+// Buvio palette — "Pelouse sous projecteurs" (see DESIGN.md).
+//
+// Dark-first and dark-locked: the app reads like a live scoreboard. A neutral
+// near-black ground, one accent that means "act" (Dourado) and one that means
+// "alive / positive" (Verde Vif). Components consume semantic roles only —
+// never hardcode hex in styles.
+//
+// The scheme type is kept so `makeTheme` keeps its signature, but both schemes
+// resolve to the same palette: a scoreboard has no light mode.
 
 export type ColorScheme = "light" | "dark";
 
 const dourado = {
   light: "#F8D664",
   main: "#F4C430",
-  dark: "#FFB800",
-  contrastText: "#1E1E1E",
+  dark: "#D9A916",
+  contrastText: "#0A0C0B",
 };
 
-export const lightColors = {
+export const darkColors = {
+  // Verde Vif — live state, positive, focus. Never a background surface.
   primary: {
-    light: "#0E5C36", // Verde Campo — active fills, links
-    main: "#1B4D3E", // Verde Gramado — headers, tab bar
-    dark: "#0F3327", // pressed
-    contrastText: "#F9F9F9",
+    light: "#4FC98A", // text-safe on the dark ground
+    main: "#2FA968",
+    dark: "#1F7A4C", // pressed
+    contrastText: "#0A0C0B",
   },
   secondary: dourado,
   success: {
-    light: "#E3F1E8",
-    main: "#1F7A3D",
-    dark: "#14572B",
-    contrastText: "#F9F9F9",
+    light: "#0F2A1C",
+    main: "#2FA968",
+    dark: "#4FC98A",
+    contrastText: "#0A0C0B",
   },
   error: {
-    light: "#FBEAE7",
-    main: "#C6402E",
-    dark: "#9A2F21",
-    contrastText: "#F9F9F9",
+    light: "#2A1414",
+    main: "#FF5C5C",
+    dark: "#FF8A8A",
+    contrastText: "#0A0C0B",
   },
   warning: {
-    light: "#FCF3D7",
-    main: "#A97908",
-    dark: "#7C5906",
-    contrastText: "#1E1E1E",
+    light: "#2A2012",
+    main: "#F0A33A",
+    dark: "#F5BC6A",
+    contrastText: "#0A0C0B",
   },
   info: {
-    light: "#E3EEF7",
-    main: "#2C6E9E",
-    dark: "#1F4E70",
-    contrastText: "#F9F9F9",
+    light: "#10202E",
+    main: "#5AA9FF",
+    dark: "#8CC4FF",
+    contrastText: "#0A0C0B",
   },
-  // Green-tinted neutrals — the chalk-and-shade range of the pitch.
+  // Neutral ramp with a whisper of green, 50 darkest → 900 lightest, so the
+  // low end is a surface and the high end is text.
   grey: {
-    50: "#F4F7F5",
-    100: "#E9EEEB",
-    200: "#D9E2DD",
-    300: "#C2CFC8",
-    400: "#9FB0A8",
-    500: "#7C8F86",
-    600: "#5D7168",
-    700: "#46574F",
-    800: "#2F3C36",
-    900: "#1C2620",
-    border: "#D9E2DD",
-    disable: "#C2CFC8",
+    50: "#0F1210",
+    100: "#161A18",
+    200: "#1F2522",
+    300: "#2A322E",
+    400: "#3A443F",
+    500: "#55615B",
+    600: "#7A877F",
+    700: "#9AA69F",
+    800: "#C2CBC6",
+    900: "#E6EBE8",
+    border: "#232A26",
+    disable: "#2A322E",
   },
   background: {
-    default: "#F9F9F9", // Branco Gelo
-    paper: "#FFFFFF",
-    dark: "#0B1D15",
+    default: "#0A0C0B", // the ground
+    paper: "#121614", // cards, inputs, sheets
+    elevated: "#1A201C", // modals, menus, anything floating over paper
+    dark: "#050706", // deepest — overlays, shadow tint
   },
   text: {
-    primary: "#1E1E1E", // Preto Grafite
-    variant: "#2A332E",
-    secondary: "#5D7168",
-    disabled: "#9FB0A8",
-    hint: "#7C8F86",
-    lightText: "#F9F9F9",
+    primary: "#F4F6F5",
+    variant: "#DDE3E0",
+    secondary: "#8A9691",
+    disabled: "#55615B",
+    hint: "#6E7A74",
+    lightText: "#F4F6F5",
   },
   calendar: {
-    textSectionTitle: "#7C8F86",
-    dayText: "#2A332E",
-    textDisabled: "#C2CFC8",
+    textSectionTitle: "#6E7A74",
+    dayText: "#DDE3E0",
+    textDisabled: "#3A443F",
   },
-  overlay: "rgba(11, 29, 21, 0.55)",
+  overlay: "rgba(0, 0, 0, 0.72)",
 };
 
-// Dark scheme: deep pitch under floodlights — designed, not inverted.
-// The grey ramp flips (50 darkest → 900 lightest) so secondary text
-// written against grey[600]+ stays legible in both schemes.
-export const darkColors: typeof lightColors = {
-  primary: {
-    light: "#4FA37B",
-    main: "#164534",
-    dark: "#0C2A1F",
-    contrastText: "#F2F5F3",
-  },
-  secondary: dourado,
-  success: {
-    light: "#12291E",
-    main: "#5DBB7F",
-    dark: "#8FD4A8",
-    contrastText: "#0B1D15",
-  },
-  error: {
-    light: "#301613",
-    main: "#E5715F",
-    dark: "#F09A8C",
-    contrastText: "#0B1D15",
-  },
-  warning: {
-    light: "#2B2410",
-    main: "#E4B93E",
-    dark: "#F0D083",
-    contrastText: "#0B1D15",
-  },
-  info: {
-    light: "#12222E",
-    main: "#6FAAD6",
-    dark: "#9CC5E5",
-    contrastText: "#0B1D15",
-  },
-  grey: {
-    50: "#13221C",
-    100: "#182B23",
-    200: "#20362C",
-    300: "#2C4437",
-    400: "#40584A",
-    500: "#5C7365",
-    600: "#93A99D",
-    700: "#B2C4B9",
-    800: "#D0DCD4",
-    900: "#EAF0EC",
-    border: "#2C4437",
-    disable: "#40584A",
-  },
-  background: {
-    default: "#0B1D15",
-    paper: "#122A20",
-    dark: "#06120D",
-  },
-  text: {
-    primary: "#F2F5F3",
-    variant: "#DDE7E1",
-    secondary: "#A9BFB4",
-    disabled: "#6E857A",
-    hint: "#8AA195",
-    lightText: "#F9F9F9",
-  },
-  calendar: {
-    textSectionTitle: "#8AA195",
-    dayText: "#DDE7E1",
-    textDisabled: "#40584A",
-  },
-  overlay: "rgba(3, 10, 7, 0.65)",
-};
+export type Palette = typeof darkColors;
 
-export type Palette = typeof lightColors;
+// Dark-locked (see file header). Kept as a named export so the provider's
+// scheme branch and any existing import keep compiling.
+export const lightColors: Palette = darkColors;
 
-export const palette = lightColors;
+export const palette = darkColors;
 
 export default palette;

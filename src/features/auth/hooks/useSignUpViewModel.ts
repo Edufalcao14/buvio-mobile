@@ -14,6 +14,7 @@ import {
   useImageUpload,
   type PreparedImage,
 } from "@/hooks/useImageUpload";
+import { t } from "@/i18n";
 
 export const useSignUpViewModel = () => {
   const [error, setError] = useState("");
@@ -56,9 +57,7 @@ export const useSignUpViewModel = () => {
       }
     } catch (cause) {
       setAvatarError(
-        cause instanceof Error
-          ? cause.message
-          : "Cette image n’a pas pu être préparée. Choisis-en une autre."
+        cause instanceof Error ? cause.message : t("upload.prepareFailed")
       );
     }
   }, []);
@@ -87,15 +86,15 @@ export const useSignUpViewModel = () => {
         if (outcome.status === "failed") {
           Toast.show({
             type: "info",
-            text1: "Compte créé, photo non envoyée",
-            text2: "Tu pourras l’ajouter dans les réglages.",
+            text1: t("auth.signUp.toastPhotoFailed"),
+            text2: t("auth.signUp.toastAddLater"),
             position: "bottom",
             visibilityTime: 4000,
           });
         }
       }
 
-      router.push("/welcome");
+      router.replace("/welcome");
     } catch (error) {
       setError(getErrorMessage(error));
     } finally {

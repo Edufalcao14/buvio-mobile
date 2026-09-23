@@ -1,5 +1,4 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import { MockedResponse } from "@apollo/client/testing";
 import { render, screen } from "@/test-utils/render";
 import RankingScreen from "@/features/team/screens/RankingScreen";
@@ -38,10 +37,10 @@ describe("RankingScreen", () => {
     mockedUseAuth.mockReturnValue({ userData: { id: "me-1" } });
   });
 
-  it("shows a spinner on the first load", () => {
+  it("shows a skeleton on the first load", () => {
     render(<RankingScreen />, { mocks: [rankingMock([])] });
 
-    expect(screen.UNSAFE_getByType(ActivityIndicator)).toBeTruthy();
+    expect(screen.getByTestId("ranking-skeleton")).toBeTruthy();
   });
 
   it("builds one podium per category, best first", async () => {
@@ -54,8 +53,8 @@ describe("RankingScreen", () => {
       ],
     });
 
-    expect(await screen.findByText("Les plus TOP")).toBeTruthy();
-    expect(screen.getByText("Les plus FLOP")).toBeTruthy();
+    expect(await screen.findByText("Most TOP")).toBeTruthy();
+    expect(screen.getByText("Most FLOP")).toBeTruthy();
     expect(screen.getByText("Eduardo")).toBeTruthy();
     expect(screen.getByText("3")).toBeTruthy();
     expect(screen.getByText("4")).toBeTruthy();
@@ -82,7 +81,7 @@ describe("RankingScreen", () => {
       mocks: [rankingMock([{ id: "me-1", name: "Eduardo", top: 2, flop: 0 }])],
     });
 
-    expect(await screen.findByText("toi")).toBeTruthy();
+    expect(await screen.findByText("you")).toBeTruthy();
   });
 
   it("says nobody has a trophy yet when no vote has been counted", async () => {
@@ -92,11 +91,11 @@ describe("RankingScreen", () => {
 
     expect(
       await screen.findByLabelText(
-        "Personne n\u2019a encore de troph\u00e9e. Premier match, premier verdict !"
+        "Nobody has a trophy yet. First match, first verdict!"
       )
     ).toBeTruthy();
-    expect(screen.getByText("Aucun top pour l\u2019instant.")).toBeTruthy();
-    expect(screen.getByText("Aucun flop pour l\u2019instant.")).toBeTruthy();
+    expect(screen.getByText("No top yet.")).toBeTruthy();
+    expect(screen.getByText("No flop yet.")).toBeTruthy();
   });
 
   it("offers a retry when the standings fail to load", async () => {
@@ -110,11 +109,11 @@ describe("RankingScreen", () => {
     });
 
     expect(
-      await screen.findByText("Impossible de charger le classement.")
+      await screen.findByText("Could not load the standings.")
     ).toBeTruthy();
 
     // The retry affordance is what matters here; the refetch path itself is
     // covered by the successful-load tests above.
-    expect(screen.getByText("R\u00e9essayer")).toBeTruthy();
+    expect(screen.getByText("Try again")).toBeTruthy();
   });
 });

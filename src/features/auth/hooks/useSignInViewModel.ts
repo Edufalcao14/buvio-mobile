@@ -39,7 +39,7 @@ export const useSignInViewModel = () => {
       if (user.team) {
         router.replace("/(tabs)/team");
       } else {
-        router.push("/welcome");
+        router.replace("/welcome");
       }
     } catch (error) {
       reportError(error, "sign-in-form");

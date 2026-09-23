@@ -9,18 +9,18 @@ describe("Welcome", () => {
   it("greets the new player and offers the two ways in", () => {
     render(<Welcome />);
 
-    expect(screen.getByText("Bienvenue sur Buvio !")).toBeTruthy();
+    expect(screen.getByText("Your team, your verdict.")).toBeTruthy();
     expect(
-      screen.getByLabelText("La troisième mi-temps commence ici !")
+      screen.getByText("Join an existing team or create your own.")
     ).toBeTruthy();
-    expect(screen.getByText("Créer une équipe")).toBeTruthy();
-    expect(screen.getByText("Rejoindre une équipe")).toBeTruthy();
+    expect(screen.getByText("Create a team")).toBeTruthy();
+    expect(screen.getByText("Join a team")).toBeTruthy();
   });
 
   it("opens the create-team screen", () => {
     render(<Welcome />);
 
-    fireEvent.press(screen.getByText("Créer une équipe"));
+    fireEvent.press(screen.getByText("Create a team"));
 
     expect(router.push).toHaveBeenCalledWith("/welcome/createTeam");
   });
@@ -28,7 +28,7 @@ describe("Welcome", () => {
   it("opens the join-team screen", () => {
     render(<Welcome />);
 
-    fireEvent.press(screen.getByText("Rejoindre une équipe"));
+    fireEvent.press(screen.getByText("Join a team"));
 
     expect(router.push).toHaveBeenCalledWith("/welcome/joinTeam");
   });

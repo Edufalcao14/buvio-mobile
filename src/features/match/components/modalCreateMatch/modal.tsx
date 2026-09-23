@@ -7,28 +7,43 @@ import {
   ScrollView,
   Platform,
   KeyboardAvoidingView,
+  TextInput,
 } from "react-native";
 import { Controller } from "react-hook-form";
-import { AntDesign } from "@expo/vector-icons";
-import { createStyles } from "./modal.styles";
-import { useCreateMatchViewModel } from "@/features/match/hooks/useCreateMatchViewModel";
-import { useTheme } from "@/providers/ThemeProvider";
+import { Feather } from "@expo/vector-icons";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import DatePicker from "@/components/inputs/DatePicker/DatePicker";
+import { createStyles } from "./modal.styles";
+import { useCreateMatchViewModel } from "@/features/match/hooks/useCreateMatchViewModel";
+import { useTheme } from "@/providers/ThemeProvider";
 import { MatchType } from "@/graphql/generated/hooks";
-import { FormTextInput } from "@/components/inputs/formTextInput";
 import { Button } from "@/components/buttons/button";
-import { PlayerAvatar } from "@/components/avatars/PlayerAvatar";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { AvatarStack } from "@/components/avatars/AvatarStack";
+import { tapSelection } from "@/components/motion/haptics";
 import { nicknameOf } from "@/utils/identity";
+import { t } from "@/i18n";
+import { DateChips } from "./DateChips";
+
+const MATCH_TYPE_SEGMENTS: { type: MatchType; label: string }[] = [
+  { type: MatchType.Amical, label: t("history.types.amical") },
+  { type: MatchType.Tournoi, label: t("history.types.tournoi") },
+  { type: MatchType.Championnat, label: t("history.types.championnat") },
+];
 
 interface MatchModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
+/**
+ * The match form as a native sheet: one big headline field for the name,
+ * the platform's segmented control for the type, the week as a row of date
+ * chips, the roster as an avatar stack, and the one gold action pinned to the
+ * thumb. Nothing to scroll through on a normal night.
+ */
 const MatchModal: React.FC<MatchModalProps> = ({ visible = true, onClose }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -37,8 +52,6 @@ const MatchModal: React.FC<MatchModalProps> = ({ visible = true, onClose }) => {
     control,
     errors,
     matchType,
-    showCalendar,
-    setShowCalendar,
     handleTypeSelection,
     getTeamMembers,
     handleSubmit,
@@ -47,12 +60,11 @@ const MatchModal: React.FC<MatchModalProps> = ({ visible = true, onClose }) => {
   } = useCreateMatchViewModel(onClose);
 
   const teamMembers = getTeamMembers?.getTeamMembers || [];
-  const displayTeamMembers = teamMembers.slice(0, 3);
 
   return (
     <Modal
       animationType="slide"
-      transparent={true}
+      transparent
       visible={visible}
       onRequestClose={onClose}
     >
@@ -61,25 +73,12 @@ const MatchModal: React.FC<MatchModalProps> = ({ visible = true, onClose }) => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardAvoidingView}
         >
-          <Pressable
-            onPress={onClose}
-            style={styles.modalOverlay}
-            // Tapping the backdrop closes the sheet for a pointer, but it is
-            // not a second "Fermer" control: the header button is the one a
-            // screen reader should find. `accessible={false}` keeps the scrim
-            // itself out of the tree without hiding the sheet inside it.
-            accessible={false}
-          >
-            <Pressable
-              onPress={(e) => e.stopPropagation()}
-              style={styles.modalContainer}
-              // Swallows the tap so it does not reach the scrim; it is not
-              // itself an action, so it stays out of the accessibility tree.
-              accessible={false}
-              importantForAccessibility="no"
-            >
-              {/* Header */}
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
               <View style={styles.header}>
+                <Text style={styles.headerTitle}>
+                  {t("match.create.header")}
+                </Text>
                 <Pressable
                   onPress={() => {
                     onClose();
@@ -87,187 +86,149 @@ const MatchModal: React.FC<MatchModalProps> = ({ visible = true, onClose }) => {
                   }}
                   hitSlop={12}
                   accessibilityRole="button"
-                  accessibilityLabel="Fermer"
+                  accessibilityLabel={t("common.close")}
+                  style={styles.closeButton}
                 >
-                  <AntDesign
-                    name="arrow-left"
-                    size={24}
-                    color={theme.colors.primary.contrastText}
+                  <Feather
+                    name="x"
+                    size={20}
+                    color={theme.colors.text.primary}
                   />
                 </Pressable>
-                <Text style={styles.headerTitle}>Créer un Match</Text>
-                <View style={styles.headerSpacer} />
               </View>
 
               <ScrollView
                 style={styles.formContainer}
                 contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
               >
-                <Text style={styles.formTitle}>Nouveau match</Text>
-                <Text style={styles.formSubtitle}>
-                  Remplissez les informations pour créer un nouveau match avec
-                  votre équipe.
-                </Text>
+                <Text style={styles.formTitle}>{t("match.create.title")}</Text>
 
-                {/* Match Name */}
+                {/* The name is the headline of the night: set in display type,
+                    no box around it, the hairline underneath is the field. */}
                 <View style={styles.sectionGroup}>
-                  <FormTextInput
+                  <Text style={styles.inputLabel}>
+                    {t("match.create.name")}
+                  </Text>
+                  <Controller
                     control={control}
-                    errors={errors}
                     name="name"
-                    label="Nom du match"
-                    placeHolder="Ex: Match du dimanche"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        testID="input-name"
+                        style={[
+                          styles.nameInput,
+                          errors.name && styles.nameInputError,
+                        ]}
+                        value={value}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        placeholder={t("match.create.namePlaceholder")}
+                        placeholderTextColor={theme.colors.grey[500]}
+                        selectionColor={theme.colors.secondary.main}
+                        autoCapitalize="sentences"
+                        returnKeyType="done"
+                      />
+                    )}
                   />
+                  {errors.name ? (
+                    <Text style={styles.errorText}>{errors.name.message}</Text>
+                  ) : null}
                 </View>
 
-                {/* Match Type */}
                 <View style={styles.sectionGroup}>
-                  <Text style={styles.inputLabel}>Type de match</Text>
-                  <View
-                    style={styles.buttonGroup}
-                    accessibilityRole="radiogroup"
-                  >
-                    <Pressable
-                      accessibilityRole="radio"
-                      accessibilityLabel={`Type de match : Amical`}
-                      accessibilityState={{
-                        selected: matchType === MatchType.Amical,
-                      }}
-                      style={[
-                        styles.typeButton,
-                        matchType === MatchType.Amical &&
-                          styles.selectedTypeButton,
-                      ]}
-                      onPress={() => handleTypeSelection(MatchType.Amical)}
-                    >
-                      <Text
-                        style={[
-                          styles.typeButtonText,
-                          matchType === MatchType.Amical &&
-                            styles.selectedTypeText,
-                        ]}
-                      >
-                        Amical
-                      </Text>
-                    </Pressable>
-
-                    <Pressable
-                      accessibilityRole="radio"
-                      accessibilityLabel={`Type de match : Tournoi`}
-                      accessibilityState={{
-                        selected: matchType === MatchType.Tournoi,
-                      }}
-                      style={[
-                        styles.typeButton,
-                        matchType === MatchType.Tournoi &&
-                          styles.selectedTypeButton,
-                      ]}
-                      onPress={() => handleTypeSelection(MatchType.Tournoi)}
-                    >
-                      <Text
-                        style={[
-                          styles.typeButtonText,
-                          matchType === MatchType.Tournoi &&
-                            styles.selectedTypeText,
-                        ]}
-                      >
-                        Tournoi
-                      </Text>
-                    </Pressable>
-
-                    <Pressable
-                      accessibilityRole="radio"
-                      accessibilityLabel={`Type de match : Championnat`}
-                      accessibilityState={{
-                        selected: matchType === MatchType.Championnat,
-                      }}
-                      style={[
-                        styles.typeButton,
-                        matchType === MatchType.Championnat &&
-                          styles.selectedTypeButton,
-                      ]}
-                      onPress={() => handleTypeSelection(MatchType.Championnat)}
-                    >
-                      <Text
-                        style={[
-                          styles.typeButtonText,
-                          matchType === MatchType.Championnat &&
-                            styles.selectedTypeText,
-                        ]}
-                      >
-                        Championnat
-                      </Text>
-                    </Pressable>
-                  </View>
+                  <Text style={styles.inputLabel}>
+                    {t("match.create.type")}
+                  </Text>
+                  <SegmentedControl
+                    values={MATCH_TYPE_SEGMENTS.map((segment) => segment.label)}
+                    selectedIndex={Math.max(
+                      0,
+                      MATCH_TYPE_SEGMENTS.findIndex(
+                        (segment) => segment.type === matchType
+                      )
+                    )}
+                    onChange={(event) => {
+                      const segment =
+                        MATCH_TYPE_SEGMENTS[
+                          event.nativeEvent.selectedSegmentIndex
+                        ];
+                      if (segment) {
+                        tapSelection();
+                        handleTypeSelection(segment.type);
+                      }
+                    }}
+                    appearance="dark"
+                    backgroundColor={theme.colors.background.paper}
+                    tintColor={theme.colors.secondary.main}
+                    fontStyle={{
+                      color: theme.colors.text.secondary,
+                      fontSize: theme.typography.fontSize.sm,
+                    }}
+                    activeFontStyle={{
+                      color: theme.colors.secondary.contrastText,
+                      fontWeight: "700",
+                      fontSize: theme.typography.fontSize.sm,
+                    }}
+                    style={styles.segmented}
+                  />
                   {errors.type ? (
                     <Text style={styles.errorText}>{errors.type.message}</Text>
                   ) : null}
                 </View>
 
-                {/* Match Date */}
-                <Controller
-                  control={control}
-                  name="date"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <DatePicker
-                      label="Date du match"
-                      value={value}
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      error={errors.date?.message}
-                      showCalendar={showCalendar}
-                      setShowCalendar={setShowCalendar}
-                    />
-                  )}
-                />
+                <View style={styles.sectionGroup}>
+                  <Text style={styles.inputLabel}>
+                    {t("match.create.date")}
+                  </Text>
+                  <Controller
+                    control={control}
+                    name="date"
+                    render={({ field: { onChange, value } }) => (
+                      <DateChips
+                        value={value}
+                        onChange={onChange}
+                        error={errors.date?.message}
+                      />
+                    )}
+                  />
+                </View>
 
-                {/* Players Section */}
-                <View style={styles.playersSection}>
+                <View style={styles.sectionGroup}>
                   <View style={styles.playersSectionHeader}>
-                    <Text style={styles.playersTitle}>Joueurs</Text>
+                    <Text style={styles.inputLabel}>
+                      {t("match.create.players")}
+                    </Text>
                     <Text style={styles.playersCount}>
-                      {teamMembers.length || 0} joueurs
+                      {t("common.players", { count: teamMembers.length })}
                     </Text>
                   </View>
-                  <Text style={styles.playersSubtitle}>
-                    Tous les membres de l’équipe sont automatiquement inclus
-                    comme joueurs.
-                  </Text>
-
-                  {/* Player List */}
-                  <View style={styles.playerList}>
-                    {displayTeamMembers.map((player, index) => (
-                      <View
-                        key={player.id}
-                        style={[
-                          styles.playerItem,
-                          index === displayTeamMembers.length - 1 &&
-                            styles.lastPlayerItem,
-                        ]}
-                      >
-                        <PlayerAvatar
-                          name={nicknameOf(player)}
-                          url={player.avatarUrl}
-                          size={36}
-                        />
-                        <Text style={styles.playerName}>
-                          {nicknameOf(player)}
-                        </Text>
-                      </View>
-                    ))}
+                  <View style={styles.roster}>
+                    <AvatarStack
+                      players={teamMembers.map((player) => ({
+                        id: player.id,
+                        name: nicknameOf(player),
+                        avatarUrl: player.avatarUrl,
+                      }))}
+                      max={7}
+                      size={40}
+                    />
+                    <Text style={styles.playersSubtitle}>
+                      {t("match.create.playersHint")}
+                    </Text>
                   </View>
                 </View>
               </ScrollView>
 
               <View style={styles.buttonContainer}>
                 <Button
-                  text="Créer le match"
+                  text={t("match.create.submit")}
                   onPress={handleSubmit}
                   isLoading={isCreating}
                 />
               </View>
-            </Pressable>
-          </Pressable>
+            </View>
+          </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </Modal>

@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 import { Button } from "@/components/buttons/button";
 import { MascotBubble } from "@/components/mascot/MascotBubble";
 import { reportError } from "./index";
+import { t } from "@/i18n";
 
 interface Props {
   children: React.ReactNode;
@@ -50,12 +51,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
           gap: 16,
         }}
       >
-        <MascotBubble line="Là, j'ai glissé. On reprend ?" />
-        <Text style={{ textAlign: "center" }}>
-          Une erreur inattendue est survenue. L&apos;équipe a été prévenue.
-        </Text>
+        <MascotBubble line={t("errorBoundary.mascot")} />
+        <Text style={{ textAlign: "center" }}>{t("errorBoundary.text")}</Text>
         <Button
-          text="Réessayer"
+          text={t("common.retry")}
           onPress={async () => this.setState({ hasError: false })}
         />
       </View>

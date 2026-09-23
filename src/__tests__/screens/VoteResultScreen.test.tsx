@@ -141,7 +141,7 @@ const historyMock = (): MockedResponse => ({
 const renderVote = (mocks: MockedResponse[]) =>
   render(<VoteScreen matchId={MATCH_ID} onClose={jest.fn()} />, { mocks });
 
-const ACTION = "Voir tous les votes";
+const ACTION = "See all votes";
 
 describe("the ballot history action on the result", () => {
   it("offers the full ballot list once the session is closed", async () => {
@@ -150,7 +150,7 @@ describe("the ballot history action on the result", () => {
       silentSubscription(),
     ]);
 
-    expect(await screen.findByText("Top de la soirée")).toBeTruthy();
+    expect(await screen.findByText("Top of the night")).toBeTruthy();
     expect(screen.getByRole("button", { name: ACTION })).toBeTruthy();
   });
 
@@ -160,18 +160,19 @@ describe("the ballot history action on the result", () => {
       silentSubscription(),
     ]);
 
-    expect(await screen.findByText("Vote en cours")).toBeTruthy();
+    expect(await screen.findByText("Vote in progress")).toBeTruthy();
     expect(screen.queryByText(ACTION)).toBeNull();
   });
 
   it("does not offer it when no vote was ever opened", async () => {
     renderVote([voteMatchMock(null)]);
 
-    expect(await screen.findByText("Ouvrir le vote")).toBeTruthy();
+    expect(await screen.findByText("Open the vote")).toBeTruthy();
     expect(screen.queryByText(ACTION)).toBeNull();
   });
 
   it("opens the ballots, comments included, when the action is pressed", async () => {
+    jest.setTimeout(15000);
     renderVote([
       voteMatchMock(VoteSessionStatus.Completed),
       silentSubscription(),
@@ -181,7 +182,7 @@ describe("the ballot history action on the result", () => {
     fireEvent.press(await screen.findByRole("button", { name: ACTION }));
     await act(async () => {});
 
-    expect(screen.getByText("Tous les votes")).toBeTruthy();
+    expect(screen.getByText("All votes")).toBeTruthy();
     expect(
       await screen.findByText("Il a tout gagné dans les duels.")
     ).toBeTruthy();

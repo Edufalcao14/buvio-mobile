@@ -8,7 +8,7 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.background.default,
     },
     mainContainer: {
-      padding: theme.spacing.lg,
+      padding: theme.spacing.md,
     },
     container: {
       gap: theme.spacing.xl,
@@ -16,9 +16,11 @@ export const createStyles = (theme: Theme) =>
     title: {
       fontFamily: theme.typography.fontFamily.display,
       fontSize: theme.typography.fontSize.xxl,
+      letterSpacing: theme.typography.letterSpacing.tight,
       color: theme.colors.text.primary,
     },
     subtitle: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.md,
       lineHeight:
         theme.typography.fontSize.md * theme.typography.lineHeight.normal,
@@ -31,6 +33,7 @@ export const createStyles = (theme: Theme) =>
       gap: theme.spacing.md,
     },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.error.main,
       fontSize: theme.typography.fontSize.sm,
     },

@@ -13,6 +13,7 @@ import {
 import { useApolloClient } from "@apollo/client";
 import Toast from "react-native-toast-message";
 import { getErrorMessage } from "@/lib/errors";
+import { t } from "@/i18n";
 
 export const useJoinTeamViewModel = () => {
   const [error, setError] = useState("");
@@ -26,7 +27,7 @@ export const useJoinTeamViewModel = () => {
     defaultValues: {
       code: "",
     },
-    mode: "onChange",
+    mode: "onSubmit",
   });
 
   const [join, { loading }] = useJoinTeamMutation();
@@ -44,7 +45,7 @@ export const useJoinTeamViewModel = () => {
       if (!validationData?.validateTeamCode) {
         Toast.show({
           type: "error",
-          text1: `Aucune équipe trouvée avec le code ${data.code}`,
+          text1: t("team.join.notFound", { code: data.code }),
           position: "bottom",
           visibilityTime: 2000,
         });
@@ -56,12 +57,12 @@ export const useJoinTeamViewModel = () => {
 
       Toast.show({
         type: "success",
-        text1: `Vous avez rejoint l'équipe ${team.data?.joinTeam.name} avec succès.`,
+        text1: t("team.join.joined", { name: team.data?.joinTeam.name }),
         position: "bottom",
         visibilityTime: 2000,
       });
 
-      router.push("/(tabs)/team");
+      router.replace("/(tabs)/team");
     } catch (error) {
       setError(getErrorMessage(error));
     }

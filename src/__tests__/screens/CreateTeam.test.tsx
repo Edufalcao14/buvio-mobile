@@ -36,30 +36,28 @@ describe("CreateTeamScreen", () => {
   it("explains what the code is for and shows both fields", () => {
     render(<CreateTeamScreen />);
 
-    expect(screen.getByText("Créer une équipe")).toBeTruthy();
+    expect(screen.getByText("Create a team")).toBeTruthy();
     expect(
-      screen.getByText(
-        "Donnez un nom à votre équipe pour obtenir un code d’invitation unique."
-      )
+      screen.getByText("Name your team to get a unique invite code.")
     ).toBeTruthy();
-    expect(screen.getByText("Nom de l'équipe")).toBeTruthy();
-    expect(screen.getByText("Sport (optionnel)")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Créer l'équipe" })).toBeTruthy();
+    expect(screen.getByText("Team name")).toBeTruthy();
+    expect(screen.getByText("Sport (optional)")).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Create the team" })
+    ).toBeTruthy();
   });
 
   it("refuses a name shorter than three characters", async () => {
     render(<CreateTeamScreen />);
 
     fireEvent.changeText(
-      screen.getByPlaceholderText("Ex: Les Invincibles"),
+      screen.getByPlaceholderText("e.g. The Invincibles"),
       "AB"
     );
-    fireEvent.press(screen.getByRole("button", { name: "Créer l'équipe" }));
+    fireEvent.press(screen.getByRole("button", { name: "Create the team" }));
 
     expect(
-      await screen.findByText(
-        "Le champs Nom de l'équipe doit comporter au moins 3 caractères"
-      )
+      await screen.findByText("The team name must be at least 3 characters")
     ).toBeTruthy();
   });
 
@@ -74,18 +72,18 @@ describe("CreateTeamScreen", () => {
     });
 
     fireEvent.changeText(
-      screen.getByPlaceholderText("Ex: Les Invincibles"),
+      screen.getByPlaceholderText("e.g. The Invincibles"),
       "Les Invincibles"
     );
-    fireEvent.press(screen.getByRole("button", { name: "Créer l'équipe" }));
+    fireEvent.press(screen.getByRole("button", { name: "Create the team" }));
 
     await waitFor(() =>
-      expect(router.push).toHaveBeenCalledWith("/(tabs)/team")
+      expect(router.replace).toHaveBeenCalledWith("/(tabs)/team")
     );
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "success",
-        text1: "Équipe créée avec succès",
+        text1: "Team created",
       })
     );
   });
@@ -110,15 +108,15 @@ describe("CreateTeamScreen", () => {
     });
 
     fireEvent.changeText(
-      screen.getByPlaceholderText("Ex: Les Invincibles"),
+      screen.getByPlaceholderText("e.g. The Invincibles"),
       "Les Invincibles"
     );
-    fireEvent.press(screen.getByRole("button", { name: "Créer l'équipe" }));
+    fireEvent.press(screen.getByRole("button", { name: "Create the team" }));
 
     expect(
-      await screen.findByText("Ce code d'équipe est déjà utilisé.")
+      await screen.findByText("This team code is already taken.")
     ).toBeTruthy();
-    expect(router.push).not.toHaveBeenCalled();
+    expect(router.replace).not.toHaveBeenCalled();
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({ type: "error" })
     );

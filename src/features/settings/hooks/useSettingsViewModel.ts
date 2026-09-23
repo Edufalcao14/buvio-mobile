@@ -16,6 +16,7 @@ import {
   ProfileForms,
   profileSchema,
 } from "@/features/settings/schemas/ProfileValidation";
+import { t } from "@/i18n";
 
 export const useSettingsViewModel = () => {
   const { userData, logout } = useAuth();
@@ -61,7 +62,7 @@ export const useSettingsViewModel = () => {
     if (outcome.status === "uploaded") {
       Toast.show({
         type: "success",
-        text1: "Photo de profil mise à jour",
+        text1: t("settings.toastPhotoUpdated"),
         position: "bottom",
         visibilityTime: 1800,
       });
@@ -74,7 +75,7 @@ export const useSettingsViewModel = () => {
     if (outcome.status === "uploaded") {
       Toast.show({
         type: "success",
-        text1: "Blason mis à jour",
+        text1: t("settings.toastCrestUpdated"),
         position: "bottom",
         visibilityTime: 1800,
       });
@@ -106,7 +107,7 @@ export const useSettingsViewModel = () => {
 
       Toast.show({
         type: "success",
-        text1: "Profil mis à jour",
+        text1: t("settings.toastProfileUpdated"),
         position: "bottom",
         visibilityTime: 1800,
       });
@@ -124,7 +125,7 @@ export const useSettingsViewModel = () => {
 
     Toast.show({
       type: "success",
-      text1: `Code ${team.code} copié`,
+      text1: t("team.header.copied", { code: team.code }),
       position: "bottom",
       visibilityTime: 1800,
     });
@@ -136,28 +137,24 @@ export const useSettingsViewModel = () => {
     }
 
     await Share.share({
-      message: `Rejoins ${team.name} sur Buvio avec le code ${team.code}`,
+      message: t("team.header.share", { name: team.name, code: team.code }),
     });
   }, [team]);
 
   // Signing out drops the whole session, so it asks first: a mis-tap here
   // costs the user their place in the app, not a screen.
   const confirmLogout = useCallback(() => {
-    Alert.alert(
-      "Se déconnecter ?",
-      "Tu devras entrer ton email et ton mot de passe pour revenir.",
-      [
-        { text: "Annuler", style: "cancel" },
-        {
-          text: "Se déconnecter",
-          style: "destructive",
-          onPress: async () => {
-            await logout();
-            router.replace("/");
-          },
+    Alert.alert(t("settings.logoutTitle"), t("settings.logoutBody"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("settings.logout"),
+        style: "destructive",
+        onPress: async () => {
+          await logout();
+          router.replace("/");
         },
-      ]
-    );
+      },
+    ]);
   }, [logout]);
 
   /**
@@ -167,59 +164,55 @@ export const useSettingsViewModel = () => {
    * a mis-tap from being final.
    */
   const confirmDeleteAccount = useCallback(() => {
-    Alert.alert(
-      "Supprimer ton compte ?",
-      "Ton nom, ton pseudo, ta photo et ta place dans l'équipe seront effacés. Cette action est définitive.",
-      [
-        { text: "Annuler", style: "cancel" },
-        {
-          text: "Continuer",
-          style: "destructive",
-          onPress: () =>
-            Alert.alert(
-              "C'est définitif",
-              "Tu ne pourras pas récupérer ton compte. On y va ?",
-              [
-                { text: "Annuler", style: "cancel" },
-                {
-                  text: "Supprimer définitivement",
-                  style: "destructive",
-                  onPress: async () => {
-                    try {
-                      const result = await deleteAccountMutation();
+    Alert.alert(t("settings.deleteTitle"), t("settings.deleteBody"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("common.continue"),
+        style: "destructive",
+        onPress: () =>
+          Alert.alert(
+            t("settings.deleteConfirmTitle"),
+            t("settings.deleteConfirmBody"),
+            [
+              { text: t("common.cancel"), style: "cancel" },
+              {
+                text: t("settings.deleteForever"),
+                style: "destructive",
+                onPress: async () => {
+                  try {
+                    const result = await deleteAccountMutation();
 
-                      if (result.errors?.length) {
-                        Toast.show({
-                          type: "error",
-                          text1: "Suppression impossible",
-                          text2: getErrorMessage({
-                            graphQLErrors: result.errors,
-                          }),
-                          position: "bottom",
-                        });
-                        return;
-                      }
-
-                      // The server has already invalidated every token, so the
-                      // local session is dead either way - clearing it is what
-                      // gets the player back to a usable screen.
-                      await logout();
-                      router.replace("/");
-                    } catch (cause) {
+                    if (result.errors?.length) {
                       Toast.show({
                         type: "error",
-                        text1: "Suppression impossible",
-                        text2: getErrorMessage(cause),
+                        text1: t("settings.deleteFailed"),
+                        text2: getErrorMessage({
+                          graphQLErrors: result.errors,
+                        }),
                         position: "bottom",
                       });
+                      return;
                     }
-                  },
+
+                    // The server has already invalidated every token, so the
+                    // local session is dead either way - clearing it is what
+                    // gets the player back to a usable screen.
+                    await logout();
+                    router.replace("/");
+                  } catch (cause) {
+                    Toast.show({
+                      type: "error",
+                      text1: t("settings.deleteFailed"),
+                      text2: getErrorMessage(cause),
+                      position: "bottom",
+                    });
+                  }
                 },
-              ]
-            ),
-        },
-      ]
-    );
+              },
+            ]
+          ),
+      },
+    ]);
   }, [deleteAccountMutation, logout]);
 
   return {

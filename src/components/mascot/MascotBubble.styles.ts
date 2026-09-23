@@ -3,16 +3,17 @@ import { Theme } from "@/theme";
 
 export type MascotSize = "sm" | "md" | "lg";
 
+// Demoted to an accent: smaller than before, straight (no sticker tilt), and
+// the line is display type in the app's own voice — the goat is a footnote to
+// the data, not the headline (DESIGN.md).
 export const createStyles = (
   theme: Theme,
   size: MascotSize,
   aspectRatio: number
 ) => {
-  const stickerHeight = { sm: 104, md: 148, lg: 200 }[size];
-  // The line does not grow past `lg`: a bigger sticker is a bigger mascot, not
-  // a louder sentence, and the screen's own title has to stay the loudest thing.
+  const stickerHeight = { sm: 72, md: 96, lg: 128 }[size];
   const lineSize =
-    size === "sm" ? theme.typography.fontSize.lg : theme.typography.fontSize.xl;
+    size === "sm" ? theme.typography.fontSize.md : theme.typography.fontSize.lg;
 
   return StyleSheet.create({
     row: {
@@ -20,20 +21,16 @@ export const createStyles = (
       alignItems: "center",
       gap: theme.spacing.md,
     },
-    // Slapped slightly askew, like on a locker door.
     sticker: {
-      // Driven by the artwork's own ratio: the coach is a wider figure than the
-      // player, and a shared constant squashed whichever one it was not made for.
       width: stickerHeight * aspectRatio,
       height: stickerHeight,
-      transform: [{ rotate: "-4deg" }],
     },
     line: {
       flex: 1,
-      fontFamily: theme.typography.fontFamily.display,
+      fontFamily: theme.typography.fontFamily.displayBold,
       fontSize: lineSize,
-      lineHeight: lineSize * theme.typography.lineHeight.tight,
-      color: theme.colors.text.primary,
+      lineHeight: lineSize * theme.typography.lineHeight.snug,
+      color: theme.colors.text.variant,
     },
   });
 };

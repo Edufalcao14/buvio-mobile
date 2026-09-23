@@ -12,6 +12,7 @@ import {
   useCreateMatchMutation,
   useGetTeamMembersQuery,
 } from "@/graphql/generated/hooks";
+import { t } from "@/i18n";
 
 export const useCreateMatchViewModel = (onClose?: () => void) => {
   const [error, setError] = useState("");
@@ -70,7 +71,7 @@ export const useCreateMatchViewModel = (onClose?: () => void) => {
 
       Toast.show({
         type: "success",
-        text1: "Match créé avec succès",
+        text1: t("match.create.toastCreated"),
         position: "bottom",
         visibilityTime: 2000,
       });
@@ -82,7 +83,7 @@ export const useCreateMatchViewModel = (onClose?: () => void) => {
 
       Toast.show({
         type: "error",
-        text1: "Erreur lors de la création du match",
+        text1: t("match.create.toastError"),
         position: "bottom",
         visibilityTime: 2000,
       });
@@ -90,7 +91,9 @@ export const useCreateMatchViewModel = (onClose?: () => void) => {
   };
 
   const handleTypeSelection = (type: MatchType) => {
-    setValue("type", type, { shouldValidate: true });
+    // The type is always one of the three valid values; validating here would
+    // only flag the still-empty name before the player has typed it.
+    setValue("type", type, { shouldValidate: false });
   };
 
   const resetForm = () => {

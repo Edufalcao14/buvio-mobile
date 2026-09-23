@@ -12,14 +12,14 @@ const signUp = jest.fn();
 const mockedUseAuth = useAuth as unknown as jest.Mock;
 
 const fillForm = (password = "Supersecret1!") => {
-  const passwordFields = screen.getAllByPlaceholderText("6 caractères minimum");
+  const passwordFields = screen.getAllByPlaceholderText("6 characters minimum");
 
   fireEvent.changeText(
-    screen.getByPlaceholderText("Prénom et Nom"),
+    screen.getByPlaceholderText("First and last name"),
     "Camille Dupont"
   );
   fireEvent.changeText(
-    screen.getByPlaceholderText("votre@email.com"),
+    screen.getByPlaceholderText("you@email.com"),
     "camille@example.com"
   );
   fireEvent.changeText(passwordFields[0], password);
@@ -35,34 +35,28 @@ describe("SignUpScreen", () => {
   it("renders the fields, the optional identity block and the call to action", () => {
     render(<SignUpScreen />);
 
-    expect(screen.getByText("Inscription")).toBeTruthy();
-    expect(screen.getByText("Nom Complet")).toBeTruthy();
-    expect(screen.getByText("Surnom")).toBeTruthy();
-    expect(screen.getByLabelText("Choisir une photo de profil")).toBeTruthy();
+    expect(screen.getByRole("header", { name: "Sign up" })).toBeTruthy();
+    expect(screen.getByText("Full name")).toBeTruthy();
+    expect(screen.getByText("Nickname")).toBeTruthy();
+    expect(screen.getByLabelText("Choose a profile photo")).toBeTruthy();
     expect(screen.getByText("Email")).toBeTruthy();
-    expect(screen.getByText("Mot de passe")).toBeTruthy();
-    expect(screen.getByText("Confirmer Mot de passe")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "S'inscrire" })).toBeTruthy();
-    expect(screen.getByText("Se Connecter")).toBeTruthy();
+    expect(screen.getByText("Password")).toBeTruthy();
+    expect(screen.getByText("Confirm password")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sign up" })).toBeTruthy();
+    expect(screen.getByText("Sign in")).toBeTruthy();
   });
 
   it("refuses an empty form and names every problem", async () => {
     render(<SignUpScreen />);
 
-    fireEvent.press(screen.getByRole("button", { name: "S'inscrire" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign up" }));
 
     expect(
-      await screen.findByText(
-        "Le champs Nom Complet doit comporter au moins 3 caractères"
-      )
+      await screen.findByText("The full name must be at least 3 characters")
     ).toBeTruthy();
+    expect(screen.getByText("Please enter a valid email address")).toBeTruthy();
     expect(
-      screen.getByText("Veuillez entrer une adresse e-mail valide")
-    ).toBeTruthy();
-    expect(
-      screen.getAllByText(
-        "Le mot de passe doit comporter au moins 12 caractères"
-      ).length
+      screen.getAllByText("The password must be at least 12 characters").length
     ).toBe(2);
     expect(signUp).not.toHaveBeenCalled();
   });
@@ -71,11 +65,11 @@ describe("SignUpScreen", () => {
     render(<SignUpScreen />);
 
     fillForm("douzecaracteres");
-    fireEvent.press(screen.getByRole("button", { name: "S'inscrire" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign up" }));
 
     expect(
       await screen.findAllByText(
-        "Le mot de passe doit contenir au moins une lettre majuscule, un chiffre et un caractère spécial"
+        "The password must contain at least one uppercase letter, one digit and one special character"
       )
     ).toHaveLength(2);
     expect(signUp).not.toHaveBeenCalled();
@@ -86,7 +80,7 @@ describe("SignUpScreen", () => {
     render(<SignUpScreen />);
 
     fillForm();
-    fireEvent.press(screen.getByRole("button", { name: "S'inscrire" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign up" }));
 
     await waitFor(() =>
       expect(signUp).toHaveBeenCalledWith(
@@ -96,7 +90,9 @@ describe("SignUpScreen", () => {
         ""
       )
     );
-    await waitFor(() => expect(router.push).toHaveBeenCalledWith("/welcome"));
+    await waitFor(() =>
+      expect(router.replace).toHaveBeenCalledWith("/welcome")
+    );
   });
 
   it("passes the surname along when the player gives one", async () => {
@@ -105,10 +101,10 @@ describe("SignUpScreen", () => {
 
     fillForm();
     fireEvent.changeText(
-      screen.getByPlaceholderText("Optionnel — le nom que l’équipe utilise"),
+      screen.getByPlaceholderText("Optional, the name the team uses"),
       "Cami"
     );
-    fireEvent.press(screen.getByRole("button", { name: "S'inscrire" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign up" }));
 
     await waitFor(() =>
       expect(signUp).toHaveBeenCalledWith(
@@ -134,13 +130,11 @@ describe("SignUpScreen", () => {
     render(<SignUpScreen />);
 
     fillForm();
-    fireEvent.press(screen.getByRole("button", { name: "S'inscrire" }));
+    fireEvent.press(screen.getByRole("button", { name: "Sign up" }));
 
     expect(
-      await screen.findByText(
-        "Un compte existe déjà avec cette adresse e-mail."
-      )
+      await screen.findByText("An account with this email already exists.")
     ).toBeTruthy();
-    expect(router.push).not.toHaveBeenCalled();
+    expect(router.replace).not.toHaveBeenCalled();
   });
 });

@@ -1,12 +1,18 @@
 import { useCallback, useMemo, useState } from "react";
 import { format, isFuture } from "date-fns";
-import { fr } from "date-fns/locale";
+import { enUS, fr } from "date-fns/locale";
+import { currentLocale, t } from "@/i18n";
+
 import {
   MatchType,
   VoteSessionStatus,
   useTeamHistoryQuery,
 } from "@/graphql/generated/hooks";
 import { nicknameOf } from "@/utils/identity";
+import { deriveStreak, type Streak } from "@/features/team/gamification";
+
+// Month names and day labels follow the app locale, not the device region.
+const dateLocale = () => (currentLocale() === "fr" ? fr : enUS);
 
 /** What the squad decided about a match, or why it decided nothing yet. */
 export type MatchOutcome =
@@ -53,12 +59,14 @@ export type HistorySummary = {
   decidedCount: number;
   /** Votes still open — the only part of a history that can still move. */
   liveCount: number;
+  /** The same player crowned Top on the latest decided nights, when ≥ 2. */
+  streak: Streak | null;
 };
 
 const MATCH_TYPE_LABELS: Record<MatchType, string> = {
-  [MatchType.Amical]: "Amical",
-  [MatchType.Tournoi]: "Tournoi",
-  [MatchType.Championnat]: "Championnat",
+  [MatchType.Amical]: t("history.types.amical"),
+  [MatchType.Tournoi]: t("history.types.tournoi"),
+  [MatchType.Championnat]: t("history.types.championnat"),
 };
 
 const toOutcome = (
@@ -98,11 +106,11 @@ const OUTCOME_TAGS: Record<
   MatchOutcome["kind"],
   { label: string; variant: MatchTagVariant }
 > = {
-  result: { label: "✅ Terminé", variant: "neutral" },
-  voting: { label: "🔴 Vote en cours", variant: "live" },
-  notStarted: { label: "⚪ Vote pas lancé", variant: "neutral" },
-  noVotes: { label: "🕳️ Personne n’a voté", variant: "neutral" },
-  upcoming: { label: "⏳ À venir", variant: "neutral" },
+  result: { label: t("history.tags.finished"), variant: "neutral" },
+  voting: { label: t("history.tags.voting"), variant: "live" },
+  notStarted: { label: t("history.tags.notStarted"), variant: "neutral" },
+  noVotes: { label: t("history.tags.noVotes"), variant: "neutral" },
+  upcoming: { label: t("history.tags.upcoming"), variant: "neutral" },
 };
 
 /**
@@ -119,12 +127,12 @@ const toTags = (typeLabel: string, outcome: MatchOutcome): MatchTag[] => {
   if (outcome.kind === "result") {
     tags.push({
       id: "top",
-      label: `👑 ${outcome.topName}`,
+      label: t("history.tags.top", { name: outcome.topName }),
       variant: "honours",
     });
     tags.push({
       id: "flop",
-      label: `💩 ${outcome.flopName}`,
+      label: t("history.tags.flop", { name: outcome.flopName }),
       variant: "neutral",
     });
   }
@@ -205,8 +213,11 @@ export const useHistoryViewModel = () => {
       const item: HistoryMatch = {
         id: match.id,
         name: match.name,
-        dayLabel: format(date, "d", { locale: fr }),
-        monthLabel: format(date, "MMM", { locale: fr }).replace(".", ""),
+        dayLabel: format(date, "d", { locale: dateLocale() }),
+        monthLabel: format(date, "MMM", { locale: dateLocale() }).replace(
+          ".",
+          ""
+        ),
         playerCount: match.players.length,
         outcome,
         tags: toTags(typeLabel, outcome),
@@ -215,7 +226,7 @@ export const useHistoryViewModel = () => {
       matches.push(item);
 
       const sectionTitle = capitalise(
-        format(date, "MMMM yyyy", { locale: fr })
+        format(date, "MMMM yyyy", { locale: dateLocale() })
       );
       const lastSection = grouped[grouped.length - 1];
 
@@ -235,6 +246,8 @@ export const useHistoryViewModel = () => {
           .length,
         liveCount: matches.filter((match) => match.outcome.kind === "voting")
           .length,
+        // Matches arrive newest first, which is the order the streak reads.
+        streak: deriveStreak(matches.map((match) => match.outcome)),
       } satisfies HistorySummary,
     };
   }, [data]);
@@ -250,7 +263,7 @@ export const useHistoryViewModel = () => {
     isLoadingMore,
     hasMore,
     loadMore,
-    errorMessage: error ? "Impossible de charger l’historique." : null,
+    errorMessage: error ? t("history.error") : null,
     refetch,
   };
 };

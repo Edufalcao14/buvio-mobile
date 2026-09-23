@@ -7,12 +7,19 @@ import {
   Text,
   View,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { ListSkeleton } from "@/components/motion/Skeleton";
+import { StaggerItem } from "@/components/motion/StaggerItem";
+import { AnimatedNumber } from "@/components/motion/AnimatedNumber";
 import { useTheme } from "@/providers/ThemeProvider";
 import { MascotBubble } from "@/components/mascot/MascotBubble";
 import { Button } from "@/components/buttons/button";
 import { useHistoryViewModel } from "../hooks/useHistoryViewModel";
 import { MatchHistoryCard } from "../components/matchHistoryCard/MatchHistoryCard";
+import { LiveVoteBanner } from "../components/LiveVoteBanner";
+import { usePendingVoteViewModel } from "@/features/vote";
 import { createStyles } from "./History.styles";
+import { t } from "@/i18n";
 
 export default function History() {
   const theme = useTheme();
@@ -28,23 +35,20 @@ export default function History() {
     errorMessage,
     refetch,
   } = useHistoryViewModel();
+  const { pendingVote } = usePendingVoteViewModel();
 
   if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={theme.colors.primary.light} />
-      </View>
-    );
+    return <ListSkeleton rows={3} testID="history-skeleton" />;
   }
 
   if (errorMessage) {
     return (
       <View style={styles.centered}>
-        <MascotBubble line="Le tableau du club est tombé…" />
+        <MascotBubble line={t("history.errorMascot")} />
         <Text style={styles.errorText}>{errorMessage}</Text>
         <View style={styles.retryButton}>
           <Button
-            text="Réessayer"
+            text={t("common.retry")}
             onPress={async () => {
               await refetch();
             }}
@@ -106,40 +110,73 @@ export default function History() {
       }
       ListHeaderComponent={
         summary.matchCount > 0 ? (
-          <View style={styles.summary}>
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryValue}>{summary.matchCount}</Text>
-              <Text style={styles.summaryLabel}>
-                {summary.matchCount === 1 ? "match" : "matchs"}
-              </Text>
-            </View>
-            <View style={styles.summaryDivider} />
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryValue}>{summary.decidedCount}</Text>
-              <Text style={styles.summaryLabel}>
-                {summary.decidedCount === 1 ? "verdict" : "verdicts"}
-              </Text>
-            </View>
-            {/* Only shown when something is still open — no empty boasting. */}
-            {summary.liveCount > 0 ? (
-              <>
-                <View style={styles.summaryDivider} />
-                <View style={styles.summaryItem}>
-                  <Text style={[styles.summaryValue, styles.summaryLiveValue]}>
-                    {summary.liveCount}
-                  </Text>
-                  <Text style={styles.summaryLabel}>
-                    {summary.liveCount === 1 ? "vote ouvert" : "votes ouverts"}
-                  </Text>
-                </View>
-              </>
+          <StaggerItem index={0}>
+            {pendingVote ? (
+              <View style={styles.banner}>
+                <LiveVoteBanner
+                  matchName={pendingVote.matchName}
+                  onPress={() => router.push(`/vote/${pendingVote.matchId}`)}
+                />
+              </View>
             ) : null}
-          </View>
+            {/* The scoreboard counts up once, on the content the player
+                opened the tab for. */}
+            <View style={styles.summary}>
+              <View style={styles.summaryItem}>
+                <AnimatedNumber
+                  value={summary.matchCount}
+                  style={styles.summaryValue}
+                />
+                <Text style={styles.summaryLabel}>
+                  {t("history.matches", { count: summary.matchCount })}
+                </Text>
+              </View>
+              <View style={styles.summaryDivider} />
+              <View style={styles.summaryItem}>
+                <AnimatedNumber
+                  value={summary.decidedCount}
+                  style={styles.summaryValue}
+                />
+                <Text style={styles.summaryLabel}>
+                  {t("history.verdicts", { count: summary.decidedCount })}
+                </Text>
+              </View>
+              {/* Only shown when something is still open — no empty boasting. */}
+              {summary.liveCount > 0 ? (
+                <>
+                  <View style={styles.summaryDivider} />
+                  <View style={styles.summaryItem}>
+                    <AnimatedNumber
+                      value={summary.liveCount}
+                      style={[styles.summaryValue, styles.summaryLiveValue]}
+                    />
+                    <Text style={styles.summaryLabel}>
+                      {t("history.liveVotes", { count: summary.liveCount })}
+                    </Text>
+                  </View>
+                </>
+              ) : null}
+            </View>
+            {/* "On fire": the same Top on consecutive nights. */}
+            {summary.streak ? (
+              <View style={styles.streak} accessibilityRole="text">
+                <Feather
+                  name="zap"
+                  size={14}
+                  color={theme.colors.secondary.main}
+                />
+                <Text style={styles.streakText}>
+                  <Text style={styles.streakName}>{summary.streak.name}</Text>
+                  {`  ·  ${t("history.streak", { count: summary.streak.count })}`}
+                </Text>
+              </View>
+            ) : null}
+          </StaggerItem>
         ) : null
       }
       ListEmptyComponent={
         <View style={styles.empty}>
-          <MascotBubble line="Rien dans les archives. Le premier match s’écrit tout seul ?" />
+          <MascotBubble line={t("history.emptyMascot")} />
         </View>
       }
     />

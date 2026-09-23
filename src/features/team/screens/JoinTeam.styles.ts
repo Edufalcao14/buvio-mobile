@@ -12,23 +12,24 @@ export const createStyles = (theme: Theme) =>
     },
     container: {
       flex: 1,
-      padding: theme.spacing.lg,
+      padding: theme.spacing.md,
       gap: theme.spacing.md,
     },
     containerMain: {
-      flexDirection: "column",
       gap: theme.spacing.lg,
     },
     headerContainer: {
-      marginBottom: theme.spacing.xl,
+      marginBottom: theme.spacing.lg,
       gap: theme.spacing.xs,
     },
     title: {
       fontFamily: theme.typography.fontFamily.display,
       fontSize: theme.typography.fontSize.xxl,
+      letterSpacing: theme.typography.letterSpacing.tight,
       color: theme.colors.text.primary,
     },
     description: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.md,
       lineHeight:
         theme.typography.fontSize.md * theme.typography.lineHeight.normal,
@@ -39,23 +40,24 @@ export const createStyles = (theme: Theme) =>
       width: "100%",
     },
     inputLabel: {
-      fontSize: theme.typography.fontSize.md,
-      fontWeight: "600",
-      color: theme.colors.text.primary,
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.text.secondary,
     },
     inputContainers: {
-      flexDirection: "column",
       alignItems: "center",
       gap: theme.spacing.lg,
     },
     displayCodeInfoContainer: {
-      flexDirection: "column",
       width: "100%",
       gap: theme.spacing.sm,
     },
     codeHint: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.sm,
-      color: theme.colors.text.secondary,
+      color: theme.colors.text.hint,
       textAlign: "center",
     },
     helpContainer: {
@@ -64,34 +66,41 @@ export const createStyles = (theme: Theme) =>
       gap: theme.spacing.tiny,
     },
     helpText: {
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.sm,
       color: theme.colors.text.secondary,
     },
     helpLink: {
+      fontFamily: theme.typography.fontFamily.semiBold,
       fontSize: theme.typography.fontSize.sm,
-      fontWeight: "600",
-      color: theme.colors.primary.light,
-      textDecorationLine: "underline",
+      color: theme.colors.text.primary,
       paddingVertical: theme.spacing.xs,
     },
+    // The assembled code: a scoreboard readout, gold once complete.
     displayCode: {
-      padding: theme.spacing.md,
-      borderWidth: 2,
-      borderColor: theme.colors.grey.border,
+      paddingVertical: theme.spacing.md,
+      borderWidth: 1,
+      borderColor: theme.colors.grey[300],
       backgroundColor: theme.colors.background.paper,
       width: "100%",
       borderRadius: theme.borderRadius.lg,
       textAlign: "center",
-      fontSize: theme.typography.fontSize.xxxl,
-      letterSpacing: 4,
+      fontFamily: theme.typography.fontFamily.numeric,
+      fontSize: theme.typography.fontSize.display,
+      lineHeight: theme.typography.fontSize.display * 1.1,
+      letterSpacing: 8,
       color: theme.colors.text.primary,
-      fontWeight: "800",
+      minHeight: 76,
     },
-    // The assembled code earns the gold — the team taking shape.
     displayCodeActive: {
       borderColor: theme.colors.secondary.main,
+      color: theme.colors.secondary.main,
+    },
+    displayCodeEmpty: {
+      color: theme.colors.grey[400],
     },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.error.main,
       fontSize: theme.typography.fontSize.sm,
       textAlign: "center",

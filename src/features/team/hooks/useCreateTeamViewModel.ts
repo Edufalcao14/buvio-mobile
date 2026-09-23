@@ -14,6 +14,7 @@ import {
   pickImage,
   useImageUpload,
 } from "@/hooks/useImageUpload";
+import { t } from "@/i18n";
 
 export const useCreateTeamViewModel = () => {
   const [error, setError] = useState("");
@@ -78,28 +79,28 @@ export const useCreateTeamViewModel = () => {
         if (uploaded.status === "failed") {
           Toast.show({
             type: "warning",
-            text1: "Équipe créée, blason non envoyé",
-            text2: "Tu pourras l’ajouter dans les réglages.",
+            text1: t("team.create.toastCrestFailed"),
+            text2: t("auth.signUp.toastAddLater"),
             position: "bottom",
             visibilityTime: 3000,
           });
-          router.push("/(tabs)/team");
+          router.replace("/(tabs)/team");
           return;
         }
       }
 
       Toast.show({
         type: "success",
-        text1: "Équipe créée avec succès",
+        text1: t("team.create.toastCreated"),
         position: "bottom",
         visibilityTime: 2000,
       });
-      router.push("/(tabs)/team");
+      router.replace("/(tabs)/team");
     } catch (error) {
       setError(getErrorMessage(error));
       Toast.show({
         type: "error",
-        text1: "Erreur lors de la création de l'équipe",
+        text1: t("team.create.toastError"),
         position: "bottom",
         visibilityTime: 2000,
       });

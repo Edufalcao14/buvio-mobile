@@ -7,11 +7,12 @@ export const createStyles = (theme: Theme) =>
       gap: theme.spacing.xs,
     },
     input: {
-      minHeight: 48,
+      minHeight: 52,
       borderWidth: 1,
-      borderColor: theme.colors.grey.border,
+      borderColor: theme.colors.grey[300],
       borderRadius: theme.borderRadius.md,
       padding: theme.spacing.input,
+      fontFamily: theme.typography.fontFamily.regular,
       fontSize: theme.typography.fontSize.md,
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.paper,
@@ -19,12 +20,16 @@ export const createStyles = (theme: Theme) =>
     inputError: {
       borderColor: theme.colors.error.main,
     },
+    // Small caps label above the field — a data-sheet, not a form.
     label: {
-      fontSize: theme.typography.fontSize.md,
-      fontWeight: "600",
-      color: theme.colors.text.primary,
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: theme.typography.fontSize.xs,
+      letterSpacing: theme.typography.letterSpacing.caps,
+      textTransform: "uppercase",
+      color: theme.colors.text.secondary,
     },
     errorText: {
+      fontFamily: theme.typography.fontFamily.regular,
       color: theme.colors.error.main,
       fontSize: theme.typography.fontSize.sm,
     },

@@ -1,11 +1,12 @@
 import React, { ReactElement } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
+import { PressableScale } from "@/components/motion/PressableScale";
+import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@/providers/ThemeProvider";
 import { createStyles } from "./card.styles";
-import { getStyle } from "./utils";
 
 interface CardProps {
-  /** Accent of the icon chip — never a colored border (see DESIGN.md). */
+  /** Tint of the icon disc only. */
   accentColor: string;
   iconSymbol: ReactElement;
   title: string;
@@ -14,6 +15,7 @@ interface CardProps {
   handlePress: () => void;
 }
 
+/** A tappable row: icon disc, title + description, chevron. */
 export const Card: React.FC<CardProps> = ({
   accentColor,
   iconSymbol,
@@ -26,17 +28,20 @@ export const Card: React.FC<CardProps> = ({
   const styles = createStyles(theme, accentColor);
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={handlePress}
-      style={({ pressed }) => getStyle({ pressed })}
-    >
-      <View style={[styles.card]}>
-        <View style={[styles.iconContainer]}>{iconSymbol}</View>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
-        {helpText ? <Text style={styles.helpText}>{helpText}</Text> : null}
+    <PressableScale accessibilityRole="button" onPress={handlePress}>
+      <View style={styles.card}>
+        <View style={styles.iconContainer}>{iconSymbol}</View>
+        <View style={styles.body}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.description}>{description}</Text>
+          {helpText ? <Text style={styles.helpText}>{helpText}</Text> : null}
+        </View>
+        <Feather
+          name="chevron-right"
+          size={20}
+          color={theme.colors.text.hint}
+        />
       </View>
-    </Pressable>
+    </PressableScale>
   );
 };

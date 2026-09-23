@@ -80,6 +80,15 @@ export const createStyles = (theme: Theme) =>
       fontSize: theme.typography.fontSize.lg,
       color: theme.colors.text.primary,
     },
+    countPillTop: { borderColor: theme.colors.secondary.main },
+    countKind: {
+      fontFamily: theme.typography.fontFamily.semiBold,
+      fontSize: 10,
+      letterSpacing: theme.typography.letterSpacing.wide,
+      textTransform: "uppercase",
+      color: theme.colors.text.secondary,
+    },
+    countKindTop: { color: theme.colors.secondary.main },
     countPill: {
       flexDirection: "row",
       alignItems: "center",

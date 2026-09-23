@@ -1,5 +1,4 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import { MockedResponse } from "@apollo/client/testing";
 import { render, screen, fireEvent, waitFor } from "@/test-utils/render";
 import HistoryScreen from "@/features/match/screens/HistoryScreen";
@@ -26,7 +25,7 @@ type MatchInput = {
 const player = (index: number) => ({
   __typename: "User",
   id: `player-${index}`,
-  displayName: `Joueur ${index}`,
+  displayName: `Player ${index}`,
 });
 
 const buildMatch = ({
@@ -96,7 +95,7 @@ describe("HistoryScreen", () => {
   it("shows a spinner on the first load", () => {
     render(<HistoryScreen />, { mocks: [historyMock([])] });
 
-    expect(screen.UNSAFE_getByType(ActivityIndicator)).toBeTruthy();
+    expect(screen.getByTestId("history-skeleton")).toBeTruthy();
   });
 
   it("invites the team to play when the archive is empty", async () => {
@@ -104,7 +103,7 @@ describe("HistoryScreen", () => {
 
     expect(
       await screen.findByText(
-        "Rien dans les archives. Le premier match s’écrit tout seul ?"
+        "Nothing in the archives. Does the first match write itself?"
       )
     ).toBeTruthy();
   });
@@ -134,14 +133,14 @@ describe("HistoryScreen", () => {
     });
 
     expect(await screen.findByText("Derby de janvier")).toBeTruthy();
-    expect(screen.getByText("Janvier 2026")).toBeTruthy();
-    expect(screen.getByText("Décembre 2025")).toBeTruthy();
-    expect(screen.getByText("2")).toBeTruthy(); // matchs
-    expect(screen.getByText("matchs")).toBeTruthy();
+    expect(screen.getByText("January 2026")).toBeTruthy();
+    expect(screen.getByText("December 2025")).toBeTruthy();
+    expect(screen.getByDisplayValue("2")).toBeTruthy(); // matches
+    expect(screen.getByText("matches")).toBeTruthy();
     expect(screen.getByText("verdict")).toBeTruthy(); // exactly one decided
     // Nothing is still open, so the strip does not claim otherwise.
-    expect(screen.queryByText("vote ouvert")).toBeNull();
-    expect(screen.queryByText("votes ouverts")).toBeNull();
+    expect(screen.queryByText("vote open")).toBeNull();
+    expect(screen.queryByText("votes open")).toBeNull();
   });
 
   it("counts the votes still open in the summary strip", async () => {
@@ -159,7 +158,7 @@ describe("HistoryScreen", () => {
     });
 
     expect(await screen.findByText("Match en cours")).toBeTruthy();
-    expect(screen.getByText("vote ouvert")).toBeTruthy();
+    expect(screen.getByText("vote open")).toBeTruthy();
   });
 
   it.each([
@@ -167,21 +166,21 @@ describe("HistoryScreen", () => {
       "voting",
       { status: VoteSessionStatus.InProgress },
       "2020-01-12T20:00:00.000Z",
-      "🔴 Vote en cours",
+      "Vote open",
     ],
     [
       "notStarted (session not created, match already played)",
       null,
       "2020-01-12T20:00:00.000Z",
-      "⚪ Vote pas lancé",
+      "Vote not started",
     ],
     [
       "noVotes (session closed with no result)",
       { status: VoteSessionStatus.Completed },
       "2020-01-12T20:00:00.000Z",
-      "🕳️ Personne n’a voté",
+      "Nobody voted",
     ],
-    ["upcoming", null, "2999-01-12T20:00:00.000Z", "⏳ À venir"],
+    ["upcoming", null, "2999-01-12T20:00:00.000Z", "Upcoming"],
     [
       "result",
       {
@@ -190,7 +189,7 @@ describe("HistoryScreen", () => {
         flop: "Sacha",
       },
       "2020-01-12T20:00:00.000Z",
-      "✅ Terminé",
+      "Finished",
     ],
   ] as const)(
     "tags the %s outcome",
@@ -226,7 +225,7 @@ describe("HistoryScreen", () => {
       ],
     });
 
-    expect(await screen.findByText("Championnat")).toBeTruthy();
+    expect(await screen.findByText("League")).toBeTruthy();
   });
 
   it("crowns the top and roasts the flop once the verdict is in", async () => {
@@ -247,8 +246,8 @@ describe("HistoryScreen", () => {
       ],
     });
 
-    expect(await screen.findByText("👑 Camille")).toBeTruthy();
-    expect(screen.getByText("💩 Sacha")).toBeTruthy();
+    expect(await screen.findByLabelText("Top Camille")).toBeTruthy();
+    expect(screen.getByLabelText("Flop Sacha")).toBeTruthy();
   });
 
   it("never shows a verdict tag before the vote is closed with a result", async () => {
@@ -265,10 +264,10 @@ describe("HistoryScreen", () => {
       ],
     });
 
-    await screen.findByText("🔴 Vote en cours");
+    await screen.findByText("Vote open");
 
-    expect(screen.queryByText(/^👑/)).toBeNull();
-    expect(screen.queryByText(/^💩/)).toBeNull();
+    expect(screen.queryByLabelText(/^Top /)).toBeNull();
+    expect(screen.queryByLabelText(/^Flop /)).toBeNull();
   });
 
   it("offers a retry when the history cannot be loaded", async () => {
@@ -287,12 +286,10 @@ describe("HistoryScreen", () => {
       ],
     });
 
-    expect(
-      await screen.findByText("Impossible de charger l’historique.")
-    ).toBeTruthy();
-    expect(screen.getByLabelText("Le tableau du club est tombé…")).toBeTruthy();
+    expect(await screen.findByText("Could not load the history.")).toBeTruthy();
+    expect(screen.getByLabelText("The club's board fell down…")).toBeTruthy();
 
-    fireEvent.press(screen.getByRole("button", { name: "Réessayer" }));
+    fireEvent.press(screen.getByRole("button", { name: "Try again" }));
 
     await waitFor(() =>
       expect(screen.getByText("Derby retrouvé")).toBeTruthy()

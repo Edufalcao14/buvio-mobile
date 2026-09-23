@@ -17,18 +17,18 @@ describe("PodiumCard", () => {
   it("lists the players with their counts", () => {
     render(
       <PodiumCard
-        title="Les plus TOP"
+        title="Most TOP"
         emoji="👑"
         variant="top"
         entries={[
           entry(),
           entry({ id: "p2", rank: 2, nickname: "Marie", count: 1 }),
         ]}
-        emptyLine="Aucun top pour l’instant."
+        emptyLine="No top yet."
       />
     );
 
-    expect(screen.getByText("Les plus TOP")).toBeTruthy();
+    expect(screen.getByText("Most TOP")).toBeTruthy();
     expect(screen.getByText("Eduardo")).toBeTruthy();
     expect(screen.getByText("3")).toBeTruthy();
     expect(screen.getByText("Marie")).toBeTruthy();
@@ -37,29 +37,29 @@ describe("PodiumCard", () => {
   it("marks the current user's row", () => {
     render(
       <PodiumCard
-        title="Les plus TOP"
+        title="Most TOP"
         emoji="👑"
         variant="top"
         entries={[entry({ isCurrentUser: true })]}
-        emptyLine="Aucun top pour l’instant."
+        emptyLine="No top yet."
       />
     );
 
-    expect(screen.getByText("toi")).toBeTruthy();
+    expect(screen.getByText("you")).toBeTruthy();
   });
 
   // An empty podium says so rather than rendering an inviting blank card.
   it("explains an empty podium instead of showing nothing", () => {
     render(
       <PodiumCard
-        title="Les plus FLOP"
+        title="Most FLOP"
         emoji="💩"
         variant="flop"
         entries={[]}
-        emptyLine="Aucun flop pour l’instant."
+        emptyLine="No flop yet."
       />
     );
 
-    expect(screen.getByText("Aucun flop pour l’instant.")).toBeTruthy();
+    expect(screen.getByText("No flop yet.")).toBeTruthy();
   });
 });

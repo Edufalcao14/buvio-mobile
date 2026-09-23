@@ -18,12 +18,10 @@ const tryRequire = (loader: () => ImageSource): ImageSource | null => {
   }
 };
 
-const TOP_ART = tryRequire(() =>
-  require("../../../../assets/images/buvio_top.png")
-);
-const FLOP_ART = tryRequire(() =>
-  require("../../../../assets/images/buvio_flop.png")
-);
+// The dedicated verdict renders (`buvio_top.png` / `buvio_flop.png`) ship on a
+// white plate and read as a cropped rectangle on the dark ground, so they are
+// out of the chain. The die-cut sticker is the one piece of mascot art that
+// survives on any surface.
 const STICKER = tryRequire(() =>
   require("../../../../assets/images/sticker_goat.png")
 );
@@ -34,9 +32,10 @@ interface VerdictArtProps {
 }
 
 /**
- * Verdict art with the fallback chain the plan requires: the dedicated
- * artwork, then the mascot sticker, then a plain medallion. Runtime load
- * failures step down the same chain.
+ * Verdict art. The Top gets the mascot sticker — the one mascot appearance
+ * this screen is allowed (DESIGN.md) — and falls back to the gold medallion if
+ * it fails to load. The Flop goes straight to the neutral medallion: the roast
+ * is affectionate, so it never gets the character.
  */
 export const VerdictArt: React.FC<VerdictArtProps> = ({
   variant,
@@ -46,7 +45,7 @@ export const VerdictArt: React.FC<VerdictArtProps> = ({
   const isTop = variant === "top";
   const styles = createStyles(theme, size, isTop);
 
-  const chain = [isTop ? TOP_ART : FLOP_ART, STICKER].filter(
+  const chain = (isTop ? [STICKER] : []).filter(
     (source): source is ImageSource => source !== null
   );
   const [stage, setStage] = useState(0);

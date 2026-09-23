@@ -1,15 +1,22 @@
 // app/_layout.tsx
 import { useCallback } from "react";
-import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useReducedMotion } from "react-native-reanimated";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import {
-  Baloo2_600SemiBold,
-  Baloo2_700Bold,
-  Baloo2_800ExtraBold,
-} from "@expo-google-fonts/baloo-2";
+  Barlow_400Regular,
+  Barlow_500Medium,
+  Barlow_600SemiBold,
+  Barlow_700Bold,
+} from "@expo-google-fonts/barlow";
+import {
+  BarlowSemiCondensed_500Medium,
+  BarlowSemiCondensed_600SemiBold,
+  BarlowSemiCondensed_700Bold,
+} from "@expo-google-fonts/barlow-semi-condensed";
 import { ApolloProvider } from "@/providers/apollo/ApolloProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -29,10 +36,17 @@ void SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ fade: true, duration: 350 });
 
 export default function RootLayout() {
+  // Screen transitions stay the platform's own; reduced motion swaps the
+  // push for a fade rather than removing it.
+  const reducedMotion = useReducedMotion();
   const [fontsLoaded, fontError] = useFonts({
-    Baloo2_600SemiBold,
-    Baloo2_700Bold,
-    Baloo2_800ExtraBold,
+    Barlow_400Regular,
+    Barlow_500Medium,
+    Barlow_600SemiBold,
+    Barlow_700Bold,
+    BarlowSemiCondensed_500Medium,
+    BarlowSemiCondensed_600SemiBold,
+    BarlowSemiCondensed_700Bold,
   });
 
   // Hidden on the layout pass that first renders content, not in an effect that
@@ -48,19 +62,24 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={{ flex: 1 }} onLayout={revealApp}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={revealApp}>
       <ErrorBoundary>
         <ApolloProvider>
           <AuthProvider>
             <ThemeProvider>
-              {/* Chrome is Verde Gramado in both schemes — status bar stays light. */}
+              {/* Dark-locked ground — the status bar is always light-on-dark. */}
               <StatusBar style="light" />
-              <Stack screenOptions={{ headerShown: false }} />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: reducedMotion ? "fade" : "default",
+                }}
+              />
               <Toast config={toastConfig} />
             </ThemeProvider>
           </AuthProvider>
         </ApolloProvider>
       </ErrorBoundary>
-    </View>
+    </GestureHandlerRootView>
   );
 }

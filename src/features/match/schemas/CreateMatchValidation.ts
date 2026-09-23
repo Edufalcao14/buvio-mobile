@@ -1,22 +1,23 @@
 import { z } from "zod";
 import { MatchType } from "@/graphql/generated/hooks";
+import { t } from "@/i18n";
 
 export const matchSchema = z.object({
   name: z
     .string()
-    .min(3, { message: "Le nom du match doit contenir au moins 3 caractères" })
-    .max(50, { message: "Le nom du match ne peut pas dépasser 50 caractères" }),
+    .min(3, { message: t("validation.matchNameMin") })
+    .max(50, { message: t("validation.matchNameMax") }),
 
   type: z.enum([MatchType.Amical, MatchType.Tournoi, MatchType.Championnat], {
     errorMap: () => ({
-      message: "Veuillez sélectionner un type de match valide",
+      message: t("validation.matchType"),
     }),
   }),
 
   date: z
     .date()
     .refine((date) => date !== null && date !== undefined, {
-      message: "Veuillez sélectionner une date pour le match",
+      message: t("validation.matchDateRequired"),
     })
     .refine(
       (date) => {
@@ -25,7 +26,7 @@ export const matchSchema = z.object({
         return date >= today;
       },
       {
-        message: "Veuillez sélectionner une date à partir d'aujourd'hui",
+        message: t("validation.matchDateFuture"),
       }
     ),
 });

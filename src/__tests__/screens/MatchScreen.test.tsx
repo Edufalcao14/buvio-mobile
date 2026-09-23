@@ -45,14 +45,14 @@ describe("MatchScreen", () => {
     render(<MatchScreen />, { mocks: [teamMembersMock] });
 
     expect(
-      screen.getByLabelText("Toujours pas de match ? Le chopp va chauffer…")
+      screen.getByLabelText("Still no match? The beer is getting warm…")
     ).toBeTruthy();
     expect(
       screen.getByText(
-        "Créez un match avec le bouton + pour lancer la prochaine rencontre."
+        "Create a match with the + button to start the next game."
       )
     ).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Créer un match" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Create a match" })).toBeTruthy();
 
     await flushQueries();
   });
@@ -60,13 +60,13 @@ describe("MatchScreen", () => {
   it("keeps the creation modal closed until the + is pressed", async () => {
     render(<MatchScreen />, { mocks: [teamMembersMock] });
 
-    expect(screen.queryByText("Créer un Match")).toBeNull();
+    expect(screen.queryByText("Create a match")).toBeNull();
 
-    fireEvent.press(screen.getByRole("button", { name: "Créer un match" }));
+    fireEvent.press(screen.getByRole("button", { name: "Create a match" }));
 
-    expect(screen.getByText("Créer un Match")).toBeTruthy();
-    expect(screen.getByText("Nouveau match")).toBeTruthy();
-    expect(screen.getByPlaceholderText("Ex: Match du dimanche")).toBeTruthy();
+    expect(screen.getByText("Create a match")).toBeTruthy();
+    expect(screen.getByText("New match")).toBeTruthy();
+    expect(screen.getByPlaceholderText("e.g. Sunday match")).toBeTruthy();
 
     await flushQueries();
   });
@@ -74,10 +74,10 @@ describe("MatchScreen", () => {
   it("closes the modal again from its back arrow", async () => {
     render(<MatchScreen />, { mocks: [teamMembersMock] });
 
-    fireEvent.press(screen.getByRole("button", { name: "Créer un match" }));
-    fireEvent.press(screen.getByRole("button", { name: "Fermer" }));
+    fireEvent.press(screen.getByRole("button", { name: "Create a match" }));
+    fireEvent.press(screen.getByRole("button", { name: "Close" }));
 
-    expect(screen.queryByText("Nouveau match")).toBeNull();
+    expect(screen.queryByText("New match")).toBeNull();
 
     await flushQueries();
   });

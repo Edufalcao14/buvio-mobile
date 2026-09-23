@@ -12,8 +12,8 @@ describe("MascotBubble", () => {
   });
 
   it("exposes the line as the accessible name of the sticker", () => {
-    render(<MascotBubble line="Le tableau du club est tombé…" size="sm" />);
+    render(<MascotBubble line="The club's board fell down…" size="sm" />);
 
-    expect(screen.getByLabelText("Le tableau du club est tombé…")).toBeTruthy();
+    expect(screen.getByLabelText("The club's board fell down…")).toBeTruthy();
   });
 });
