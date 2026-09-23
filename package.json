@@ -19,7 +19,7 @@
     "schema:pull": "cp ../Buvio-Backend/src/graphql/schema.graphql ./schema.graphql"
   },
   "dependencies": {
-    "@apollo/client": "^3.14.1",
+    "@apollo/client": "^4.3.1",
     "@expo-google-fonts/baloo-2": "^0.4.2",
     "@expo-google-fonts/barlow": "^0.4.1",
     "@expo-google-fonts/barlow-semi-condensed": "^0.4.1",
